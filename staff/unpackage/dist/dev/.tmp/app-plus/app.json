@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/shops/shops",
+    "pages/shopHomePage/homeindex",
+    "pages/shopHomePage/shopHomePage",
+    "pages/shopHomePage/allProduct",
+    "pages/shopHomePage/activity",
+    "pages/shopHomePage/order",
+    "pages/shopHomePage/category",
+    "pages/search/search",
+    "pages/shopHomePage/salesRank",
+    "pages/message/message",
+    "pages/search/searchResult"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "店店店",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8",
+    "navigationStyle": "custom"
+  },
+  "networkTimeout": {
+    "request": 20000
+  },
+  "nvueCompiler": "uni-app",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "业务员",
+  "compilerVersion": "2.3.7",
+  "usingComponents": {}
+}

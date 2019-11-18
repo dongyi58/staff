@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "customnav": "/components/customnav",
+    "popup": "/components/uni-popup/uni-popup"
+  }
+}

@@ -1,0 +1,1 @@
+<view><view class="status_bar index_status_bar"></view><customnav vue-id="1" ismsg="{{false}}" isSearch="{{false}}" midtitle="{{false}}" placeholder="{{ph}}" cancletext="{{false}}" backPagenum="{{2}}" searchinp="{{true}}" bind:__l="__l"></customnav></view>

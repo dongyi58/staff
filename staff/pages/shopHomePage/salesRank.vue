@@ -1,0 +1,129 @@
+<template>
+	<view class="salesrank_wrap wrap">
+		<view class="status_bar index_status_bar"></view>
+		<customnav  navtitle="销售排行" />
+		<scroll-view class="rank_list" @scroll="scroll" scroll-y >
+				<!-- 排行榜列表 -->
+				<view class="ranklist_wrap">
+					<!-- 前三商品 -->
+					<view class="top3_box">
+						<view class="top3_item" v-if="idx <= 2" v-for="(item,idx) of rankList" :key="idx">
+							<view class="top3_idx" :class="[idx == 0 ? 'top3Idx_color0' : (idx==1?'top3Idx_color1' : 'top3Idx_color2') ]">NO.<i >{{idx+1}}</i></view>
+							<view class="top3_imgbox">
+								
+								<image class=" top3_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
+								<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
+							</view>
+							<p>{{item.d_name}}</p>
+							<view class="salenum">
+								日销量:{{item.sale}}
+							</view>
+						</view>
+					</view>
+					<view  class="otherrank_box">
+						<view class="otherrank_item" v-if="oidx >= 3" v-for="(item,oidx) of rankList" :key="oidx">
+							<i class="rank_idx">{{oidx}}</i>
+							<view class="other_imgbox">
+								
+								<image class=" otherimg image" :class="{lazy:!item.show}" :data-index="oidx" @load="imageLoad" :src="item.show ? item.img:''" />
+								<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
+							</view>
+							<view class="other_content">
+								<p>
+									蒙牛甄选纯牛奶蒙牛周年庆店促过时不候！过时不
+								</p>
+								<p>牛奶香浓,丝般感受，德芙，此刻尽丝滑！</p>
+							</view>
+						</view>
+					</view>
+				</view>
+		</scroll-view>
+	</view>
+</template>
+
+<script>
+	import customnav from '@/components/customnav.vue'
+	export default {
+		components:{customnav},
+		data() {
+			return {
+				rankList:[],
+				domain:this.$store.state.domain,
+				//图片懒加载
+				windowHeight: 0,
+				show: false,
+				 //图片懒加载
+			};
+		},
+		computed:{
+			shopId(){
+				return this.$store.state.shopId
+			},
+			supplierId(){
+				return this.$store.state.supplierId
+			}
+		},
+		mounted(){
+			this.getrankList()
+		},
+		methods:{
+			//图片懒加载
+			scroll(){
+				this.load()
+			},
+			load() {
+				const query = uni.createSelectorQuery().in(this)
+				query.selectAll('.lazy').boundingClientRect((images) => {
+					images.forEach((image, index) => {
+						if (image.top <= this.windowHeight) {
+							this.rankList[image.dataset.index].show = true;
+						}
+					})
+				}).exec()
+			},
+			imageLoad(e) {
+				this.rankList[e.target.dataset.index].loaded = true
+			},
+			//图片懒加载
+			getrankList(){
+				const _this = this
+				 this.$dyrequest({
+					 url:'/IndexSales/moreRankGoods',
+					 method:'POST',
+					 data:{
+						 id:_this.shopId,
+						 supplierId:_this.supplierId
+					 }
+				 }).then(res=>{
+					
+					 res.data.data.map(item=>{
+						 _this.$set(item,'show',false)
+						 _this.$set(item,'loaded',false)
+						 item.img = _this.domain + item.img
+						 _this.rankList.push(item)
+					 })
+					  console.log(_this.rankList)
+					  //图片懒加载 首次加载
+					  this.windowHeight = uni.getSystemInfoSync().windowHeight-45
+					  
+					  if (!this.show) {
+					  	this.show = true
+					  	
+					  	setTimeout(() => {
+					  		this.load()
+					  	}, 100)
+					  }
+					  //图片懒加载
+				 })
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	@import '@/static/css/style.scss';
+	.rank_list{
+		width: 100%;
+		height: calc(100vh - 45px);
+	}
+</style>
