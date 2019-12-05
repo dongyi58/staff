@@ -1,0 +1,201 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+		"path" : "pages/login/login"
+		},
+		{
+		"path": "pages/index/index"
+			
+		}
+        ,{
+            "path" : "pages/shops/shops",
+            "style" : {}
+        }
+		,{
+		    "path" : "pages/shopHomePage/homeindex",
+		    "style" : {}
+		}
+        ,{
+            "path" : "pages/shopHomePage/shopHomePage",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/shopHomePage/allProduct",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/shopHomePage/activity",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/shopHomePage/order",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/shopHomePage/category",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/search/search",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/shopHomePage/salesRank",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/message/message",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/search/searchResult",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/yhq/yhq",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/personal",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/shopManage",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/shopBasicInfo",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/shopOrder",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/shopOrderDetail",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/incomeManage",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/incomeDetail",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/account/account",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/account/currentBindPhone",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/account/verifyOldPhone",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/account/changePhone",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/account/resetPsw",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/staffFile",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/staffCheck/staffLoaction",
+            "style" : {
+				 "app-plus": {
+					  "titleNView": {
+						  "titleText":"定位小店",
+						  "titleColor":"#fff",
+						  "titleSize":"14px",
+						  "backgroundColor":"#1A6FE8"
+					  },
+				  "subNVues":[
+					  {
+						  //地图上方业务员信息
+						"id": "mapTop", 
+						"path": "pages/staffCheck/subNVues/mapTop.nvue",
+						"style": { 	
+							"height":"65px",
+							"top":"70px",
+							"background":"transparent"
+						} 
+					},
+					{
+						  //地图右方按钮
+						"id": "rightBtn", 
+						"path": "pages/staffCheck/subNVues/rightBtn.nvue",
+						"style": { 	
+							
+							"width":"70px",
+							"height":"500px",
+							"right":"10px",
+							"top":"30%",
+							"background":"transparent"
+						} 
+					},
+					{
+						  //地图右方按钮
+						"id": "bloaction", 
+						"path": "pages/staffCheck/subNVues/currentLocation.nvue",
+						"style": { 	
+							"height":"70px",
+							"bottom":"0",
+							"background":"transparent"
+						} 
+					}
+				]
+			}
+			}
+        }
+        ,{
+            "path" : "pages/staffCheck/subNVues/mapTop",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/staffCheck/subNVues/rightBtn",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/staffCheck/subNVues/currentLocation",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/staffCheck/staffCheck",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/personal/saleStatistics",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/testSku",
+            "style" : {}
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "店店店",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle":"custom"
+	},
+	//启动页配置
+	"condition" : { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [
+			{
+				"name": "check", //模式名称
+				"path": "pages/personal/saleStatistics"//启动页面，必选
+				// "query": "" //启动参数，在页面的onLoad函数里面得到
+			}
+		]
+	}
+}

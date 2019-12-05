@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8" />
+        <script>
+            var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') ||
+                CSS.supports('top: constant(a)'))
+            document.write(
+                '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+                (coverSupport ? ', viewport-fit=cover' : '') + '" />')
+        </script>
+        <title>View</title>
+        <style>
+            * {
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            input[type="search"]::-webkit-search-cancel-button {
+                display: none;
+            }
+        </style>
+        <script>
+            var __wxConfig = {"debug":false,"appname":"业务员","entryPagePath":"pages/login/login.html","page":{"pages/login/login.html":{"window":{"usingComponents":{}}},"pages/index/index.html":{"window":{"usingComponents":{}}},"pages/shops/shops.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/shopHomePage/homeindex.html":{"window":{"usingComponents":{"home":"/pages/shopHomePage/shopHomePage","allproduct":"/pages/shopHomePage/allProduct","activity":"/pages/shopHomePage/activity","order":"/pages/shopHomePage/order","category":"/pages/shopHomePage/category"}}},"pages/shopHomePage/shopHomePage.html":{"window":{"usingComponents":{"customnav":"/components/customnav","popup":"/components/uni-popup/uni-popup"}}},"pages/shopHomePage/allProduct.html":{"window":{"usingComponents":{"customnav":"/components/customnav","popup":"/components/uni-popup/uni-popup"}}},"pages/shopHomePage/activity.html":{"window":{"usingComponents":{"customnav":"/components/customnav","qstab":"/components/QS-tabs/QS-tabs"}}},"pages/shopHomePage/order.html":{"window":{"usingComponents":{}}},"pages/shopHomePage/category.html":{"window":{"usingComponents":{}}},"pages/search/search.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/shopHomePage/salesRank.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/message/message.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/search/searchResult.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/yhq/yhq.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/personal/personal.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav","popup":"/components/uni-popup/uni-popup"}}},"pages/personal/shopManage.html":{"window":{"usingComponents":{"qstab":"/components/QS-tabs/QS-tabs","customnav":"/components/customnav","level":"/components/level"}}},"pages/personal/shopBasicInfo.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/personal/shopOrder.html":{"window":{"usingComponents":{"customnav":"/components/customnav","qstab":"/components/QS-tabs/QS-tabs","level":"/components/level"}}},"pages/personal/shopOrderDetail.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/personal/incomeManage.html":{"window":{"usingComponents":{"customnav":"/components/customnav","qspicker":"/components/QuShe-picker/QuShe-picker"}}},"pages/personal/incomeDetail.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/personal/account/account.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/personal/account/currentBindPhone.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/personal/account/verifyOldPhone.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/personal/account/changePhone.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/personal/account/resetPsw.html":{"window":{"usingComponents":{"customnav":"/components/customnav"}}},"pages/personal/staffFile.html":{"window":{"usingComponents":{"uni-list":"/components/uni-list/uni-list","uni-list-item":"/components/uni-list-item/uni-list-item","customnav":"/components/customnav"}}},"pages/staffCheck/staffLoaction.html":{"window":{"titleNView":{"titleText":"定位小店","titleColor":"#fff","titleSize":"14px","backgroundColor":"#1A6FE8"},"subNVues":[{"id":"mapTop","path":"pages/staffCheck/subNVues/mapTop.nvue","style":{"height":"65px","top":"70px","background":"transparent"}},{"id":"rightBtn","path":"pages/staffCheck/subNVues/rightBtn.nvue","style":{"width":"70px","height":"500px","right":"10px","top":"30%","background":"transparent"}},{"id":"bloaction","path":"pages/staffCheck/subNVues/currentLocation.nvue","style":{"height":"70px","bottom":"0","background":"transparent"}}],"usingComponents":{"customnav":"/components/customnav"}}},"pages/staffCheck/staffCheck.html":{"window":{"usingComponents":{"customnav":"/components/customnav","popup":"/components/uni-popup/uni-popup"}}},"pages/personal/saleStatistics.html":{"window":{"usingComponents":{"customnav":"/components/customnav","qstab":"/components/QS-tabs/QS-tabs"}}}},"global":{"window":{"navigationBarTextStyle":"black","navigationBarTitleText":"店店店","navigationBarBackgroundColor":"#F8F8F8","backgroundColor":"#F8F8F8","navigationStyle":"custom"}},"tabBar":{"color":"","selectedColor":"","backgroundColor":"","borderStyle":"black","list":[],"position":"bottom"},"networkTimeout":{"request":20000,"connectSocket":60000,"uploadFile":60000,"downloadFile":60000},"platform":"devtools","pages":["pages/login/login","pages/index/index","pages/shops/shops","pages/shopHomePage/homeindex","pages/shopHomePage/shopHomePage","pages/shopHomePage/allProduct","pages/shopHomePage/activity","pages/shopHomePage/order","pages/shopHomePage/category","pages/search/search","pages/shopHomePage/salesRank","pages/message/message","pages/search/searchResult","pages/yhq/yhq","pages/personal/personal","pages/personal/shopManage","pages/personal/shopBasicInfo","pages/personal/shopOrder","pages/personal/shopOrderDetail","pages/personal/incomeManage","pages/personal/incomeDetail","pages/personal/account/account","pages/personal/account/currentBindPhone","pages/personal/account/verifyOldPhone","pages/personal/account/changePhone","pages/personal/account/resetPsw","pages/personal/staffFile","pages/staffCheck/staffLoaction","pages/staffCheck/staffCheck","pages/personal/saleStatistics","pages/staffCheck/subNVues/mapTop","pages/staffCheck/subNVues/rightBtn","pages/staffCheck/subNVues/currentLocation","pages/staffCheck/subNVues/mapTop","pages/staffCheck/subNVues/rightBtn","pages/staffCheck/subNVues/currentLocation"],"nvue":{"pages":{"pages/staffCheck/subNVues/mapTop.html":{"window":{"usingComponents":{}},"nvue":true},"pages/staffCheck/subNVues/rightBtn.html":{"window":{"usingComponents":{}},"nvue":true},"pages/staffCheck/subNVues/currentLocation.html":{"window":{"usingComponents":{}},"nvue":true}}},"nvueCompiler":"uni-app","renderer":"auto","splashscreen":{"alwaysShowBeforeRender":true,"autoclose":false},"compilerVersion":"2.4.2","usingComponents":{}}
+        </script>
+        <script>
+            var __id__ = '';
+            window.__dispatchGenerateFunc__ = function(page) {
+                __id__ = page;
+                document.title = page;
+                // window.history.pushState('', '', page);
+                var wxss = page.replace('.html', '.wxss')
+                if (
+                    typeof __wxAppCode__ !== 'undefined' &&
+                    __wxAppCode__.hasOwnProperty(wxss)
+                ) {
+                    var setCssToHead = __wxAppCode__[wxss]
+                    typeof setCssToHead === 'function' && setCssToHead()
+                    document.dispatchEvent(new CustomEvent("generateFuncReady", {
+                        detail: {
+                            generateFunc: $gwx(page.replace('.html', '.wxml'))
+                        }
+                    }));
+                } else {
+                    plus.webview.currentWebview().setJsFile('_www/' + page.replace('.html', '.js'));
+                }
+            };
+        </script>
+        <script src="__uniappes6.js"></script>
+        <script src="uniapp://ready"></script>
+    </head>
+
+    <body>
+        <div></div>
+    </body>
+
+</html>

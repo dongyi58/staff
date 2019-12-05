@@ -1,0 +1,567 @@
+@charset "UTF-8";
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.homepage_list {
+  position: absolute;
+  top: 170px;
+  width: 100%;
+  height: calc(100vh - 230px);
+  overflow-y: scroll;
+}
+.sales_rank {
+  padding: 10px;
+}
+.content_header {
+  padding: 20px 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.content_header ._span:first-child {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4D4D4D;
+}
+.content_header ._span:last-child {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+.content_header ._span:last-child ._i {
+      color: #147AED;
+      margin-left: 5px;
+}
+.sales_content > ._ul {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 0;
+}
+.sales_content > ._ul ._li {
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    position: relative;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 1 28%;
+        -ms-flex: 0 1 28%;
+            flex: 0 1 28%;
+    list-style: none;
+    text-align: center;
+}
+.sales_content > ._ul ._li ._p {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-direction: column;
+          -ms-flex-direction: column;
+              flex-direction: column;
+      -webkit-box-pack: start;
+      -webkit-justify-content: flex-start;
+          -ms-flex-pack: start;
+              justify-content: flex-start;
+      min-height: 40px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      padding: 10px 0 5px;
+}
+.sales_content > ._ul ._li:nth-child(2)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -15%;
+    width: 1px;
+    height: 100%;
+    background: #eee;
+}
+.sales_content > ._ul ._li:nth-child(2)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -15%;
+    width: 1px;
+    height: 100%;
+    background: #eee;
+}
+.sales_content > ._ul .sales_img {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    background-size: cover !important;
+    border-radius: 5px;
+}
+.sales_content > ._ul .sales_num {
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+.sales_content > ._ul .sales_num ._span {
+      color: #EE453C;
+      margin-right: 5px;
+      letter-spacing: 0;
+      font-size: 12px;
+}
+.activity_banner {
+  width: 100%;
+  padding: 10px;
+}
+.activity_banner .activity_banner_img {
+    width: 100%;
+    height: 150px;
+    background-size: 100% 100% !important;
+}
+.goods_list_wrap {
+  padding: 10px;
+}
+.goods_list_wrap .goods_item_one {
+    background: #fff;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.goods_list_wrap .goods_img_box {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+}
+.goods_list_wrap .goods_img_box .goods_img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 5px 5px 0 0;
+}
+.goods_list_wrap .goods_list {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+}
+.goods_list_wrap .goods_list .goods_item {
+      -webkit-box-flex: 0;
+      -webkit-flex: 0 1 48%;
+          -ms-flex: 0 1 48%;
+              flex: 0 1 48%;
+      background: #fff;
+      margin-bottom: 10px;
+      border-radius: 5px;
+}
+.goods_list_wrap .goods_name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 5px 0;
+    padding: 0 5px;
+}
+.goods_list_wrap .goods_price {
+    color: #EE453C;
+    font-size: 16px;
+    padding: 5px;
+    font-weight: 600;
+}
+.yhq_title {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  margin: 10px 0 20px;
+  font-size: 14px;
+}
+.yhq_title ._i {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.yhq_item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  height: 80px;
+  background-size: cover !important;
+  margin-bottom: 10px;
+  color: #fff;
+}
+.yhq_item .yhq_left {
+    width: 75%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.yhq_item .yhq_left .yhq_left_two, .yhq_item .yhq_left .yhq_left_one {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+          -ms-flex-direction: column;
+              flex-direction: column;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+}
+.yhq_item .yhq_left .yhq_left_two ._span:last-child, .yhq_item .yhq_left .yhq_left_one ._span:last-child {
+        text-align: center;
+}
+.yhq_item .yhq_left .yhq_left_one ._span:first-child {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      font-size: 2em;
+}
+.yhq_item .yhq_left .yhq_left_one ._span:first-child ._i {
+        font-size: 16px;
+        margin-right: 3px;
+}
+.yhq_item .yhq_left .yhq_left_one ._span:last-child {
+      -webkit-transform: scale(0.7);
+          -ms-transform: scale(0.7);
+              transform: scale(0.7);
+}
+.yhq_item .yhq_left .yhq_left_two ._span {
+      font-size: 10px;
+}
+.yhq_item .yhq_right {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+.yhq_item .yhq_right ._span:last-child {
+      display: block;
+      width: 40px;
+      border-radius: 20px;
+      padding: 3px 5px;
+      margin-top: 5px;
+      text-align: center;
+}
+.yhq_item .yhq_right .usestyle {
+      background: #fff;
+      color: #F93232;
+}
+.yhq_item .yhq_right .takestyle {
+      background: #FB5151;
+      color: #fff;
+}
+.yhq_item .yhq_right .usestyle2 {
+      background: #fff;
+      color: #F93232;
+}
+.yhq_item .yhq_right .takestyle2 {
+      background: #FD911F;
+      color: #fff;
+}
+.home_popup .uni-popup__wrapper-box {
+  width: 90%;
+  max-width: 300px;
+}
+.loadfinshed_text {
+  width: 100%;
+  text-align: center;
+  color: #999;
+  padding: 5px 0;
+}
+.header-bkg {
+  position: absolute;
+  width: 100%;
+  height: 170rpx;
+  overflow-x: hidden;
+}
+.header-bkg::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    -webkit-transform: translate(-50%, 0);
+        -ms-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+    width: 130%;
+    height: 80px;
+    border-radius: 0 0 60% 60%;
+    background: -webkit-gradient(linear, left top, right top, from(#21a4f9), color-stop(#20a2f8), color-stop(#1f95f4), color-stop(#1d89f0), color-stop(#1c80ed), color-stop(#1b76ea), to(#0064ef));
+    background: -o-linear-gradient(left, #21a4f9, #20a2f8, #1f95f4, #1d89f0, #1c80ed, #1b76ea, #0064ef);
+    background: linear-gradient(to right, #21a4f9, #20a2f8, #1f95f4, #1d89f0, #1c80ed, #1b76ea, #0064ef);
+}
+.supInfo {
+  z-index: 99;
+  position: relative;
+  top: 4%;
+  left: 2.5%;
+  width: 95%;
+  background: #fff;
+  padding: .5rem;
+  font-size: 24rpx;
+  border-radius: 5px;
+}
+.supInfo .st-left-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #f3f3f3;
+    -webkit-flex-shrink: 0;
+        -ms-flex-negative: 0;
+            flex-shrink: 0;
+}
+.supInfo .getcut {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+}
+.supInfo .getcut ._span:first-child {
+      color: #999;
+}
+.supInfo .getcut ._span:last-child {
+      border: 1px solid #147AED;
+      border-radius: 4px;
+      color: #2A8BF9;
+      padding: 2px 5px;
+}
+.supInfo .supInfo-top {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    margin-bottom: 5px;
+}
+.supInfo .supInfo-top .st-left {
+      width: 80%;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+}
+.supInfo .supInfo-top .st-left .st-name {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        width: 80%;
+        margin-left: 10px;
+}
+.supInfo .supInfo-top .st-left .st-name ._h4 {
+          font-size: 14px;
+          font-weight: normal;
+          line-height: 1;
+          overflow: hidden;
+          -o-text-overflow: ellipsis;
+             text-overflow: ellipsis;
+          white-space: nowrap;
+}
+.supInfo .supInfo-top .st-left .st-name ._i {
+          color: #999;
+          font-size: 16px;
+}
+.supInfo .supInfo-top .st-left .st-name ._p {
+          overflow: hidden;
+          -o-text-overflow: ellipsis;
+             text-overflow: ellipsis;
+          white-space: nowrap;
+}
+.supInfo .supInfo-top .st-left .st-name .h_location {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -ms-flexbox;
+          display: flex;
+          margin-top: 10px;
+}
+.supInfo .supInfo-top .st-left .st-name .h_location ._i {
+            color: #44AE69;
+}
+.supInfo .supInfo-top .st-left .st-name .h_location ._p {
+            color: #999;
+}
+
+@charset "UTF-8";
+/**
+ * 这里是uni-app内置的常用样式变量
+ *
+ * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量
+ * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App
+ *
+ */
+/**
+ * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能
+ *
+ * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件
+ */
+/* 颜色变量 */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.supBottomNav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 10rpx 0;
+  background: #f9f9f9;
+  border-top: #eaeaea;
+}
+.supBottomNav ._ul {
+    padding: 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.supBottomNav ._ul ._li {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      list-style: none;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 1 20%;
+          -ms-flex: 1 1 20%;
+              flex: 1 1 20%;
+      color: #999;
+}
+.supBottomNav ._ul ._li .other_view {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+            -ms-flex-align: center;
+                align-items: center;
+}
+.supBottomNav ._ul ._li ._i {
+        font-size: 20px;
+}
+.index_view {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #147AED;
+  text-align: center;
+  line-height: 35px;
+  color: #fff;
+  margin: auto;
+}
+.active {
+  color: #2A8BF9 !important;
+}
+

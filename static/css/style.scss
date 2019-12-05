@@ -1,0 +1,268 @@
+
+
+
+//公用商品列表样式
+.goods_list_wrap{
+	padding:10px;
+	.goods_item_one{
+		width:100%;
+		background:#fff;
+		margin-bottom:10px;
+		border-radius: 5px;
+		padding-bottom:10px;
+	}
+	.goods_img_box{
+		position:relative;
+		width:100%;
+		height:0;
+		padding-bottom:100%;
+		.goods_img{
+			
+				position:absolute;
+				width:100%;
+				height:100%;
+				border-radius:5px 5px 0 0 ;
+			
+		}
+	}
+	
+	.goods_list{
+		display:flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		.goods_item{
+			width:48%;
+			background:#fff;
+			margin-bottom:10px;
+			border-radius:5px;
+			padding-bottom:10px;
+		}
+	}
+	.goods_name{
+		@include longtext;
+		margin:5px 0;
+		padding:0 10px;
+		max-width:100%;
+	}
+	.goods_price{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		color:#EE453C;
+		font-size:16px;
+		padding:0 10px;
+		font-weight: 600;
+		i{
+			font-size:20px;
+		};
+	}
+}
+
+//公用商品列表样式
+
+//公用loading样式和懒加载样式
+.loadfinshed_text{
+	
+	width:100%;
+	text-align: center;
+	color:#999;
+	padding:5px 0 20px;
+}
+.loadimg{
+	position: absolute;
+	top:0;
+	left:0;
+	    width: 100%;
+	    height: 100%;
+	    text-align: center;
+	    background: #fff;
+	i{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size:4em;
+		color:#f5f5f5;
+	}
+}
+.placeholder{
+		opacity: 1;
+		transition: opacity 0.4s linear;
+	}
+
+	.placeholder.loaded {
+		opacity: 0;
+	}
+//公用loading样式
+
+
+// 公用过滤样式
+.filter_bar{
+	background:#fff;
+	ul{
+		display: flex;
+		justify-content: space-between;
+		li{
+			flex:1 1 25%;
+			text-align:center;
+			// padding:20rpx 0;
+			height:40px;
+			line-height: 40px;
+		}
+	}
+}
+.hl_box{
+	position:relative;
+	i{
+		position:absolute;
+		right:15%;
+		transform: scale(.5);
+		color:#999;
+	}
+	i:first-child{
+		top:-2px;
+	}
+	i:last-child{
+		top:4px; 
+	}
+}
+.activeFitler{
+		color:#078CF3 !important
+	}
+// 公用过滤样式
+.emptyTips{
+			display: flex;
+			    justify-content: center;
+			    align-items: center;
+			    padding: 6em 0;
+			    font-size: 14px;
+			    color: #999;
+		}
+
+//小店采购统计
+
+.shopSales{
+	background:#fff;
+}
+.caigou_head{
+	padding:10px;
+	ul{
+		display: flex;
+		li{
+			
+			color:#999;
+		}
+	}
+ }
+ .totalMoney,.nums{
+	 text-align: right !important;
+ }
+.col-1{
+		width:10.66%;
+	}
+	.idxnum{
+		 display: flex;
+		 align-items:center;
+		  color:#EE453C;
+		  padding-left:7px;
+	}
+	.col-2{
+		display: flex;
+		align-items: center;
+		 width:16.66%
+	}
+	.col-6{
+		 width:60%;
+	}
+ .caigou_list_wrap{
+	 padding:10px;
+	 .caigou_listItem{
+			display: flex;
+			padding:10px 0;
+			border-bottom:1px solid #f5f5f5;
+			.caigou_img_box{
+				position:relative;
+				width:30px;
+				height:30px;
+				border-radius: 4px;
+				border:1px solid #f5f5f5;
+				overflow: hidden;
+				 .caigou_img{
+					 width:100%;
+					 height:100%;
+				 }
+			}
+			.caigouLoadImg i{
+				 font-size:2em !important
+			}
+		.caigou_progress{
+			.name_fee{
+				display: flex;
+				justify-content: space-between;
+				span:first-child{
+					@include longtext2;
+					font-size:12px;
+					color:#383838
+				}
+				span:last-child{
+					color:#EE453C;
+					margin-left:10px;
+				}
+			}
+			.progress_view{
+				width:100%;
+				height:13px;
+				position:relative;
+				background:#CCCCCC;
+				margin-top:5px;
+				.progress{
+					position:absolute;
+					top:0;
+					left:0;
+					width:0;
+					height:100%;
+					background:linear-gradient(to right,#FC755B,#EE453C);
+					transition:all .3s
+				}
+			}
+		}
+		.nums{
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+		}
+	 }
+}
+.shopTotal{
+	align-items: center;
+	justify-content: space-between !important;
+	border-top:1px solid #f5f5f5;
+	.totalLeft{
+		font-size:12px;
+	}
+}
+
+
+ // sku测试
+ 
+.skuChild{
+	display: flex;
+	li{
+		width:20%;
+		border:1px solid #f3f3f3;
+		background:#fff;
+		border-radius:5px;
+		text-align:center;
+		padding:3px 0;
+	}
+	.activeSku{
+		background:#1A6FE8;
+		color:#fff;
+	}
+	.disabledSku{
+		background-color: #ccc;
+		    opacity: 0.4;
+		    color: #000;
+		    pointer-events: none;
+	}
+}
