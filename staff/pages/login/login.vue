@@ -38,11 +38,11 @@
 		
 		mounted() {
 			//如果存在token，保持登录状态
-			// if(uni.getStorageSync("token")){
-			// 	uni.redirectTo({
-			// 	    url: '/pages/index/index'
-			// 	});
-			// }
+			if(uni.getStorageSync("token")){
+				uni.redirectTo({
+				    url: '/pages/index/index'
+				});
+			}
 		},
 		methods: {
 			login(){

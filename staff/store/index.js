@@ -9,7 +9,10 @@ const store = new Vuex.Store({
 		domain2:'http://dsales.ddddian.com',
 		shopId:'',
 		supplierId:'',
-		currentIndex:0
+		
+		staffInfo:{},
+		currentIndex:0,
+		index:0
 	},
 	getters: {
 		
@@ -29,7 +32,13 @@ const store = new Vuex.Store({
 		//在homeindex切换时存储当前页面下标
 		SET_CURRENINDEX(state,currentIndex){
 				state.currentIndex = currentIndex
-		}
+		},
+		//存储业务员信息
+		SET_STAFFINFO(state,info){
+				state.staffInfo=info
+			
+		},
+		
 	},
 	actions:{
 		

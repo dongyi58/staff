@@ -133,7 +133,7 @@
 		},
 	mounted(){
 		//tabs宽度
-		this.tabwidth = (uni.getSystemInfoSync().windowWidth / 5) * 2
+		this.tabwidth = uni.getSystemInfoSync().windowWidth / 5
 		// console.log(this.tabwidth)
 	},
 	methods:{

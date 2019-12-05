@@ -121,7 +121,7 @@
 							<view class="yhq_right">
 								<span>店铺折扣券</span>
 								<span  class="usestyle2" v-if="!item.take" @click="getYhq(item.activity_id,'',idx)">领 取</span>
-								<span  class="takestyle2" v-else>去使用</span>
+								<span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 							</view>
 						</view>
 						<!-- 满减券 -->
@@ -143,7 +143,7 @@
 							<view class="yhq_right">
 								<span>店铺满减券</span>
 								<span  class="usestyle" v-if="!item.take" @click="getYhq(item.activity_id,item.rule[0].money,idx)">领 取</span>
-								<span  class="takestyle" v-else>去使用</span>
+								<span  class="takestyle" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 							</view>
 						</view>
 						
@@ -234,6 +234,13 @@
 						return
 				 }
 			     this.$refs.popup.open()
+			  },
+			  //使用优惠券
+			  
+			  useDiscount(couponId,type){
+				  uni.navigateTo({
+				  	url:'/pages/yhq/yhq?couponId='+couponId+'&type='+type
+				  })
 			  },
 			  //关闭弹窗
 			 closePopup(){
@@ -630,6 +637,7 @@
 			}
 		}
 	}
+	
 	.activity_banner{
 		width:100%;
 		

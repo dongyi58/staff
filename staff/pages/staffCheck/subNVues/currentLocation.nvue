@@ -1,0 +1,58 @@
+<template>
+	<view class="currentLoaction_wrap">
+		<text class="location">当前位置：{{currentLoaction}}</text>
+		<text class="arrive_btn" @click="goCheck">确认到店</text>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				currentLoaction:""
+			};
+		},
+		onLoad() {
+			uni.$on('getLoaction',res=>{
+				console.log(res)
+				this.currentLoaction = res.loaction
+			})
+		},
+		onUnload(){
+		    // 移除监听事件  
+		        uni.$off('getLoaction');  
+		    },
+			methods:{
+				goCheck(){
+					uni.navigateTo({
+						url:'/pages/staffCheck/staffCheck'
+					})
+				}
+			}
+	}
+</script>
+
+<style lang="scss">
+	.currentLoaction_wrap{
+		height:70px;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding:10px;
+		background-color:#fff;
+	}
+	.arrive_btn{
+		background-color:#EE453C;
+		border-radius:20px;
+		font-size:14px;
+		color:#fff;
+		padding:10px 20px;
+		 
+	}
+	.location{
+		width:250px;
+		lines:2;
+		color:#383838;
+		font-size:14px;
+	} 
+</style>

@@ -1,21 +1,21 @@
 
-view.data-v-c3424602,
-scroll-view.data-v-c3424602 {
+view.data-v-93f35556,
+scroll-view.data-v-93f35556 {
 	-webkit-box-sizing: border-box;
 	        box-sizing: border-box;
 }
-.QS-tabs.data-v-c3424602 {
+.QS-tabs.data-v-93f35556 {
 	width: 100%;
 	-webkit-transition-property: background-color, color;
 	-o-transition-property: background-color, color;
 	transition-property: background-color, color;
 }
-.QS-tabs-scroll.data-v-c3424602 {
+.QS-tabs-scroll.data-v-93f35556 {
 	width: 100%;
 	white-space: nowrap;
 	position: relative;
 }
-.QS-tabs-scroll-box.data-v-c3424602{
+.QS-tabs-scroll-box.data-v-93f35556{
 	position: relative;
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -24,7 +24,7 @@ scroll-view.data-v-c3424602 {
 	white-space: nowrap !important;
 	display: block !important;
 }
-.QS-tabs-scroll-item.data-v-c3424602 {
+.QS-tabs-scroll-item.data-v-93f35556 {
 	position: relative;
 	display: inline-block;
 	text-align: center;
@@ -33,20 +33,20 @@ scroll-view.data-v-c3424602 {
 	transition-property: background-color, color;
 	padding: 0 20rpx;
 }
-.content.data-v-c3424602 {
+.content.data-v-93f35556 {
 	overflow: hidden;
 	white-space: nowrap;
 	-o-text-overflow: ellipsis;
 	   text-overflow: ellipsis;
 }
-.boxStyle.data-v-c3424602 {
+.boxStyle.data-v-93f35556 {
 	pointer-events: none;
 	position: absolute;
 	-webkit-transition-property: all;
 	-o-transition-property: all;
 	transition-property: all;
 }
-.boxStyle2.data-v-c3424602 {
+.boxStyle2.data-v-93f35556 {
 	pointer-events: none;
 	position: absolute;
 	bottom: 0;
@@ -55,7 +55,7 @@ scroll-view.data-v-c3424602 {
 	-o-transition-property: all;
 	transition-property: all;
 }
-.itemBackgroundBox.data-v-c3424602 {
+.itemBackgroundBox.data-v-93f35556 {
 	pointer-events: none;
 	position: absolute;
 	top: 0;
@@ -83,7 +83,7 @@ scroll-view.data-v-c3424602 {
 	    -ms-flex-align: center;
 	        align-items: center;
 }
-.itemBackground.data-v-c3424602 {
+.itemBackground.data-v-93f35556 {
 	height: 100%;
 	width: 100%;
 	-webkit-transition-property: all;

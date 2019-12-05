@@ -1,0 +1,42 @@
+{
+  "titleNView": {
+    "titleText": "定位小店",
+    "titleColor": "#fff",
+    "titleSize": "14px",
+    "backgroundColor": "#1A6FE8"
+  },
+  "subNVues": [
+    {
+      "id": "mapTop",
+      "path": "pages/staffCheck/subNVues/mapTop.nvue",
+      "style": {
+        "height": "65px",
+        "top": "70px",
+        "background": "transparent"
+      }
+    },
+    {
+      "id": "rightBtn",
+      "path": "pages/staffCheck/subNVues/rightBtn.nvue",
+      "style": {
+        "width": "70px",
+        "height": "500px",
+        "right": "10px",
+        "top": "30%",
+        "background": "transparent"
+      }
+    },
+    {
+      "id": "bloaction",
+      "path": "pages/staffCheck/subNVues/currentLocation.nvue",
+      "style": {
+        "height": "70px",
+        "bottom": "0",
+        "background": "transparent"
+      }
+    }
+  ],
+  "usingComponents": {
+    "customnav": "/components/customnav"
+  }
+}

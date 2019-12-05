@@ -9,14 +9,13 @@
 			<input type="text" 
 			confirm-type="search" 
 			@confirm="shopSearch"
-			:style="{borderColor:bcolor}"
 			placeholder="请输入小店名称">
 		</view>
 		
 		<scroll-view scroll-y="true" 
-					@scrolltolower="loadShoplist"
+					
 					 class="shoplist_scroll_view_height">
-				 
+				
 			<view class="shoplist_content">
 					<view class="shoplist_content_item" 
 					v-for="(item,idx) of shop_list"
@@ -65,7 +64,9 @@
 			this.loadShoplist()
 			
 		},
+	
 		methods:{
+			
 			shopSearch(){
 				console.log(111)
 			},
@@ -88,7 +89,6 @@
 					 	method:'POST'
 					 }).then(res=>{
 						 _this.shop_list= res.data.data
-						 console.log(res.data.data)
 					 })
 			}
 				
@@ -103,7 +103,7 @@
 		background:#F6F6F6;
 	}
 	.shoplist_scroll_view_height{
-		height:calc(100vh - 1rem - 77px);
+		height:calc(100vh - 95px);
 	
 	}
 	.shoplist_content{

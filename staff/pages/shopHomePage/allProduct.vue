@@ -47,14 +47,24 @@
 							
 						</view>
 			</scroll-view>
+			<popup ref="popup" 
+				 type="top" class="home_popup" 
+				:popstyle="{width:'100%',height:'350px',overflow:'hidden'}"
+				:iscustomTop="true"
+			>
+							
+							<view>sadasdasdasd</view>
+			 </popup>
 	</view>
 </template>
 
 <script>
 	// 顶部导航
 	import customnav from '@/components/customnav.vue'
+	//popup弹出层
+	import popup from'@/components/uni-popup/uni-popup.vue'
 	export default {
-		components:{customnav},
+		components:{customnav,popup},
 		data() {
 			return {
 				allgoodsList:[],
@@ -84,10 +94,9 @@
 			allgoods(){
 				return this.allgoodsList.filter(item=>{
 						this.$set(item,'fact_price',0)
-							// console.log(item)
-						 if(item.sale_type== 3){
+						if(item.sale_type== 3){
 							
-							return  item.fact_price = item.retail_price 
+						return  item.fact_price = item.retail_price 
 									 
 							 
 						}else if(item.sale_type== 1){
@@ -106,6 +115,7 @@
 				if(n == 1 && !this.loadonce){
 					this.loadonce = true
 					this.getgoods_list(this.shopId)
+					
 				}
 			}
 		},
@@ -131,14 +141,22 @@
 			//图片懒加载
 			
 			changeFilter(idx){
+				
 				if(idx == 'sales'){
 					this.filterIdx=1
 					this.salesup = !this.salesup
+					this.$refs.popup.close()
 				}else if(idx == 'price'){
 					this.filterIdx=2
 					this.priceup = !this.priceup
+					this.$refs.popup.close()
+				}else if(idx == 3){
+					this.filterIdx=idx
+					this.$refs.popup.open()
+						 
 				}else{
 					this.filterIdx = idx
+					this.$refs.popup.close()
 				}
 				
 			},
@@ -160,8 +178,8 @@
 								finshed:false,
 							}
 					 }).then(res=>{
-							//console.log(res,'all')
-							 
+							console.log( res.data.data.data.length)
+							
 							 
 							 // //全部商品列表
 							 
@@ -177,7 +195,7 @@
 							 })
 							 // console.log(_this.allgoodsList)
 							//图片懒加载 首次加载
-							this.windowHeight = uni.getSystemInfoSync().windowHeight-162
+							this.windowHeight = uni.getSystemInfoSync().windowHeight
 							
 							if (!this.show) {
 								this.show = true

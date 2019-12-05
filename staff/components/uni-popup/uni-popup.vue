@@ -1,7 +1,7 @@
 <template>
   <view
     v-if="showPopup"
-    class="uni-popup">
+    class="uni-popup" :class="[iscustomTop ? 'customTop' :  '']">
     <view
       :class="[ani, animation ? 'ani' : '', !custom ? 'uni-custom' : '']"
       class="uni-popup__mask"
@@ -51,6 +51,10 @@ export default {
 	popstyle:{
 		type:Object
 	},
+	iscustomTop:{
+		type:Boolean,
+		default:false
+	}
   },
   data () {
     return {
@@ -97,6 +101,10 @@ export default {
 }
 </script>
 <style lang="scss">
+	//全部商品弹出层top
+	.customTop{
+		top:calc(85px + var(--status-bar-height)) !important;
+	}
 .uni-popup {
   position: fixed;
   /*  #ifdef  H5  */

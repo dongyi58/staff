@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "qstab": "/components/QS-tabs/QS-tabs",
+    "customnav": "/components/customnav",
+    "level": "/components/level"
+  }
+}

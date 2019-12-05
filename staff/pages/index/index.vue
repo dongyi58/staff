@@ -2,6 +2,7 @@
 	<view class="wrap index-wrap">
 		<view class="status_bar index_status_bar"></view>
 		<view class="header">首页</view>
+		
 		<view class="index_item_box">
 			<view class="item_one">
 				<view class="item_one_left">
@@ -16,7 +17,7 @@
 					</view>
 				</view>
 				<view class="item_one_right">
-					<view class="item_one_right_btn">
+					<view class="item_one_right_btn" @click="goCheck">
 						<i class="iconfont icon-tianchongxing-"></i>
 						<view>到店打卡</view>
 					</view>
@@ -38,7 +39,7 @@
 				</view>
 			</view>
 			<view class="item_two item_three">
-				<view class="item_two_top item_left_icon"><span>个人中心</span><button>查看详情</button></view>
+				<view class="item_two_top item_left_icon"><span>个人中心</span><navigator url="/pages/personal/personal"><button>查看详情</button></navigator></view>
 				<view class="item_two_text">小店管理、报表管理、收入管理一目了然</view>
 				
 			</view>
@@ -47,20 +48,24 @@
 				<i class="iconfont icon-xiaoxi"></i>
 			</view>
 		</view>
+		
 	</view>
 </template>
 
 <script>
 	// import request from '@/api/request.js'
+
 	export default {
+		
 		data() {
+		
 			return {
 				staff_info:"",
-				domain:this.$store.state.domain
+				domain:this.$store.state.domain,
 			}
 		},
 		
-		onLoad() {
+		onShow() {
 			
 			let _this = this
 			
@@ -70,13 +75,46 @@
 			}).then(res=>{
 					_this.staff_info = res.data.data
 					_this.staff_info.picture = _this.domain+_this.staff_info.picture
+					// uni.setStorageSync('staffInfo',_this.staff_info)
+					
+					_this.$store.commit('SET_STAFFINFO',
+							{
+								name:_this.staff_info.salesName,
+								img:_this.staff_info.picture,
+								supplier:_this.staff_info.supplierName
+							},
+					)
 					
 			})
+			
+		},
+		// watch:{
+		// 	list(n,o){
+		// 		this.total = 0
+		// 		n.map(item=>{
+		// 			if(item.flag){
+		// 				console.log(item.price)
+		// 				this.total = this.total+item.price
+		// 			}
+					
+		// 		})
+		// 	}
+		// },
+		computed:{
+			
 		},
 		methods: {
+			calc(idx){
+				this.$set(this.list[idx],'flag',true)
+			},
 			checkMessage(){
 				uni.navigateTo({
 					url:'/pages/message/message'
+				})
+			},
+			goCheck(){
+				uni.navigateTo({
+					url:'/pages/staffCheck/staffLoaction'
 				})
 			}
 		}

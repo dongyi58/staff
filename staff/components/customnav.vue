@@ -19,11 +19,13 @@
 			<!-- 导航文字 -->
 			<span class="navtext">{{navtitle}}</span>
 		</view>
-		<view class="nav-right" v-if="isSearch || ismsg">
+		<view class="nav-right" v-if="isSearch || ismsg || isRightText">
 			<!-- 消息提醒 -->
-			<i  v-if="isSearch" @click="gosearch" class="iconfont icon-sousuo msg"></i>
+			<i v-if="isSearch" @click="gosearch" class="iconfont icon-sousuo msg"></i>
 			<i v-if="ismsg"  @click="checkMessage" class="iconfont icon-xiaoxi msg"></i>
+			<i v-if="isRightText" @click="help" style="font-style:normal;font-size:14px">{{rightText}}</i>
 		</view>
+		
 	</view>
 </template>
 
@@ -46,15 +48,19 @@
 				type:Boolean,
 				default:true
 			},
+			isRightText:{
+				type:Boolean,
+				default:false
+			},
+			rightText:{
+				type:String,
+				default:''
+			},
 			back:{
 				type:Boolean,
 				default:true
 			},
-			//如果是搜索结果页返回2页
-			backPagenum:{
-				type:Number,
-				default:1
-			},
+			
 			searchinp:{
 				type:Boolean,
 				default:false
@@ -82,7 +88,7 @@
 			getback(){
 				
 				uni.navigateBack({
-				    delta: this.backPagenum
+				    delta:1
 				});
 			},
 			checkMessage(){
@@ -97,9 +103,12 @@
 			},
 			gotoSearchResult(){
 				
-				uni.navigateTo({
+				uni.redirectTo({
 					url:'/pages/search/searchResult?keywords='+this.searchkey
 				})
+			},
+			help(){
+				this.$emit('showhelp',true)
 			}
 		}
 	}
@@ -131,6 +140,7 @@
 		}
 	}
 	.customnav{
+		position:relative;
 		display:flex;
 		justify-content: space-between;
 		align-items: center;
@@ -151,7 +161,15 @@
 	}
 	.nav-left{
 		    position: absolute;
-		    left: 10px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width:20px;
+			height:100%;
+			left: 20px;
+			i{
+				font-size:18px;
+			};
 	}
 	.nav-mid{
 		    position: absolute;
@@ -160,7 +178,7 @@
 	}
 	.nav-right{
 		position: absolute;
-		right:10px;
+		right:20px;
 		display:flex;
 		i{
 			margin-left:10px;

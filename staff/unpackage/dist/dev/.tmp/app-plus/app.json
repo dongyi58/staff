@@ -12,7 +12,24 @@
     "pages/search/search",
     "pages/shopHomePage/salesRank",
     "pages/message/message",
-    "pages/search/searchResult"
+    "pages/search/searchResult",
+    "pages/yhq/yhq",
+    "pages/personal/personal",
+    "pages/personal/shopManage",
+    "pages/personal/shopBasicInfo",
+    "pages/personal/shopOrder",
+    "pages/personal/shopOrderDetail",
+    "pages/personal/incomeManage",
+    "pages/personal/incomeDetail",
+    "pages/personal/account/account",
+    "pages/personal/account/currentBindPhone",
+    "pages/personal/account/verifyOldPhone",
+    "pages/personal/account/changePhone",
+    "pages/personal/account/resetPsw",
+    "pages/personal/staffFile",
+    "pages/staffCheck/staffLoaction",
+    "pages/staffCheck/staffCheck",
+    "pages/personal/saleStatistics"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -24,6 +41,28 @@
   "networkTimeout": {
     "request": 20000
   },
+  "nvue": {
+    "pages": {
+      "pages/staffCheck/subNVues/mapTop.html": {
+        "window": {
+          "usingComponents": {}
+        },
+        "nvue": true
+      },
+      "pages/staffCheck/subNVues/rightBtn.html": {
+        "window": {
+          "usingComponents": {}
+        },
+        "nvue": true
+      },
+      "pages/staffCheck/subNVues/currentLocation.html": {
+        "window": {
+          "usingComponents": {}
+        },
+        "nvue": true
+      }
+    }
+  },
   "nvueCompiler": "uni-app",
   "renderer": "auto",
   "splashscreen": {
@@ -31,6 +70,6 @@
     "autoclose": false
   },
   "appname": "业务员",
-  "compilerVersion": "2.3.7",
+  "compilerVersion": "2.4.2",
   "usingComponents": {}
 }

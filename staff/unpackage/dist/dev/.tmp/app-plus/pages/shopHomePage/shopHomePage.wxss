@@ -172,110 +172,32 @@
 .activeFitler {
   color: #078CF3 !important;
 }
-.top3_box {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
+.income_header {
   background: #fff;
 }
-.top3_box .top3_item {
-    position: relative;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1 1 33%;
-        -ms-flex: 1 1 33%;
-            flex: 1 1 33%;
+.income_header .timePick {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
     padding: 10px;
+    font-weight: 600;
+    color: #383838;
+    font-size: 14px;
 }
-.top3_box .top3_item .top3_imgbox {
-      position: relative;
-      height: 0;
-      padding-bottom: 70%;
-      margin-top: 2rem;
+.income_header .timePick ._i {
+      color: #999;
+      font-weight: normal;
 }
-.top3_box .top3_item .top3_imgbox .top3_img {
-        position: absolute;
-        left: 15%;
-        width: 70%;
-        height: 100%;
-        border-radius: 5px;
-}
-.top3_box .top3_item ._p {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      overflow: hidden;
-      min-height: 35px;
-      margin-top: 5px;
-}
-.top3_box .top3_item .salenum {
-      border-top: 1px solid #eee;
-      text-align: center;
-      color: #C50B07;
-      padding: 5px 0;
-}
-.top3_box .top3_item .top3_idx {
-      position: absolute;
-      left: 10px;
-      font-style: normal;
-      font-weight: 600;
-}
-.top3_box .top3_item .top3_idx ._i {
-        font-size: 14px;
-        font-style: normal;
-}
-.top3_box .top3_item:nth-child(2)::after,
-  .top3_box .top3_item:nth-child(2)::before {
-    content: '';
-    position: absolute;
-    top: 5%;
-    width: 1px;
-    height: 90%;
-    background: #eee;
-}
-.top3_box .top3_item:nth-child(2)::after {
-    right: 0;
-}
-.top3_box .top3_item:nth-child(2)::before {
-    left: 0;
-}
-.top3Idx_color0 {
-  color: #C50B07;
-}
-.top3Idx_color1 {
-  color: #EE7024;
-}
-.top3Idx_color2 {
-  color: #ABABAB;
-}
-.otherrank_item {
-  margin: 10px 0;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  padding: 10px;
-  background: #fff;
-}
-.otherrank_item .other_imgbox {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    -webkit-flex-shrink: 0;
-        -ms-flex-negative: 0;
-            flex-shrink: 0;
-    margin-left: 10px;
-}
-.otherrank_item .other_imgbox .otherimg {
-      width: 100%;
-      height: 100%;
-      border-radius: 4px;
-}
-.otherrank_item .other_content {
+.income_header .shopReturn {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -285,35 +207,90 @@
     -webkit-flex-direction: column;
         -ms-flex-direction: column;
             flex-direction: column;
-    margin-left: 10px;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    padding: 10px 0;
+    color: #999;
+    border-top: 1px solid #f8f8f8;
 }
-.otherrank_item .other_content ._p:first-child {
+.income_header .shopReturn ._h2 {
+      color: #EE453C;
+      font-size: 20px;
+      font-weight: 500;
+      margin: 10px 0;
+}
+.income_header .shopReturn ._h2 ._span {
+        font-size: 14px;
+}
+.recommendShop_count {
+  background: #fff;
+}
+.recommendShop_count ._ul {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+.recommendShop_count ._ul ._li {
+      position: relative;
+      width: 50%;
       display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      overflow: hidden;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+          -ms-flex-direction: column;
+              flex-direction: column;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
 }
-.otherrank_item .other_content ._p:last-child {
-      margin-top: 5px;
-      overflow: hidden;
-      -o-text-overflow: ellipsis;
-         text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 12px;
-      color: #ccc;
+.recommendShop_count ._ul ._li ._span:first-child {
+        color: #999;
+        margin-bottom: 10px;
 }
-.otherrank_item .rank_idx {
-    width: 18px;
-    height: 18px;
-    -webkit-flex-shrink: 0;
-        -ms-flex-negative: 0;
-            flex-shrink: 0;
-    border-radius: 50%;
-    background: #D0D0D0;
-    color: #fff;
-    text-align: center;
-    line-height: 18px;
-    font-style: normal;
+.recommendShop_count ._ul ._li ._span:last-child {
+        font-size: 14px;
+        margin-bottom: 10px;
+}
+.recommendShop_count ._ul ._li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 80%;
+      background: #f8f8f8;
+}
+.emptyTips {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 6em 0;
+  font-size: 14px;
+  color: #999;
 }
 .homepage_list {
   margin-top: 45px;

@@ -12,7 +12,7 @@
 				<view class="QS-tabs-scroll-item " :style="{
 				'height': getHeight + 'rpx', 
 				'line-height': getHeight + 'rpx',
-				'width': getWidth + 'rpx',
+				'width': getWidth + 'px',
 				'color': index===getCurrent?getActiveColor:getDefaultColor,
 				'transition-duration': getDuration + 's',
 				'z-index': (Number(zIndex) + 2)

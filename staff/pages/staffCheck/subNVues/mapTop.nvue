@@ -1,0 +1,134 @@
+<template>
+	<view class="mapTop_wrapper">
+			<view class="staffinfo"  >
+				<view class="s_left">
+						<view class="simgBox">
+							<image class="simg" :src="staffInfo.picture" resize="contain" ></image>
+						</view>
+						<view class="s_info">
+							<text class="s_name">{{staffInfo.salesName}}</text>
+							<text class="s_com">{{staffInfo.supplierName}}</text>
+						</view>
+				</view>
+				<view class="s_right">
+					<text class="nowtime">{{currentDate}}</text> 
+				</view>
+					
+			</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				currentDate:'',
+				swidth:'',
+				staffInfo:{}
+			};
+		},
+		onLoad() {
+				let _this = this
+				// this.staffInfo = uni.getStorageSync('staffInfo')
+				
+					uni.$on('getInfo',res=>{
+						_this.$set(_this.staffInfo,'salesName',res.name)
+						_this.$set(_this.staffInfo,'supplierName',res.supplier)
+						_this.$set(_this.staffInfo,'picture',res.img)
+						
+					})
+			
+					
+				
+				
+				this.getCurrentDate()
+		},
+		onUnload(){  
+		    // 移除监听事件  
+		        uni.$off('getInfo');  
+		    },
+		methods:{
+			
+			getCurrentDate(){
+				 var myDate = new Date();
+				
+						var year = myDate.getFullYear(); //年
+						var month = myDate.getMonth() + 1; //月
+						var day = myDate.getDate(); //日
+						var days = myDate.getDay();
+				 switch(days) {
+				
+				        case 1:
+								days = '星期一';
+								break;
+						case 2:
+								 days = '星期二';
+								 break;
+						case 3:
+								 days = '星期三';
+								 break;
+						case 4:
+								days = '星期四';
+								 break;
+						 case 5:
+								 days = '星期五';
+								 break;
+						 case 6:
+								days = '星期六';
+								 break;
+						 case 0:
+								days = '星期日';
+								break;
+						
+				
+				
+				      }
+				
+				      var str = year + "年" + month + "月" + day + "日  " + days;
+						this.currentDate = str
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.staffinfo{
+		height:65px;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		// border-width:1px;
+		// border-style:solid;
+		// border-color:#000;
+		padding:5px;
+		background-color:#fff;
+	}
+	.s_left{
+		flex-direction: row;
+		align-items: center;
+		
+	}
+	.simg{
+		width:50px;
+		height:50px;
+		border-radius:50%;
+		border-width:1px;
+		border-style:solid;
+		border-color:#489cfb;
+	
+	}
+	.s_info{
+		margin-left:10px;
+	}
+	.s_name{
+		font-size:16;
+	}
+	.s_com{
+		font-size:12;
+		color:#999;
+		margin-top:5px;
+	}
+	.nowtime{
+		font-size:14
+	}
+</style>

@@ -1,0 +1,100 @@
+<template>
+	<view class="rightBtn_wrap">
+		
+		<view class="rightOpt">
+			
+				<view class="btn_one btn" @click="handleClick(1)">
+					<text class="viewtext storenum">120</text>
+					<text class="viewtext">责任小店</text>
+				</view>
+				<view class="btn_two btn" @click="handleClick(2)">
+					<text class="viewtext storenum">120</text>
+					<text class="viewtext">推荐小店</text>
+				</view>
+				<view class="btn_three btn" @click="handleClick(3)">
+					<text class="viewtext storenum">120</text>
+					<text class="viewtext">未合作小店</text>
+				</view>
+			
+			
+				<view class="btn_four btn" @click="handleClick(4)">
+					<text class=" chakan">&#xe657;</text>
+					<text class="viewtext">所有小店</text>
+				</view>
+			
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			};
+		},
+		created() {
+			
+				 var domModule = weex.requireModule("dom");
+				   domModule.addRule('fontFace', {
+					   'fontFamily': 'iconfont',   //注意这里必须是驼峰命名，跟上面的css样式对照
+					   'src': "url('http://at.alicdn.com/t/font_1495627_k11512f6m8g.ttf')"
+				   })
+		},
+		methods:{
+			handleClick(type){
+				
+				uni.$emit('right-click',type)
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	
+	.rightOpt{
+		color:#fff;
+	}
+	.viewtext{
+		font-size:12;
+		color:#fff;
+	}
+	.storenum{
+		font-size:16;
+		margin-bottom:5px;
+	}
+	.btn{
+		justify-content: center;
+		align-items: center;
+		width:70px;
+		height:60px;
+		color:#fff;
+	}
+	.btn_one{
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			background-color:#209AF5;
+	}
+	.btn_two{
+	
+		background-color:#F44540
+	}
+	.btn_three{
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+		background-color:#888888
+	}
+	.btn_four{
+		border-radius: 5px;
+		margin-top:10px;
+		background-color:#147AED
+	}
+	.chakan{
+		font-family:iconfont;
+		font-size: 12;
+		color:#fff;
+		margin-bottom:5px;
+	}
+	
+
+</style>
