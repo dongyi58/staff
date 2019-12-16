@@ -1,9 +1,0 @@
-{
-  "usingComponents": {
-    "home": "/pages/shopHomePage/shopHomePage",
-    "allproduct": "/pages/shopHomePage/allProduct",
-    "activity": "/pages/shopHomePage/activity",
-    "order": "/pages/shopHomePage/order",
-    "category": "/pages/shopHomePage/category"
-  }
-}

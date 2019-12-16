@@ -10,7 +10,7 @@
 		 :cancletext="false"
 		 :focus="false"
 		 />
-		<!-- <view class="content_wrap">
+		<view class="content_wrap">
 			 <view class="personal_header">
 			 			 <image v-if="staffInfo.img" class="personal_header_img" :src="staffInfo.img" mode="aspectFill"></image>
 						 <image v-else class="personal_header_img" src="../../static/images/default-avatar.jpeg" mode="aspectFill"></image>
@@ -72,22 +72,8 @@
 		 				<textarea class="fb_textarea"  v-model="feedtext" placeholder="非常感谢你的建议" />
 						<button class="submit_feedback" @click="sendFeedBack">提交反馈</button>
 		 			</view>
-		  </popup> -->
-		  <view class="skuWrap">
-			  
-			  <view class="sku_parent" v-for="(skuParent,idx) of skudata.view" :key="idx">
-				  <h1>{{skuParent.skuname}}</h1> 
-				  <ul class="skuChild">
-				  	<li
-					  @click="skuChildClick(idx,scidx,skuChild)"
-					  v-for="(skuChild,scidx) of skuParent.item" :key="scidx"
-					  :class="[skuChild.isShow ? '' : 'disabledSku',selectIdx[idx] == scidx ? 'activeSku' : '']"
-					  >
-					 {{skuChild.value}}</li>
-				  </ul>
-			  </view>
-			  
-		  </view>
+		  </popup>
+		 
 	</view>
 	
 </template>
@@ -110,57 +96,7 @@
 			return {
 				cacheSize:0,
 				feedtext:'',
-				childIdx:-1,
-				parentIdx:-1,
-				
-				
-				skudata:{
-						"view":[{
-								"skuname":'颜色',
-								"item":[
-									{
-										value:"白色"
-									},
-									{
-										value:"蓝色"
-									},
-									{
-										value:"黑色"
-									}
-								]
-							}
-							,{
-								"skuname":'尺寸',
-								"item":[
-									{
-										value:"35"
-									},
-									{
-										value:"36"
-									},
-									{
-										value:"37"
-									}
-								]
-							}
-						],
-						"checkSku":[
-							{"sku":"蓝色,35","stock":0,"is_use":1},
-							{"sku":"蓝色,36","stock":0,"is_use":1},
-							{"sku":"蓝色,37","stock":2,"is_use":1},
-							{"sku":"白色,35","stock":0,"is_use":1},
-							{"sku":"白色,36","stock":5,"is_use":1},
-							{"sku":"白色,37","stock":5,"is_use":1},
-							{"sku":"黑色,35","stock":5,"is_use":1},
-							{"sku":"黑色,36","stock":0,"is_use":1},
-							{"sku":"黑色,37","stock":5,"is_use":1}
-						 ],
-					},
-					selectIdx:[],
-					selectArr:[],
-					skuInfo:[],
-					initSku:'',
-					init:true
+			
 			};
 		},
 		computed:{
@@ -170,90 +106,11 @@
 		},
 		onLoad() {
 			
-			for (var i in this.skudata.checkSku) {
-				this.skuInfo[this.skudata.checkSku[i].sku] = this.skudata.checkSku[i]
-				
-			}
-			console.log(this.skuInfo)
-			for (var j in this.skudata.checkSku){
-				
-				if(this.skudata.checkSku[j].stock != 0 && this.skudata.checkSku[j].is_use != 0){
-					this.initSku = this.skudata.checkSku[j].sku
-					break
-				}
-			}
-			
-			for (var k in this.skudata.view){
-				this.skudata.view[k].item.map(vitem=>{
-						this.$set(vitem,'isShow',true)
-				})
-				
-			}
-			let initArr = this.initSku.split(',')
-			
-			
-			this.checkIsShow(initArr)	
 				
 			this.cacheSize = uni.getStorageInfoSync().currentSize;
 		
 		},
 		methods:{
-			
-			skuChildClick(pidx,cidx,item){
-				if(cidx != this.selectIdx[pidx]){
-					this.$set(this.selectIdx,pidx,cidx)
-					this.$set(this.selectArr,pidx,item.value)
-				}else{
-					this.$set(this.selectIdx,pidx,-1)
-					this.$set(this.selectArr,pidx,'')
-				}
-					// console.log(this.selectIdx,this.selectArr)
-					this.checkIsShow()
-			},
-			
-			checkIsShow(initArr){
-					let result=[]
-					console.log(this.selectArr)
-					for (var i in this.skudata.view) {
-						
-					   result[i] = this.selectArr[i] ? this.selectArr[i] : '';
-						
-					}
-					this.skudata.view.map((parentItem,idx)=>{
-							let clickVal = result[idx]
-							
-							parentItem.item.map((childItem,childIdx)=>{
-								
-								if(this.init){
-									
-									if(initArr[idx] == childItem.value){
-										this.selectIdx[idx] = childIdx
-									}
-									
-									
-									
-								}else{
-									result[idx] = childItem.value
-									this.$set(childItem,'isShow',this.checkStock(result))
-									
-								}
-								 
-							})
-							result[idx] = clickVal
-					})
-					this.init =false
-			},
-			checkStock(result){
-				// console.log(result)
-				for (var i in result) {
-				    if (result[i] == '') {
-				        return true; //如果数组里有为空的值，那直接返回true
-				    }
-				}
-					console.log(result)
-				 return this.skuInfo[result].stock == 0 ? false : true;
-			},
-			
 			
 			
 			

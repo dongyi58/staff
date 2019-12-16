@@ -1,0 +1,373 @@
+<template>
+	<view class="wrap map_wrap">
+		
+		<view class="map_position" >
+			<map class="checkmap"
+			id="map1"
+			ref="map1"
+			:latitude="latitude"
+			:longitude="longitude"
+			:markers="markArr"
+			:show-location="true"
+			@labeltap="handleMarker"
+			scale="12"
+			></map>
+			
+		</view>
+		
+		
+	</view>
+</template>
+
+<script>
+	// 顶部导航
+	import customnav from '@/components/customnav.vue'
+	
+	export default {
+		 components: {customnav},
+		data() {
+			return {
+				shopMark:{
+					"dutyShop": [{
+						"name": "测试阿里普兰小店",
+						"xy": ["103.9918700", "30.7166500"],
+						"id": "1079",
+					}, {
+						"name": "测试：阿里小店",
+						"xy": ["103.9918700", "30.5566500"],
+						"id": "1078"
+					}, {
+						"name": "佳佳超市",
+						"xy": ["103.9918700", "30.6266500"],
+						"id": "1117"
+					}, {
+						"name": "测试店店店",
+						"xy": ["104.0429300", "30.6816800"],
+						"id": "1116"
+					}],
+					"recommendShop": [{
+						"name": "测试：阿里小店",
+						"xy": ["103.9918700", "30.5866500"],
+						"id": "1078"
+					}, {
+						"name": "测试店店店",
+						"xy": ["104.0429300", "30.5716800"],
+						"id": "1116"
+					}, {
+						"name": "佳佳超市",
+						"xy": ["103.9918700", "30.5066500"],
+						"id": "1117"
+					}],
+					"whz": [],
+					"whz_count": 0,
+					"dutyShop_count": 4,
+					"recommendShop_count": 3
+				},
+				markTempArr:[],//临时存储mark数据
+				markArr:[],//正式渲染的mark数据，解决不能更新视图的问题
+				latitude:'',
+				longitude:'',
+				points:[],
+				mapCtx:{},
+				markId:0,
+				currentLocation:''
+			};
+		},
+		watch:{
+			 markTempArr(n,o) {
+				
+				this.markArr=n
+			}
+		},
+		onReady() {
+			this.mapCtx = uni.createMapContext('map1',this)
+			
+		},
+		onLoad() {
+		
+			let _this = this
+			//监听右侧按钮事件
+			uni.$on('right-click',(res)=>{
+				let titleText = ''
+				_this.includePoints(res)
+				switch(res){
+						case 0:titleText="责任";
+						break;
+						case 1:titleText="推荐";
+						break;
+						case 2:titleText="未合作";
+						break;
+						case 3:
+						titleText="所有";
+						break;
+				}
+				uni.showToast({
+					icon:'none',
+					title:'已为您显示'+titleText+'小店'
+				})
+			})
+			this.getStaffLocation()
+			this.getShop()
+			
+			
+		},
+		onUnload(){
+		    // 移除监听事件  
+		        uni.$off('right-click');  
+		    },
+		methods:{
+			//点击右边按钮，查看不同类型的小店分布，
+			includePoints(type){
+				let _this = this
+				this.points=[]
+				this.addMarker(type)
+				//根据点击区分出当前需要缩放展示的小店类型
+				let p = this.markTempArr.filter(item=>{
+					if(type == 0){
+						return item.typeName == 'dutyShop';
+					}else if(type == 1){
+						return item.typeName == 'recommendShop';
+					}else if(type == 2){
+						return item.typeName == 'whz';
+					}else if(type == 3){
+						return item
+					}
+						
+				})
+				
+				//获取区分出来的小店的坐标
+				p.map(item=>{
+					this.points.push({
+						latitude:item.latitude,
+						longitude:item.longitude
+					})
+				})
+				
+				// console.log(JSON.stringify(p))
+				//调用地图组件方法，将地图缩放到看见所有标记
+				_this.mapCtx.includePoints({
+					points:_this.points,
+					padding: [200]
+				})
+				
+			},
+			//获取业务员位置
+			getStaffLocation(){
+				let _this = this
+				uni.getLocation({
+					type: 'gcj02',
+					geocode:'true',
+					success: function (res) {
+						
+						let l = res.address
+						_this.currentLocation = l.province+l.city+l.district+l.street+l.streetNum+l.poiName
+					
+						//地图显示当前位置
+						_this.latitude = res.latitude
+						_this.longitude = res.longitude
+						console.log(_this.latitude)
+						//分别传递给snvue的值业务员信息,和地图下方当前地址信息
+						uni.$emit('getInfo',_this.$store.state.staffInfo)
+						uni.$emit('getLoaction',{loaction:_this.currentLocation})
+						
+						//存储的坐标信息,在打卡时提交使用
+						_this.$store.commit('SET_LOCATION',{
+							address:_this.currentLocation,
+							lat:res.latitude,
+							lng:res.longitude
+						})
+					},
+					fail: function(err){
+						console.log(err)
+					},
+				});
+			},
+			// 获取业务下相关小店位置,并标注
+			getShop(){
+				let p = uni.getStorageSync('phone')
+				let t = uni.getStorageSync('token')
+				var _this = this
+				uni.showLoading({
+					title:'加载中..'
+				})
+				
+				uni.request({
+						url:'http://dsales.ddddian.com/PersonSales/map1',
+						data:{
+							phone:p,
+							token:t
+						},
+						method:'POST',
+						header:{'Content-type': 'application/x-www-form-urlencoded'},
+						success:res=>{
+							uni.hideLoading();
+							if(res.data.code == 1){
+								uni.showToast({
+									icon:"none",
+								    title:'登陆过期,请重新登录',
+								    duration: 2000,
+									complete(){
+										setTimeout(()=>{
+											uni.navigateTo({
+									                url: '../../pages/login/login' 
+									            });
+										},2000)
+										
+									}
+								})
+							}else{
+								
+								
+								 // _this.shopMark = res.data.data
+								uni.$emit('shopNums',{
+									whz:_this.shopMark.whz_count,
+									dutyshop:_this.shopMark.dutyShop_count,
+									rshop:_this.shopMark.recommendShop_count
+								})
+								
+								
+								//添加标记
+								_this.addMarker(3)
+							}
+							
+						},
+						fail(err){
+							uni.showToast({
+								icon:"none",
+							    title:'请求超时',
+							    duration: 2000
+							});
+						}
+					
+				})
+			},
+			rad(d) {
+			  return d * Math.PI / 180.0;
+			},
+			geoDistance(lat1, lng1, lat2, lng2) {
+			  let radLat1 = this.rad(lat1);
+			  let radLat2 = this.rad(lat2);
+			  let a = radLat1 - radLat2;
+			  let b = this.rad(lng1) - this.rad(lng2);
+			  let s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+			  s = s * 6378.137;// EARTH_RADIUS;
+			  s = Math.round(s * 10000) / 10000; //输出为公里
+			 return s
+			},
+			handleMarker(e){
+				//点击marker获取id
+				let idx = Number(e.detail.markerId)
+				//获取地图实例的marker
+				let marksInfo = this.mapCtx.ctx.attr.markers
+				let selectInfo=[]
+				
+				//循环找到应的marker信息
+				marksInfo.map(item=>{
+					if(item.id == idx){
+						selectInfo.push({
+							shopName:item.shopName,
+							shopId:item.shopId,
+							cur:this.currentLocation,
+							type:item.typeName,
+							lat:item.latitude,
+							lng:item.longitude,
+							distance:this.geoDistance(Number(item.latitude),Number(item.longitude),this.latitude,this.longitude)
+						})
+						
+						
+					}
+				})
+				
+				const subNVue = uni.getSubNVueById('markerPop')  
+				
+				// 打开 nvue 子窗体  
+				subNVue.show('fade-in', 300, function(){  
+				   uni.$emit('selectShop',selectInfo)
+				}); 
+			},
+			// 循环添加marker
+			addMarker(type){
+				
+				let iconUrl = '';
+				let markdata = {};
+				this.markTempArr = [];
+				this.markArr = []
+				if(type == 0){
+					markdata.dutyShop = this.shopMark.dutyShop
+				}else if(type == 1){
+					markdata.recommendShop = this.shopMark.recommendShop
+				}else if (type == 2){
+					markdata.whz = this.shopMark.whz
+				}else{
+					markdata = this.shopMark
+					
+				}
+			
+				// console.log(type)
+				//console.log(JSON.stringify(markdata))
+				for(let i in markdata){
+					
+					switch(i){
+						case 'dutyShop': iconUrl = '/static/images/1@3x.png';
+						break;
+						case 'recommendShop' : iconUrl = '/static/images/2.png';
+						break;
+						case 'whz' : iconUrl = '/static/images/3.png';
+					}
+					
+					for(let j  in  markdata[i]){
+						//nvue不知道为啥在请求里改变了定义的不能更新试图
+						//这里向数组添加了数据，却没有显示标记
+						//无奈只有使用watch来监听，在外面重新将数组赋值给另外一个数组， 
+						//更新mark时会残留上一次的mark标记，必须给mark设置number类型的id来搞定
+						this.markId++ //mark标记得id
+							this.markTempArr.push({
+								shopId:markdata[i][j].id,
+								shopName:markdata[i][j].name,
+								typeName:i,
+								id:this.markId,
+								latitude:markdata[i][j].xy[1],
+								longitude:markdata[i][j].xy[0],
+								iconPath:iconUrl,
+								width:80,
+								height:80,
+								anchor:{
+									x:0.95,y:0
+								},
+								label:{
+									content:markdata[i][j].name,
+									padding:5,
+									fontSize:12,
+									y:20,
+									x:20
+								}
+							})
+						
+					}
+					
+				}
+				
+				//console.log(JSON.stringify(this.markTempArr))
+			},
+			
+			
+		}
+	}
+</script>
+
+<style lang="scss">
+	@import '@/static/css/style.scss';
+	
+	.map_position,.map_wrap{
+		position: relative;
+		width:750rpx;
+		
+		flex:1;
+	}
+	.checkmap{
+		width:750rpx;
+		flex:1;
+	}
+	
+</style>
+	

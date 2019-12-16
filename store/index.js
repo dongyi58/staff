@@ -12,7 +12,8 @@ const store = new Vuex.Store({
 		
 		staffInfo:{},
 		currentIndex:0,
-		index:0
+		index:0,
+		locationInfo:{}
 	},
 	getters: {
 		
@@ -38,7 +39,10 @@ const store = new Vuex.Store({
 				state.staffInfo=info
 			
 		},
-		
+		//存储业务员位置信息
+		SET_LOCATION(state,location){
+			 state.locationInfo = location
+		}
 	},
 	actions:{
 		

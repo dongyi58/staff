@@ -1,1 +1,0 @@
-<view class="search_wrap wrap"><view class="status_bar index_status_bar"></view><customnav vue-id="1" back="{{false}}" ismsg="{{false}}" isSearch="{{false}}" midtitle="{{false}}" focus="{{true}}" searchinp="{{true}}" bind:__l="__l"></customnav></view>

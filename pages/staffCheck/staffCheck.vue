@@ -16,7 +16,7 @@
 				</view>
 				
 				<ul>
-					<li v-for="(item,idx) of chooseImgList" :key="idx" @click="zoomImg(idx)">
+					<li v-for="(item,idx) of previewImgList" :key="idx" @click="zoomImg(idx)">
 						<i class="iconfont icon-yingyong- delBtn"
 						    v-if="showDel"
 						    @click.stop="delUpload(idx)"></i>
@@ -90,27 +90,32 @@
 		components:{customnav,popup},
 		data() {
 			return {
-				 chooseImgList:[],
-				 maxUpload:false,
-				 memoText:'',
-				 showdel:false,
-				 isActive:false,
-				 showdate:'',
+				 previewImgList:[],//预览图片列表
+				 maxUpload:false,//最大上传数
+				 memoText:'',//备注
+				 isActive:false,//是否可以打卡
+				 showdate:'',//
 				 currentDate:'',
 				 checkText:'确认打卡',
-				 checkSucess:false,
+				 checkSucess:false,//打卡是否成功
 				 editText:'编辑',
-				 showDel:false,
-				 showEdit:false,
+				 showDel:false,//是否显示删除按钮
+				 showEdit:false,//是否显示编辑按钮
+				 tmpPath:[],
+				 uploadList:[],//上传成功后返回的图片地址，打卡时一起提交
+				 uploadInfo:{},
 			};
 		},
 		computed:{
 			staffInfo(){
 				return this.$store.state.staffInfo
-			}
+			},
+			locationInfo(){
+				return this.$store.state.locationInfo
+			},
 		},
 		watch:{
-			chooseImgList(n){
+			previewImgList(n){
 				//监听是否上传商品图片，上传后显示编辑按钮并激活打卡按钮
 				if(n.length > 0){
 					 this.showEdit = true
@@ -126,12 +131,18 @@
 				}
 			}
 		},
-		mounted() {
+		onLoad(option) {
+			//获取传过来的打卡小店信息
+			this.uploadInfo = option
 			this.getCurrentTime()
 			this.getCurrentDate()
-			console.log(this.staffInfo)
-		
+			
 		},
+		onUnload(){
+		    // 移除监听事件  
+		        uni.$off('getLoaction');  
+		    },
+		
 		methods:{
 			//点击编辑显示删除按钮
 			editUpload(){
@@ -139,52 +150,125 @@
 				//maxUpload 达到最大上传量9张 隐藏上传按钮
 				//此处用作点击编辑后隐藏添加图片按钮
 				//在两个地方用了这个变量，判断一下防止上传满9张后，已经隐藏了的上传按钮，被此处改变状态，再次显示
-				if(this.chooseImgList.length != 9){
+				if(this.previewImgList.length != 9){
 					this.maxUpload = !this.maxUpload
 				}
 				
 				this.showDel ? this.editText = '完成' : this.editText = '编辑'
 			},
-			//删除图片
-			delUpload(idx){
-				console.log(this.chooseImgList.length)
+		
+			//调用相机拍摄图片，并上传图片，限制上传数量
+			openCamera(){
+					let _this = this
+					uni.chooseImage({
+					    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					    sourceType: ['camera'], //从相册选择
+					    success: function (res) {
+							_this.tmpPath = res.tempFilePaths[0]
+							//存入预览图片数组
+							_this.previewImgList.push(_this.tmpPath)
+							//最多上传9张，隐藏上传按钮
+							_this.previewImgList.length == 9 ? _this.maxUpload = true : _this.maxUpload = false 
+							
+						}
+					});
+				
+				
+			},
+			
+			
+			//点击图片放大预览
+			zoomImg(idx){
 				let _this = this
-				if(this.chooseImgList.length == 1){
+				uni.previewImage({
+					urls:this.previewImgList,
+					indicator:"default",
+					current:idx
+				})
+				
+			},
+			//preview删除图片
+			delUpload(idx){
+				
+				let _this = this
+				if(this.previewImgList.length == 1){
 					uni.showModal({
 						title:'',
 						content:"至少要上传一张商品图片才能进行打卡，确定要删除吗",
 						success(res){
 							if(res.confirm){
 								
-								_this.chooseImgList.splice(idx,1)
+								_this.previewImgList.splice(idx,1)
 							}
 						}
 					})
 				}else{
-					this.chooseImgList.splice(idx,1)
+					this.previewImgList.splice(idx,1)
 				}
 				
 			},
-			//打卡
+			
+			//提交打卡信息，
 			checkIn(){
+				
 				if(!this.isActive){
 					uni.showToast({
 						icon:'none',
 						title:'请至少上传一张商品图片'
 					})
 					return
-				}
-				this.checkSucess = true
-				this.checkText = '打卡成功'
+				}	
+				uni.showLoading({
+					title:'加载中..'
+				})
+				
+				let upload =[]
+				//循环提交图片，将每次请求都封装成promise存入数组，在使用promise.all等待所有请求执行完成后，在提交所有数据
+				this.previewImgList.map((item,idx)=>{
+					upload[idx] = new Promise(resolve=>{
+						uni.uploadFile({
+									url: 'http://dsales.ddddian.com/PersonSales/uploadimg', //仅为示例，非真实的接口地址
+									filePath:item,
+									name:'file',
+									success: (res) => {
+										let uploadFileName = JSON.parse(res.data).info
+										
+										this.uploadList.push(uploadFileName) //保存上传成功的图片地址
+											resolve()
+									}
+							  });
+					})
+				})
+				//等待图片上传完成后，得到返回文件地址列表，再一起上传入库
+				Promise.all(upload).then(()=>{
+						this.$dyrequest({
+							url:'/PersonSales/addruk',
+							method:'POST',
+							data:{
+								remarks:this.memoText,
+								photo:this.uploadList,
+								id:this.uploadInfo.shopId,
+								lng:this.uploadInfo.lng,
+								lat:this.uploadInfo.lat,
+								address:this.uploadInfo.cur,
+								d_name:this.uploadInfo.name
+							}
+						}).then(res=>{
+							uni.hideLoading();
+							this.checkSucess = true
+							this.checkText = '打卡成功'
+							console.log(res)
+						})
+				})
+			
+					
+					
+				
+				
+			
+				
 			},
-			showhelp(flag){
-				if(flag){
-					this.$refs.popup.open()
-				}
-			},
-			closeHelp(){
-				this.$refs.popup.close()
-			},
+	
 			//获取当前时间
 			getCurrentTime(){
 				 let myDate = new Date();
@@ -203,45 +287,6 @@
 				}else{
 					return i;
 				}
-			},
-			//照相上传图片
-			openCamera(){
-					let _this = this
-					uni.chooseImage({
-					    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					    sourceType: ['camera'], //从相册选择
-					    success: function (res) {
-							// JSON.stringify()
-					        // console.log(res);
-							_this.uploadPic(res.tempFiles)
-							
-							// console.log(res.tempFiles)
-					    }
-					});
-				
-				
-			},
-			//图片预览
-			uploadPic(file){
-				
-				file.map((item,idx)=>{
-					//上传最大数限制9张
-					if(idx <= 8){
-						this.chooseImgList.push(item.path)
-					}
-				})
-				
-				this.chooseImgList.length == 9 ? this.maxUpload = true : this.maxUpload = false 
-			},
-			//图片放大
-			zoomImg(idx){
-				let _this = this
-				uni.previewImage({
-					urls:this.chooseImgList,
-					indicator:"default",
-					current:idx
-				})
-				
 			},
 			getCurrentDate(){
 				var myDate = new Date();
@@ -279,8 +324,19 @@
 				
 				      var str = year + "年" + month + "月" + day + "日  " + days;
 						this.currentDate = str
-			}
-		}
+			},
+			//打开帮助
+			showhelp(flag){
+				if(flag){
+					this.$refs.popup.open()
+				}
+			},
+			closeHelp(){
+				this.$refs.popup.close()
+			},
+		},
+		
+		
 	}
 </script>
 

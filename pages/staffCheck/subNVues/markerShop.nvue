@@ -1,0 +1,121 @@
+<template>
+	<view style="background-color:#fff;color:#fff;border-radius:5px;">
+		<view class="titleWrap"><text class="title">选择小店 </text><text class="close" @click="closePop">×</text></view>
+		<view class="itemBox">
+			
+			<text class="infoItem">当前小店: {{shopInfo.shopName}}({{shopInfo.distance}})</text>
+			<text class="infoItem">小店类型: {{shopInfo.type}}</text>
+			<text class="infoItem curText">我的位置: {{shopInfo.cur}}</text>
+			<text class="checkBtn"
+			:class="[lk ? '' : 'disabledStyle']"
+			@click="lk && goCheck(shopInfo.id,shopInfo.lat,shopInfo.lng,shopInfo.cur,shopInfo.shopName)"
+			>{{lk ? '去打卡' : '不在打卡范围内'}}</text>
+		</view>
+		
+		
+		
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				shopInfo:{},
+				lk:true, //在打卡范围内可以打卡
+				
+			};
+		},
+		onLoad() {
+			let _this = this
+			uni.$on('selectShop',res=>{
+					let typeName=""
+					let formatDistance = 0
+					_this.$set(	_this.shopInfo,'shopName',res[0].shopName)
+					_this.$set(	_this.shopInfo,'id',res[0].shopId)
+					_this.$set(	_this.shopInfo,'cur',res[0].cur)
+					_this.$set(	_this.shopInfo,'lat',res[0].lat)
+					_this.$set(	_this.shopInfo,'lng',res[0].lng)
+					if(res[0].type == 'dutyShop'){
+						typeName = '责任小店'
+					}else if(res[0].type == 'recommendShop'){
+						typeName = '推荐小店'
+					}else{
+						typeName = '未合作小店'
+					}
+					
+					if(res[0].distance > 0.2){
+						_this.lk = false
+					}else{
+						_this.lk = true
+					}
+					_this.$set(	_this.shopInfo,'type',typeName)
+					if(res[0].distance < 1){
+						formatDistance = (res[0].distance * 1000).toFixed(2)+'m'
+					}else{
+						formatDistance = res[0].distance.toFixed(2)+'km'
+					}
+					_this.$set(	_this.shopInfo,'distance',formatDistance)
+					
+			})
+		},
+		onUnload(){
+			uni.$off('selectShop')
+		},
+		methods:{
+			//跳转至打卡页面
+			goCheck(shopId,lat,lng,cur,name){
+				uni.navigateTo({
+					url:'/pages/staffCheck/staffCheck?shopId='+shopId+'&lat='+lat+'&lng='+lng+'&cur='+cur+'&name='+name
+				})
+			},
+			closePop(){
+				// 通过 id 获取 nvue 子窗体  
+				const subNVue = uni.getSubNVueById('markerPop') 
+				subNVue.hide('fade-out', 300)
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.titleWrap{
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom-width:1px;
+		border-bottom-style: solid;
+		border-bottom-color: #f5f5f5;
+		padding:5px;
+	}
+	.close{
+		font-size:25px;
+	}
+	.title{
+		font-size:14px;
+		
+		
+	}
+	.itemBox{
+		padding:10px;
+	}
+	.infoItem{
+		font-size:12px;
+		margin-bottom:10px;
+	}
+	.checkBtn{
+		text-align:center;
+		padding:10px 0;
+		border-radius:5px;
+		font-size:14px;
+		background-color:#007AFF;
+		color:#fff;
+		border:none
+	}
+	.curText{
+		lines:2
+	}
+	.disabledStyle{
+		background-color:#ccc !important
+	}
+</style>

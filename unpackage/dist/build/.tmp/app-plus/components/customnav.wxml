@@ -1,1 +1,0 @@
-<view class="customnav"><view class="nav-left"><view data-event-opts="{{[['tap',[['getback',['$event']]]]]}}" class="iconfont icon-xiangzuo _i" bindtap="__e"></view></view><view class="nav-mid"><label class="navtext _span">{{navtitle}}</label></view><view class="nav-right"><view class="iconfont icon-xiaoxi msg _i"></view></view></view>

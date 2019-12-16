@@ -1,7 +1,7 @@
 <template>
 	<view class="currentLoaction_wrap">
 		<text class="location">当前位置：{{currentLoaction}}</text>
-		<text class="arrive_btn" @click="goCheck">确认到店</text>
+	<!-- 	<text class="arrive_btn" @click="goCheck">确认到店</text> -->
 	</view>
 </template>
 
@@ -14,7 +14,7 @@
 		},
 		onLoad() {
 			uni.$on('getLoaction',res=>{
-				console.log(res)
+				// console.log(res)
 				this.currentLoaction = res.loaction
 			})
 		},
@@ -50,7 +50,7 @@
 		 
 	}
 	.location{
-		width:250px;
+		width:750rpx;
 		lines:2;
 		color:#383838;
 		font-size:14px;

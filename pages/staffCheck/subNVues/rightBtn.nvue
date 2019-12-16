@@ -3,21 +3,21 @@
 		
 		<view class="rightOpt">
 			
-				<view class="btn_one btn" @click="handleClick(1)">
-					<text class="viewtext storenum">120</text>
+				<view class="btn_one btn" @click="handleClick(0)">
+					<text class="viewtext storenum">{{shopNum.dutyShopNum}}</text>
 					<text class="viewtext">责任小店</text>
 				</view>
-				<view class="btn_two btn" @click="handleClick(2)">
-					<text class="viewtext storenum">120</text>
+				<view class="btn_two btn" @click="handleClick(1)">
+					<text class="viewtext storenum">{{shopNum.rShopNum}}</text>
 					<text class="viewtext">推荐小店</text>
 				</view>
-				<view class="btn_three btn" @click="handleClick(3)">
-					<text class="viewtext storenum">120</text>
+				<view class="btn_three btn" @click="handleClick(2)">
+					<text class="viewtext storenum">{{shopNum.whzShopNum}}</text>
 					<text class="viewtext">未合作小店</text>
 				</view>
 			
 			
-				<view class="btn_four btn" @click="handleClick(4)">
+				<view class="btn_four btn" @click="handleClick(3)">
 					<text class=" chakan">&#xe657;</text>
 					<text class="viewtext">所有小店</text>
 				</view>
@@ -30,7 +30,7 @@
 	export default {
 		data() {
 			return {
-				
+				shopNum:{}
 			};
 		},
 		created() {
@@ -41,6 +41,19 @@
 					   'src': "url('http://at.alicdn.com/t/font_1495627_k11512f6m8g.ttf')"
 				   })
 		},
+		onLoad() {
+			let _this = this
+				uni.$on('shopNums',res=>{
+					// console.log(res)
+					_this.$set(_this.shopNum,'dutyShopNum',res.dutyshop)
+					_this.$set(_this.shopNum,'whzShopNum',res.whz)
+					_this.$set(_this.shopNum,'rShopNum',res.rshop)
+				})
+		},
+		onUnload(){
+		    // 移除监听事件  
+		        uni.$off('shopNums');  
+		    },
 		methods:{
 			handleClick(type){
 				
