@@ -52,7 +52,7 @@ const store = new Vuex.Store({
 		//如果用户添加了新商品到购物车
 		ADD_CART(state,iscart){
 			state.addCart = iscart
-			// console.log(iscart)
+			 console.log(iscart)
 		},
 		//存储购物车商品数量
 		CART_NUM(state,num){

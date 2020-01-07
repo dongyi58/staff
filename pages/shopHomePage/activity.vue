@@ -40,14 +40,16 @@
 				:class="filterIdx == 3 ? 'activeFitler' : ''">品牌</li>
 			</ul>
 		</view>
-		<scroll-view class="activegoods_list" @scroll="scroll" scroll-y >
+		<scroll-view class="activegoods_list" @scroll="scroll" scroll-y :scroll-top="scrollTop">
 				<!-- 全部商品列表 -->
 					<view class="goods_list_wrap">
 						<view class="goods_list">
-							<view class="goods_item" v-for="(item,idx) of filterActivity" :key="idx">
+							<view class="goods_item"
+							@click="goto_goodsdetail(item.goods_id,item.activit_id,item.product_id,item.type)"
+							 v-for="(item,idx) of filterActivity" :key="idx">
 								<view class="goods_img_box">
 									<!-- <image class="goods_img" :src="item.img" lazy-load mode="aspectFill"></image> -->
-									<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
+									<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx"  @load="imageLoad" :src="item.show ? item.img:''" />
 									<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 								</view>
 								<p class="goods_name">{{item.name}}</p>
@@ -94,6 +96,7 @@
 				windowHeight: 0,
 				show: false,
 				 //图片懒加载
+				 scrollTop:-1
 			};
 		},
 		computed:{
@@ -105,19 +108,24 @@
 			},
 			filterActivity(){
 				let filterarr=[]
+				
 				if(this.currentidx == 0){
 					
 					return this.allgoodsList
 					
 				}else if(this.currentidx == 1){
-						
+						console.log(this.tejiaList)
 					return this.tejiaList
+					
 				}else if(this.currentidx == 2){
+					
 					return this.zhekouList
 				}else if(this.currentidx == 3){
+					
 					return this.manzengList
 					
 				}else if(this.currentidx == 4){
+					
 					return this.maizengList
 				}
 			}
@@ -138,15 +146,24 @@
 	},
 	methods:{
 			//图片懒加载
-			scroll(){
+			scroll(e){
+				// console.log(e)
 				this.load()
 			},
 			load() {
+			
 				const query = uni.createSelectorQuery().in(this)
 				query.selectAll('.lazy').boundingClientRect((images) => {
+				
 					images.forEach((image, index) => {
 						if (image.top <= this.windowHeight) {
-							this.allgoodsList[image.dataset.index].show = true;
+							if(this.currentidx==0){
+								
+								this.allgoodsList[image.dataset.index].show = true;
+							}else{
+								this.tejiaList[image.dataset.index].show = true;
+							}
+							
 						}
 					})
 				}).exec()
@@ -165,7 +182,9 @@
 			// },
 			handleChange(idx){
 				this.currentidx = idx
-				
+				this.scrollTop = 0
+				this.show = true
+				this.load()
 			},
 			changeFilter(idx){
 				if(idx == 'sales'){
@@ -197,7 +216,6 @@
 							item.map(sitem=>{
 								_this.$set(sitem,'show',false)
 								_this.$set(sitem,'loaded',false)
-								_this.$set(sitem,'type','maizeng')
 								sitem.img = _this.domain + sitem.img
 								_this.maizengList.push(sitem)
 							})
@@ -207,7 +225,6 @@
 							item.map(sitem=>{
 								_this.$set(sitem,'show',false)
 								_this.$set(sitem,'loaded',false)
-								_this.$set(sitem,'type','manzeng')
 								sitem.img = _this.domain + sitem.img
 								_this.manzengList.push(sitem)
 							})
@@ -217,7 +234,6 @@
 							item.map(sitem=>{
 								_this.$set(sitem,'show',false)
 								_this.$set(sitem,'loaded',false)
-								_this.$set(sitem,'type','tejia')
 								sitem.img = _this.domain + sitem.img
 								_this.tejiaList.push(sitem)
 							})
@@ -227,7 +243,6 @@
 							item.map(sitem=>{
 								_this.$set(sitem,'show',false)
 								_this.$set(sitem,'loaded',false)
-								_this.$set(sitem,'type','zk')
 								sitem.img = _this.domain + sitem.img
 								_this.zhekouList.push(sitem)
 							})
@@ -254,8 +269,14 @@
 						// 		_this.finshed = true
 						// }
 					})
-			}
+			},
+			//商品详情
+			goto_goodsdetail(goodsId,id,pid,type){
 				
+				 uni.navigateTo({
+					url:'/pages/goodsDetail/goodsDetail?goods_id='+goodsId+'&dtype=2&activityId='+id+'&productId='+pid+'&type='+type
+				 })
+			},	
 			
 		}
 	}

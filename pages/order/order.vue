@@ -116,7 +116,7 @@
 							</view>
 						</view>
 						<view class="zq_title">账期</view>
-						<view class="pt_item" v-for="(zitem,zidx) of zhangqi" :key="zitem">
+						<view class="pt_item" v-for="(zitem,zidx) of zhangqi" :key="zitem.id">
 							<span class="pt_item_left">{{zitem.accountname}}</span>
 							<view class="pt_item_right">
 								<checkbox-group @change="typeChoice(2,zidx,zitem.orderType,$event)">
@@ -453,7 +453,7 @@
 					
 				
 					this.freight = data.freight 
-					this.totalPrice = data.fact_pay_price
+					this.totalPrice = data.fact_price
 					this.formatFreight()
 					
 				})
@@ -512,16 +512,17 @@
 					}
 				}
 				this.$dyrequest(submitRequest).then(res=>{
-					console.log(1231312)
 					uni.showToast({
 						title:res.data.data.info,
-						icon:'none'
+						icon:'none',
+						duration:2000
 					})
 					
 					//返回购物车重新加载数据
-					// this.$store.commit('ADD_CART',true) 
-					this.$store.commit('SET_CURRENINDEX',3)
+					
 					setTimeout(()=>{
+						this.$store.commit('ADD_CART',true)
+						this.$store.commit('SET_CURRENINDEX',3)
 						uni.navigateTo({
 						    url: '/pages/shopHomePage/homeindex'
 						});
@@ -665,7 +666,6 @@
 				}
 				span{
 					@include longtext;
-					max-width:100px;
 					background:#f5f5f5;
 					color:#999;
 					border-radius: 5px;

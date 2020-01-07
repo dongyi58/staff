@@ -121,10 +121,10 @@
 				// }else{
 					
 				// }
-				
 				uni.navigateBack({
 				    delta:1
 				});
+				
 				
 			},
 			//消息页

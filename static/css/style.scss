@@ -364,6 +364,32 @@
 		margin-left:10px;
 	}
 }
+.tejie_cell{
+	display: flex;
+	justify-content: flex-start;
+	padding:10px;
+}
+.tejia_left{
+	display: flex;
+	align-items: center;
+	span{
+		width:45px;
+		color:#999;
+	}
+}
+.tejia_right{
+	display: flex;
+	flex-direction: column;
+	margin-left: 10px;
+	span{
+		padding:5px 0;
+		i{
+			font-style: normal;
+			color:red;
+		}
+		
+	}
+}
 .info3_img{
 	width:40px;
 	height:40px;

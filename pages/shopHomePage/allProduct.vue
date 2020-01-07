@@ -197,7 +197,7 @@
 			//商品详情
 			goto_goodsdetail(goodsId){
 				 uni.navigateTo({
-					url:'/pages/goodsDetail/goodsDetail?shopId='+this.shopId+'&goods_id='+goodsId
+					url:'/pages/goodsDetail/goodsDetail?goods_id='+goodsId
 				 })
 			},
 		}

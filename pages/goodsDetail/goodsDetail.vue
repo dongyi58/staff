@@ -64,6 +64,37 @@
 								<i class="iconfont icon-you"></i>
 							</view>
 						</view>
+						<!-- 打折 -->
+						<view class="send_cell info_cell" v-if="zhekou">
+							<view class="cell_left">
+								<span>折扣</span>
+								<span>现在购买享受<i style="color:red">{{activityRule[0].rebate*10}}</i>折</span>
+							</view>
+							<view class="cell_right">
+								<!-- <i class="iconfont icon-you"></i> -->
+							</view>
+						</view>
+						<!-- 满减 -->
+						<view class="send_cell info_cell" v-if="zhekouman">
+							<view class="cell_left">
+								<span>满减</span>
+								<span>现在购买满{{activityRule[0].money}}元立减{{activityRule[0].rebate}}元</span>
+							</view>
+							<view class="cell_right">
+								<!-- <i class="iconfont icon-you"></i> -->
+							</view>
+						</view>
+						<!-- 特价 -->
+						<view class="tejie_cell" v-if="tejia">
+							<view class=" tejia_left">
+								<span>特价</span>
+							</view>
+							<view class="tejia_right">
+								<span v-for="(tips,tidx) of tejiaTips" :key="tidx" v-html="tips.text">
+									{{tips.text}}
+								</span>
+							</view>
+						</view>
 					</view>
 					<!-- 供应商信息-->
 					<view class="info_item info_three"> 
@@ -71,7 +102,7 @@
 							<view class="cell_left info3_cell_left">
 								<image class="info3_img" :src="domain+goodsDetail.supplier.storepic[0]"></image>
 								<view class="info3_text">
-									<span class="suppliername">沈阳批发商</span>
+									<span class="suppliername">{{goodsDetail.supplier.contactname}}</span>
 									<view class="rate_comment">
 									
 										<uni-rate :value="star" disabled="true"></uni-rate>
@@ -147,7 +178,7 @@
 							 class="specScrollView">
 								<view class="spec_list">
 									<!-- 规格 -->
-									<view class="spec_option">
+									<view class="spec_option" v-if="skuData.length">
 										<view class="sku_parent" v-for="(skuParent,idx) of skuData" :key="idx">
 											  <h1 class="skuname">{{skuParent.name}}</h1> 
 											  <ul class="skuChild">
@@ -277,9 +308,18 @@
 	//步进器
 	import stepper from "@/components/uni-number-box/uni-number-box.vue"
 	
+	import uniCollapse from '@/components/uni-collapse/uni-collapse.vue'
+	import uniCollapseItem from '@/components/uni-collapse-item/uni-collapse-item.vue'
 	
 	export default {
-		components:{customnav,popup,uniRate,stepper},
+		components:{
+			customnav,
+			popup,
+			uniRate,
+			stepper,
+			uniCollapse,
+			uniCollapseItem
+			},
 		data() {
 			return {
 				goodsDetail:[],//商品详情数据
@@ -336,7 +376,16 @@
 					position:''
 				},
 				//badage宽度
-				width:0
+				width:0,
+				//普通商品/活动商品详情
+				goodsId:0,
+				dtype:0,//区分活动普通商品
+				zhekou:false,//折扣，显示不同活动的规则文字
+				zhekouman:false,//满减
+				tejia:false,//特价
+				activityRule:[],
+				activityType:'',//活动名称
+				tejiaTips:[]//特价的提示
 			};
 		},
 	computed:{
@@ -345,8 +394,10 @@
 				},
 				//商品价格显示:整件价或单价，或者是两种价格都有
 				formatPrice(){
-						let price  = this.goodsDetail.price
-					if(price){
+						let price  = {}
+					if(this.dtype == 1){
+						price = this.goodsDetail.price
+						if(price){
 							//整件价
 							if(price.sale_type == 1){
 								
@@ -362,6 +413,25 @@
 										}
 							}
 						}	
+					}else{
+						price = this.goodsDetail.goodsData
+						if(price){
+							
+							if(price.retail_price && price.retail_price !='0.00'){
+								
+								 return {
+										'nowPrice':price.retail_price,
+										'oldPrice':price.retail_price
+										}
+							}else{
+								return {'nowPrice':price.wholesale_price,
+										'oldPrice':price.wholesale_price
+										}
+							}
+						}
+						
+					}
+						
 			},
 			//图文详情图片
 			imageTextUrl(){
@@ -401,27 +471,72 @@
 			}
 		},
 	onLoad(option){
-			
-			this.goodsInfoParams = {
-				goodsId:option.goods_id,
-				shopId:option.shopId,
-				activityId:'',
-				activityType:'',
-				productId:''
+		
+		
+		
+		this.goodsId = option.goods_id
+		this.dtype = option.dtype
+		this.activityType = option.type //manjian,zhekou
+		
+		// console.log(this.activityType,this.dtype)
+			//请求商品详情参数
+			if(this.dtype == 1){ //普通商品
+				
+				this.goodsInfoParams = {
+					method:'POST',
+					url:'/Goods/detail',
+					data:{
+						goodsId:option.goods_id,
+						shopId:this.shopId,
+						activityId:'',
+						activityType:'',
+						productId:''
+					}
+				}
+			}else{
+				//活动商品
+				//展示对应的活动文字提示
+				
+				if(this.activityType=='zhekou'){
+					this.zhekou = true
+				}else if(this.activityType="tejia"){
+						console.log('tejia')
+					this.tejia = true
+				}else if(this.activityType="zhekouman"){
+					console.log('zhekouman')
+					this.zhekouman=true
+				}
+					
+				// console.log(this.activityType,this.tejia,this.zhekouman)
+				this.goodsInfoParams = {
+					method:'POST',
+					url:'/Goods/productDetail',
+					data:{
+						id:this.shopId,
+						activityId:option.activityId,
+						productId:option.productId,
+						sale_type:'',
+						type:option.type
+					}
+				
+				}
 			}
+			
 			//加入购物车信息
 			this.selectGoods.goodsId = option.goods_id
-			this.selectGoods.id = option.shopId
+			this.selectGoods.id = this.shopId
 			
-			//立即购买信息
+			
 			
 			this.getDetail()
+			
 			//获取购物车数量
-			this.$store.dispatch('getCartNum',{id:option.shopId}).then(()=>{
+			this.$store.dispatch('getCartNum',{id:this.shopId}).then(()=>{
 				this.cartNum = this.$store.state.cartNum
 				this.width = `width: ${String(this.cartNum).length * 8 + 8}px`
 				
 			})
+			
 		},
 		onPageScroll(e){
 			this.transOpacity = (e.scrollTop / 200).toFixed(1) > 0.9 ? 0.9 : (e.scrollTop / 200).toFixed(1) 
@@ -432,15 +547,17 @@
 		},
 		methods:{
 			goCart(){
+				this.$store.commit('ADD_CART',true)
+				this.$store.commit('SET_CURRENINDEX',3) 
 				
-				 this.$store.commit('SET_CURRENINDEX',3) //显示购物车
-				// uni.navigateTo({
+				// uni.redirectTo({
 				// 	url:'/pages/shopHomePage/homeindex?id='+this.selectGoods.id
 				// })
-				 // this.$store.commit('ADD_CART',true)
+				
 				uni.navigateBack({
 				    delta:1
 				});
+				
 			},
 			//切换价格类型，并更新头部展示的价格库存货号等、
 			priceSelect(idx){
@@ -473,30 +590,43 @@
 			
 			//获取商品详情>调用getSku()获取商品规格组合
 			//根据saletype判断应该选中当前哪个价格类型，默认选中零售价，设置ps_idx为1，批发价为2,
-		
 			//获取轮播图总数，显示当前页码
 			//判断有无规格，如果只有一种规格的话，不调用规格查询方法getSku()，直接在此接口里返回了规格相关信息
 			getDetail(){
-				this.$dyrequest({
-					url:'/Goods/detail',
-					method:'POST',
-					dataType : "json",
-					data:{
-						id:this.goodsInfoParams.shopId,
-						goodsId:this.goodsInfoParams.goodsId,
-						activityId:this.goodsInfoParams.activityId,
-						activityType:this.goodsInfoParams.activityType,
-						productId:this.goodsInfoParams.productId
-					},
-				}).then(res=>{
+				this.$dyrequest(this.goodsInfoParams).then(res=>{
 					
 					this.goodsDetail = res.data.data
+					
+					//获取活动规则
+					if(this.goodsDetail.activityRule){
+						this.activityRule = this.goodsDetail.activityRule
+					}
+					//组装特价商品规则文字
+					if(this.activityType == 'tejia'){
+							if(this.activityRule[0].money && this.activityRule[0].rebate){
+								this.tejiaTips.push({
+									text:`单件购买立减<i style="font-style:normal;color:red;margin:0 5px;">${this.activityRule[0].money}</i>元`
+								},{
+									text:`整件购买立减<i style="font-style:normal;color:red;margin:0 5px;">${this.activityRule[0].rebate}</i>元`
+								})
+							}else if(this.activityRule[0].money && this.activityRule[0].money != '0.00'){
+								this.tejiaTips.push({
+									text:`单件购买立减<i style="font-style:normal;color:red;margin:0 5px;">${this.activityRule[0].money}</i>元`
+								})
+							}else{
+								this.tejiaTips.push({
+									text:`整件购买立减<i style="font-style:normal;color:red;margin:0 5px;">${this.activityRule[0].rebate}</i>元`
+								})
+							}
+					}
+					// console.log(this.activityRule)
+					//商家星级
 					this.star = this.goodsDetail.ct.star
-				
+					//轮播图加载完成标识，懒加载
 					this.goodsDetail.goodsImg.map(item=>{
-						
 						this.$set(item,'loaded',false)
 					})
+					
 					//获取加入购物车所需数据,购买规格类型
 					this.selectGoods.buy_type = this.goodsDetail.buy_type
 					
@@ -532,23 +662,45 @@
 					
 					//有规格
 					if(this.goodsDetail.spec){
-						
+						// console.log(this.goodsDetail.spec)
 						this.specTotal = this.goodsDetail.spec.length
+						
+						let initarr=[] //活动商品默认选中一组规格
+						
 						//默认将所有规格值设置成可选状态
 						//获取规格
 						this.goodsDetail.spec.map(item=>{
 							let temp={}
 							let temparr=[]
-							item.value.map(citem=>{
-								temparr.push({value:citem,isShow:true})
+						
+							if(Array.isArray(item.value)){
+								item.value.map(citem=>{
+									temparr.push({value:citem,isShow:true})
+									temp={
+										name: item.name,
+										item:temparr
+									}
+								})
+							}else{
+								initarr.push(item.value)
+								temparr.push({value:item.value,isShow:true})
 								temp={
 									name: item.name,
 									item:temparr
 								}
-							})
+							}	
 							this.skuData.push(temp)
 						})
-						this.getSku()
+						if(this.dtype == 1){
+							this.getSku()
+						}else{
+							//活动商品只有一种规格，就不调用getSku方法，
+							//直接处理这一种规格
+							this.getSkuInfo(this.goodsDetail.goodsData.spec_array)
+							this.skuText(initarr)
+							this.checkIsShow(initarr)
+						}
+						
 					}else{
 						//无规格直接获取规格信息返回
 						let  specInfo = this.goodsDetail.product
@@ -587,8 +739,8 @@
 				method:'POST',
 				hideLoading:true,
 				data:{
-					id:this.goodsInfoParams.shopId,
-					goodsId:this.goodsInfoParams.goodsId,
+					id:this.shopId,
+					goodsId:this.goodsId,
 				}
 				}).then(res=>{
 				let spec = res.data.data.products
@@ -651,7 +803,7 @@
 					skuValText.push(item.value)
 					this.defaultSkuname.push(item.name)
 				})
-				
+				// console.log(skuValText)
 				 this.skuText(skuValText)
 				//调用规格状态监测方法
 				this.checkIsShow(initArr)
@@ -664,15 +816,21 @@
 			// 获取规格详情 用于默认或选取规格后，获取规格价钱和库存
 			//如果该商品只有一种规格，不会调用此方法。
 			//获取商品起订量
-			getSkuInfo(){
+			getSkuInfo(data){
+				let skuStr =''
+				if(data){
+					skuStr =data
+				}else{
+					skuStr = this.defaultSku
+				}
 				this.$dyrequest({
 					url:'/Goods/product',
 					method:'POST',
 					hideLoading:true,
 					data:{
-						id:this.goodsInfoParams.shopId,
-						goodsId:this.goodsInfoParams.goodsId,
-						specJson:this.defaultSku
+						id:this.shopId,
+						goodsId:this.goodsId,
+						specJson:skuStr
 					}
 				}).then(res=>{
 					this.goodsInfoBySpec = []
@@ -744,7 +902,7 @@
 			
 			//循环所有规格组合，调用规格比对函数checkStock(),例如，没有库存此规格返回false，禁用状态
 			checkIsShow(initArr){
-				
+					console.log(initArr)
 					let result=[] 
 					for (var i in this.skuData) { 
 			            

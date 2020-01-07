@@ -90,8 +90,8 @@
 			}
 		},
 		onLoad(){
-			console.log('loaded')
-			 // this.$store.commit('ADD_CART',true) //改变状态，重新加载购物车
+			  // console.log('loaded')
+			  // this.$store.commit('ADD_CART',true) //改变状态，重新加载购物车
 			  this.changeidx(this.$store.state.currentIndex)
 			 
 		},

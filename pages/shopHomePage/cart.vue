@@ -129,7 +129,7 @@
 				handler(n,o){
 					
 					//用户有加入购物车操作，才重新获取数据
-					if(n == 3 ){
+					if(n == 3){
 						 console.log('重新加载了')
 						this.init()
 					}
@@ -181,10 +181,10 @@
 					this.cartTitle = `采购单(${this.$store.state.cartNum})`;
 					
 				})
-				
+				// this.$store.commit('ADD_CART',false)
 				this.cartGoodsList = []
 				this.getCartList()
-				// this.$store.commit('ADD_CART',false)
+				
 				
 			},
 			//删除购物车商品

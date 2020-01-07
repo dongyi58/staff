@@ -282,7 +282,7 @@
 			 goto_goodsdetail(goodsId){
 				
 				 uni.navigateTo({
-				 	url:'/pages/goodsDetail/goodsDetail?shopId='+this.shopId+'&goods_id='+goodsId
+				 	url:'/pages/goodsDetail/goodsDetail?dtype=1&shopId='+this.shopId+'&goods_id='+goodsId
 				 })
 			 },
 			 //更多活动
