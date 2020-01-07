@@ -1,111 +1,85 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-		"path" : "pages/login/login"
+			"path" : "pages/login/login"
 		},
 		{
-		"path": "pages/index/index"
-			
+			"path": "pages/index/index"
 		}
         ,{
-            "path" : "pages/shops/shops",
-            "style" : {}
+            "path" : "pages/shops/shops"
         }
 		,{
-		    "path" : "pages/shopHomePage/homeindex",
-		    "style" : {}
+		    "path" : "pages/shopHomePage/homeindex"
 		}
         ,{
-            "path" : "pages/shopHomePage/shopHomePage",
-            "style" : {}
+            "path" : "pages/shopHomePage/shopHomePage"
         }
         ,{
-            "path" : "pages/shopHomePage/allProduct",
-            "style" : {}
+            "path" : "pages/shopHomePage/allProduct"
         }
         ,{
-            "path" : "pages/shopHomePage/activity",
-            "style" : {}
+            "path" : "pages/shopHomePage/activity"
         }
         ,{
-            "path" : "pages/shopHomePage/order",
-            "style" : {}
+            "path" : "pages/shopHomePage/cart"
         }
         ,{
-            "path" : "pages/shopHomePage/category",
-            "style" : {}
+            "path" : "pages/shopHomePage/category"
         }
         ,{
-            "path" : "pages/search/search",
-            "style" : {}
+            "path" : "pages/search/search"
         }
         ,{
-            "path" : "pages/shopHomePage/salesRank",
-            "style" : {}
+            "path" : "pages/shopHomePage/salesRank"
         }
         ,{
-            "path" : "pages/message/message",
-            "style" : {}
+            "path" : "pages/message/message"
         }
         ,{
-            "path" : "pages/search/searchResult",
-            "style" : {}
+            "path" : "pages/search/searchResult"
         }
         ,{
-            "path" : "pages/yhq/yhq",
-            "style" : {}
+            "path" : "pages/yhq/yhq"
         }
         ,{
-            "path" : "pages/personal/personal",
-            "style" : {}
+            "path" : "pages/personal/personal"
         }
         ,{
-            "path" : "pages/personal/shopManage",
-            "style" : {}
+            "path" : "pages/personal/shopManage"
         }
         ,{
-            "path" : "pages/personal/shopBasicInfo",
-            "style" : {}
+            "path" : "pages/personal/shopBasicInfo"
         }
         ,{
-            "path" : "pages/personal/shopOrder",
-            "style" : {}
+            "path" : "pages/personal/shopOrder"
         }
         ,{
-            "path" : "pages/personal/shopOrderDetail",
-            "style" : {}
+            "path" : "pages/personal/shopOrderDetail"
         }
         ,{
-            "path" : "pages/personal/incomeManage",
-            "style" : {}
+            "path" : "pages/personal/incomeManage"
         }
         ,{
-            "path" : "pages/personal/incomeDetail",
-            "style" : {}
+            "path" : "pages/personal/incomeDetail"
         }
         ,{
-            "path" : "pages/personal/account/account",
-            "style" : {}
+            "path" : "pages/personal/account/account"
         }
         ,{
-            "path" : "pages/personal/account/currentBindPhone",
-            "style" : {}
+            "path" : "pages/personal/account/currentBindPhone"
         }
         ,{
-            "path" : "pages/personal/account/verifyOldPhone",
-            "style" : {}
+            "path" : "pages/personal/account/verifyOldPhone"
         }
         ,{
-            "path" : "pages/personal/account/changePhone",
-            "style" : {}
+            "path" : "pages/personal/account/changePhone"
         }
         ,{
-            "path" : "pages/personal/account/resetPsw",
-            "style" : {}
+            "path" : "pages/personal/account/resetPsw"
         }
         ,{
-            "path" : "pages/personal/staffFile",
-            "style" : {}
+            "path" : "pages/personal/staffFile"
         }
         ,{
             "path" : "pages/staffCheck/staffLoaction",
@@ -168,31 +142,30 @@
 			}
         }
         ,{
-            "path" : "pages/staffCheck/subNVues/mapTop",
-            "style" : {}
+            "path" : "pages/staffCheck/subNVues/mapTop"
         }
         ,{
-            "path" : "pages/staffCheck/subNVues/rightBtn",
-            "style" : {}
+            "path" : "pages/staffCheck/subNVues/rightBtn"
         }
         ,{
-            "path" : "pages/staffCheck/subNVues/currentLocation",
-            "style" : {}
+            "path" : "pages/staffCheck/subNVues/currentLocation"
         }
         ,{
-            "path" : "pages/staffCheck/staffCheck",
-            "style" : {}
+            "path" : "pages/staffCheck/staffCheck"
         }
         ,{
-            "path" : "pages/personal/saleStatistics",
-            "style" : {}
+            "path" : "pages/personal/saleStatistics"
         }
         ,{
-            "path" : "pages/testSku",
-            "style" : {}
+            "path" : "pages/sku"
         }
         ,{
-            "path" : "pages/staffCheck/subNVues/markerShop",
+            "path" : "pages/staffCheck/subNVues/markerShop"
+        },{
+            "path" : "pages/goodsDetail/goodsDetail"
+        }
+        ,{
+            "path" : "pages/order/order",
             "style" : {}
         }
     ],
@@ -202,16 +175,16 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8",
 		"navigationStyle":"custom"
-	}
+	},
 	//启动页配置
-	// "condition" : { //模式配置，仅开发期间生效
-	// 	"current": 0, //当前激活的模式(list 的索引项)
-	// 	"list": [
-	// 		{
-	// 			"name": "check", //模式名称
-	// 			"path": "pages/staffCheck/staffCheck"//启动页面，必选
-	// 			// "query": "" //启动参数，在页面的onLoad函数里面得到
-	// 		}
-	// 	]
-	// }
+	"condition" : { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [
+			{
+				"name": "check", //模式名称
+				"path": "pages/index/index"//启动页面，必选
+				// "query": "" //启动参数，在页面的onLoad函数里面得到
+			}
+		]
+	}
 }

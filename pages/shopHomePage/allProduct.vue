@@ -29,18 +29,20 @@
 					:class="filterIdx == 3 ? 'activeFitler' : ''">品牌</li>
 				</ul>
 			</view>
-			<scroll-view class="allgoods_list" @scroll="scroll" scroll-y @scrolltolower="handlescroll">
+			<scroll-view class="allgoods_list"  scroll-y @scrolltolower="handlescroll">
 					<!-- 全部商品列表 -->
 						<view class="goods_list_wrap">
 							<view class="goods_list">
-								<view class="goods_item" v-for="(item,idx) of allgoods" :key="idx">
+								<view class="goods_item" 
+								@click="goto_goodsdetail(item.goods_id)" 
+								v-for="(item,idx) of allgoods" :key="idx">
 									<view class="goods_img_box">
 										<!-- <image class="goods_img" :src="item.img" lazy-load mode="aspectFill"></image> -->
-										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
+										<image class=" goods_img image"  lazy-load :data-index="idx" @load="imageLoad" :src="item.img" />
 										<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 									</view>
 									<p class="goods_name">{{item.name}}</p>
-									<view class="goods_price">¥{{item.fact_price}} <i class="iconfont icon-jia"></i></view>
+									<view class="goods_price">¥{{item.fact_price}} <!-- <i class="iconfont icon-jia"></i> --></view>
 								</view>
 								<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 							</view>
@@ -122,19 +124,7 @@
 	
 		methods:{
 			//图片懒加载
-			scroll(){
-				this.load()
-			},
-			load() {
-				const query = uni.createSelectorQuery().in(this)
-				query.selectAll('.lazy').boundingClientRect((images) => {
-					images.forEach((image, index) => {
-						if (image.top <= this.windowHeight) {
-							this.allgoodsList[image.dataset.index].show = true;
-						}
-					})
-				}).exec()
-			},
+			
 			imageLoad(e) {
 				this.allgoodsList[e.target.dataset.index].loaded = true
 			},
@@ -178,7 +168,7 @@
 								finshed:false,
 							}
 					 }).then(res=>{
-							console.log( res.data.data.data.length)
+							//console.log( res.data.data.data.length)
 							
 							 
 							 // //全部商品列表
@@ -186,25 +176,13 @@
 							 res.data.data.data.map((item,idx)=>{
 									 _this.$set(item,'show',false)
 									 _this.$set(item,'loaded',false)
-									 
 									 item.img = _this.domain + item.img
-									 
-									 _this.allgoodsList.push(item)
+									  _this.allgoodsList.push(item)
 								 
 								 
 							 })
 							 // console.log(_this.allgoodsList)
-							//图片懒加载 首次加载
-							this.windowHeight = uni.getSystemInfoSync().windowHeight
 							
-							if (!this.show) {
-								this.show = true
-								
-								setTimeout(() => {
-									this.load()
-								}, 100)
-							}
-							//图片懒加载
 							
 							 //判断没有数据，不再请求
 							 if(res.data.data.data.length == 0){
@@ -214,7 +192,14 @@
 					 })
 							
 							
-			}
+			},
+			
+			//商品详情
+			goto_goodsdetail(goodsId){
+				 uni.navigateTo({
+					url:'/pages/goodsDetail/goodsDetail?shopId='+this.shopId+'&goods_id='+goodsId
+				 })
+			},
 		}
 		
 	}

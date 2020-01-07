@@ -205,4 +205,23 @@
 			font-size:14px;
 		}
 	}
+	.shopReturn{
+				 display: flex;
+				 flex-direction: column;
+				 justify-content: center;
+				 align-items: center;
+				 padding:10px 0;
+				 color:#999;
+				 border-top:1px solid #f8f8f8;
+				 background:#fff;
+				 h2{
+					 color:#EE453C;
+					 font-size:20px;
+					 font-weight: 500;
+					 margin:10px 0;
+					 span{
+						 font-size:14px
+					 }
+				 }
+	}
 </style>

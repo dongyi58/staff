@@ -66,7 +66,7 @@
 					 </view>
 					 <!-- 商品详情 -->
 					 <view class="order_item" @click="orderDetail(item.id,item.order_status)" v-for="(goods,gidx) of item.goods" :key="gidx">
-						{{item.goodsIndex}}
+						
 						 <view class="o-left">
 							<!-- <image class="order_img" src="../../static/images/activity.jpeg" mode="aspectFill"></image> -->
 							 <image class=" order_img image" :class="{lazy:!goods.show}" :data-index="goods.goodsIndex" @load="imageLoad" :src="goods.show ? goods.img:''" />
@@ -191,6 +191,7 @@
 				if(this.currentidx == 0){
 					this.setMarkTop = this.marktop1
 				}
+				//记录上次滚动位置，tab切换时回到上次位置
 				switch(this.currentidx+1){
 					case 1:this.setMarkTop = this.marktop1
 					break;
@@ -279,13 +280,13 @@
 									 //存储商品列表做懒加载
 									 _this.orderGoodsList.push(gitem)
 									 //待付款列表
-									 // console.log(_this.orderGoodsList)
+									 
 															 
 							})
 								_this.orderList.push(item)
 							
 					})
-						// console.log(_this.orderList)
+						console.log(_this.orderList)
 						
 						
 					//图片懒加载
@@ -335,7 +336,7 @@
 				border:1px solid #147AED;
 				color:#147AED;
 				border-radius:4px;
-				padding:0 5px;
+				padding:3px 5px;
 				margin-left:5px
 			}
 		}

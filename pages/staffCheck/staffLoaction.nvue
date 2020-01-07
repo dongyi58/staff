@@ -9,7 +9,7 @@
 			:longitude="longitude"
 			:markers="markArr"
 			:show-location="true"
-			@labeltap="handleMarker"
+			@markertap="handleMarker"
 			scale="12"
 			></map>
 			
@@ -165,7 +165,7 @@
 						//地图显示当前位置
 						_this.latitude = res.latitude
 						_this.longitude = res.longitude
-						console.log(_this.latitude)
+						// console.log(_this.latitude)
 						//分别传递给snvue的值业务员信息,和地图下方当前地址信息
 						uni.$emit('getInfo',_this.$store.state.staffInfo)
 						uni.$emit('getLoaction',{loaction:_this.currentLocation})
@@ -216,16 +216,12 @@
 									}
 								})
 							}else{
-								
-								
-								 // _this.shopMark = res.data.data
+								 _this.shopMark = res.data.data
 								uni.$emit('shopNums',{
 									whz:_this.shopMark.whz_count,
 									dutyshop:_this.shopMark.dutyShop_count,
 									rshop:_this.shopMark.recommendShop_count
 								})
-								
-								
 								//添加标记
 								_this.addMarker(3)
 							}
@@ -241,6 +237,8 @@
 					
 				})
 			},
+			
+			//计算距离
 			rad(d) {
 			  return d * Math.PI / 180.0;
 			},
@@ -254,6 +252,7 @@
 			  s = Math.round(s * 10000) / 10000; //输出为公里
 			 return s
 			},
+		
 			handleMarker(e){
 				//点击marker获取id
 				let idx = Number(e.detail.markerId)
@@ -277,7 +276,7 @@
 						
 					}
 				})
-				
+				console.log(selectInfo)
 				const subNVue = uni.getSubNVueById('markerPop')  
 				
 				// 打开 nvue 子窗体  
@@ -292,7 +291,7 @@
 				let markdata = {};
 				this.markTempArr = [];
 				this.markArr = []
-				if(type == 0){
+				if(type == 0){ //区分显示责任小店，推荐小店，为合作小店或全部显示
 					markdata.dutyShop = this.shopMark.dutyShop
 				}else if(type == 1){
 					markdata.recommendShop = this.shopMark.recommendShop
@@ -331,16 +330,16 @@
 								iconPath:iconUrl,
 								width:80,
 								height:80,
-								anchor:{
-									x:0.95,y:0
-								},
-								label:{
-									content:markdata[i][j].name,
-									padding:5,
-									fontSize:12,
-									y:20,
-									x:20
-								}
+								// anchor:{
+								// 	x:0.95,y:0
+								// },
+								// callout:{
+								// 	content:markdata[i][j].name,
+								// 	padding:5,
+								// 	fontSize:12,
+								// 	// y:20,
+								// 	// x:20
+								// }
 							})
 						
 					}

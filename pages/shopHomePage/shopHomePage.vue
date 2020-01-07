@@ -1,7 +1,7 @@
 <template>
 	<view class="wrap shop_homepage_wrap">
 			<view class="status_bar index_status_bar"></view>
-			<customnav :navtitle="supllierInfo.contactname" :isSearch="true" />
+			<customnav :navtitle="supllierInfo.contactname" :isSearch="true"  backType="1" />
 			
 			<view class="header-bkg"></view>
 			<!-- 小店信息展示 -->
@@ -72,23 +72,23 @@
 							<!-- 商品列表 -->
 							 <view class="goods_list">
 								
-								<view class="goods_item" v-if="idx != 0" v-for="(item,idx) of goodsList" :key="idx">
+								<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)" v-if="idx != 0" v-for="(item,idx) of goodsList" :key="idx">
 									<view class="goods_img_box">
 										<!-- <image lazy-load class="image" :src="item.img"  mode="aspectFill" /> -->
 										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show?item.img:''" />
 										<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 									</view>
 									<p class="goods_name">{{item.name}}</p>
-									<view class="goods_price">¥{{item.wholesale_price}} <i class="iconfont icon-jia"></i></view>
+									<view class="goods_price"><view  class="priceBox"><span class="priceTypeSpan">{{item.priceType}}</span>  ¥{{item.showPrice}}</view> <!-- <i class="iconfont icon-jia"></i> --></view>
 								</view>
-								<view class="goods_item_one" v-else>
+								<view class="goods_item_one" @click="goto_goodsdetail(item.goods_id)" v-else>
 									<view class="goods_img_box">
 										<!-- <image class="goods_img" :src="goods_one.img" mode="aspectFill" :lazy-load="true"></image> -->
 										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="0" @load="imageLoad" :src="item.show?item.img:''" />
 										<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 									</view>
 									<p class="goods_name">{{item.name}}</p>
-									<view class="goods_price">¥{{item.wholesale_price}}<i class="iconfont icon-jia"></i></view>
+									<view class="goods_price"><view class="priceBox"><span class="priceTypeSpan">{{item.priceType}}</span>  ¥{{item.showPrice}}</view><!-- <i class="iconfont icon-jia"></i> --></view>
 								</view> 
 								<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 							</view>
@@ -174,6 +174,7 @@
 				 domain2:this.$store.state.domain2,
 				 scrollId: "scroll",
 				 page:1,
+				 loaded:false,
 				 //图片懒加载
 				 windowHeight: 0,
 				 show: false,
@@ -183,10 +184,35 @@
 		computed:{
 			shopId(){
 				return this.$store.state.shopId
+			},
+			getcurrent(){
+				return this.$store.state.currentIndex
+			},
+		},
+		watch:{
+			// getcurrent(n,o){
+			// 	console.log(n)
+			// 	//下标为3时加载购物车数据，
+			// 	if(n == 0){
+				
+			// 	this.getgoods_list(this.shopId)
+						 
+			// 	}
+			// }
+			getcurrent:{
+				handler(n,o){
+					if(n == 0 && !this.loaded){
+						this.loaded = true
+						this.getgoods_list(this.shopId)
+								 
+						}
+				},
+				immediate:true
 			}
 		},
 		mounted(){
-			this.getgoods_list(this.shopId)
+			
+			
 			//图片懒加载
 			this.windowHeight = uni.getSystemInfoSync().windowHeight-230
 			
@@ -253,8 +279,11 @@
 				this.getgoods_list(this.shopId)
 				
 			 },
-			 goto_goodsdetail(activiId){
-				 
+			 goto_goodsdetail(goodsId){
+				
+				 uni.navigateTo({
+				 	url:'/pages/goodsDetail/goodsDetail?shopId='+this.shopId+'&goods_id='+goodsId
+				 })
 			 },
 			 //更多活动
 			 activeMore(){
@@ -310,8 +339,8 @@
 							
 							
 							//优惠券
-							_this.goodsDiscount = res.data.data.coupon
-							if(_this.goodsDiscount){
+							_this.goodsDiscount = res.data.data.coupon || []
+							if(_this.goodsDiscount.length > 0){
 								res.data.data.coupon.map(item=>{
 									 item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
 									 item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
@@ -326,6 +355,13 @@
 							item.img = _this.domain + item.img
 								 _this.$set(item,'show',false)
 								 _this.$set(item,'loaded',false)
+								 if(item.sale_type == 1){
+									  _this.$set(item,'priceType','整件价')
+									  _this.$set(item,'showPrice',item.wholesale_price)
+								 }else{
+									 _this.$set(item,'priceType','零售价')
+									 _this.$set(item,'showPrice',item.retail_price)
+								 }
 							    _this.goodsList.push(item)
 								
 							 
@@ -652,5 +688,16 @@
 		width:90%;
 		height:350px;
 		overflow: hidden;
+	}
+	.priceBox{
+		display:flex;
+		align-items: center;
+	}
+	.priceTypeSpan{
+		font-size:12px;
+		font-weight: normal;
+		// border:1px solid #EE453C;
+		border-radius:4px;
+		margin-right: 5px;
 	}
 </style>

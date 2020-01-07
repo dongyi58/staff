@@ -21,7 +21,7 @@
 		 							<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 		 						</view>
 		 						<p class="goods_name">{{item.name}}</p>
-		 						<view class="goods_price">¥{{item.fact_price}} <i class="iconfont icon-jia"></i></view>
+		 						<view class="goods_price">¥{{item.fact_price}}<!-- <i class="iconfont icon-jia"></i> --></view>
 		 					</view>
 		 					<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 		 				</view>

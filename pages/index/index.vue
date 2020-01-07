@@ -76,7 +76,7 @@
 					_this.staff_info = res.data.data
 					_this.staff_info.picture = _this.domain+_this.staff_info.picture
 					// uni.setStorageSync('staffInfo',_this.staff_info)
-					
+					console.log(res)
 					_this.$store.commit('SET_STAFFINFO',
 							{
 								name:_this.staff_info.salesName,

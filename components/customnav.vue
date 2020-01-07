@@ -1,5 +1,6 @@
 <template>
-	<view class="customnav">
+	<view :class="[setFixed ? 'fixedNav' : 'customnav']" :style="{'color':'rgb('+transColor+','+transColor+','+transColor+')'}">
+		<view class="transNavBackground" :style="{'opacity':transOpacity}"></view>
 		<view class="search_box" v-if="searchinp">
 			<input type="text" 
 			placeholder-class="holder_text"
@@ -19,10 +20,14 @@
 			<!-- 导航文字 -->
 			<span class="navtext">{{navtitle}}</span>
 		</view>
-		<view class="nav-right" v-if="isSearch || ismsg || isRightText">
-			<!-- 消息提醒 -->
+		<view class="nav-right" v-if="isSearch || ismsg || isRightText || isedit">
+			<!-- 购物车编辑按钮 -->
+			<span v-if="isedit" class="cart_edit" @click="edit">{{editTxt}}</span>
+			<!-- 搜索按钮 -->
 			<i v-if="isSearch" @click="gosearch" class="iconfont icon-sousuo msg"></i>
+			<!-- 消息提醒 -->
 			<i v-if="ismsg"  @click="checkMessage" class="iconfont icon-xiaoxi msg"></i>
+			<!-- 帮助按钮 -->
 			<i v-if="isRightText" @click="help" style="font-style:normal;font-size:14px">{{rightText}}</i>
 		</view>
 		
@@ -32,6 +37,10 @@
 <script>
 	export default {
 		props:{
+			setFixed:{
+				type:Boolean,
+				default:false
+			},
 			midtitle:{
 				type:Boolean,
 				default:true
@@ -52,6 +61,10 @@
 				type:Boolean,
 				default:false
 			},
+			isedit:{
+				type:Boolean,
+				default:false
+			},
 			rightText:{
 				type:String,
 				default:''
@@ -60,7 +73,9 @@
 				type:Boolean,
 				default:true
 			},
-			
+			backType:{
+				type:[Number,String]
+			},
 			searchinp:{
 				type:Boolean,
 				default:false
@@ -77,44 +92,87 @@
 				type:Boolean,
 				default:true
 			},
-			
+			transOpacity:{
+				default:0
+			},
+			transColor:''
 		},
 		data() {
 			return {
-				searchkey:''
+				searchkey:'',
+				transOpacity2:0,
+				editTxt:'管理',
+				editFlag:false
 			};
 		},
+		// watch:{
+		// 	transOpacity(o,n){
+		// 		 console.log(n)
+		// 		this.transOpacity2 = o
+		// 	}
+		// },
 		methods:{
+			//返回按钮
 			getback(){
+				// if(this.backType == 1){
+				// 	uni.navigateTo({
+				// 		url:'/pages/shops/shops'
+				// 	})
+				// }else{
+					
+				// }
 				
 				uni.navigateBack({
 				    delta:1
 				});
+				
 			},
+			//消息页
 			checkMessage(){
 				uni.navigateTo({
 					url:'/pages/message/message'
 				})
 			},
+			//搜索页面
 			gosearch(){
 				uni.navigateTo({
 					url:'/pages/search/search'
 				})
 			},
+			//跳转搜索结果页面
 			gotoSearchResult(){
-				
 				uni.redirectTo({
 					url:'/pages/search/searchResult?keywords='+this.searchkey
 				})
 			},
+			//打卡帮助
 			help(){
 				this.$emit('showhelp',true)
-			}
+			},
+			//购物车编辑按钮
+			edit(){
+				this.editFlag = !this.editFlag
+				if(this.editFlag){
+					this.editTxt='完成'
+				}else{
+					this.editTxt='管理'
+				}
+				
+				this.$emit('edit',this.editFlag)
+			},
 		}
 	}
 </script>
 
 <style lang="scss">
+	.transNavBackground{
+			position: absolute;
+		    top: 0;
+		    left: 0;
+		    bottom: 0;
+		    right: 0;
+		    background: linear-gradient(to right,#21A5F9,#1A6FE8);
+	}
 	.search_box{
 		position:relative;
 		display: flex;
@@ -150,6 +208,16 @@
 		color:#f8f8f8;
 		padding:0 .5rem;
 	}
+	.fixedNav{
+		z-index:99;
+		position:fixed;
+		top:var(--status-bar-height);
+		display:flex;
+		justify-content: space-between;
+		align-items: center;
+		width:100%;
+		height:45px;
+	}
 	.navtext{
 		display: block;
 		font-size:14px;
@@ -161,12 +229,11 @@
 	}
 	.nav-left{
 		    position: absolute;
-			display: flex;
-			justify-content: center;
-			align-items: center;
+			
 			width:20px;
-			height:100%;
 			left: 20px;
+			top:50%;
+			transform: translateY(-50%);
 			i{
 				font-size:18px;
 			};
@@ -174,12 +241,20 @@
 	.nav-mid{
 		    position: absolute;
 		    left: 50%;
-		    transform: translateX(-50%);
+			top:50%;
+		    transform: translate3d(-50%,-50%,0);
 	}
 	.nav-right{
-		position: absolute;
-		right:20px;
-		display:flex;
+			position: absolute;
+			right:20px;
+			top:50%;
+			transform: translateY(-50%);
+			display: flex;
+			.cart_edit{
+				border:1px solid #fff;
+				padding:1px 8px;
+				border-radius:5px;
+			}
 		i{
 			margin-left:10px;
 		}

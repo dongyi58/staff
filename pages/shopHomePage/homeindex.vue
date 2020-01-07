@@ -17,7 +17,7 @@
 		<home  @changeidx='changeidx' :style="{display:current == 0 ? 'block' : 'none'}"/>
 		<allproduct  :style="{display:current == 1 ? 'block' : 'none'}" />
 		<activity  :style="{display:current == 2 ? 'block' : 'none'}" />
-		<order  :style="{display:current == 3 ? 'block' : 'none'}" />
+		<cart :style="{display:current == 3 ? 'block' : 'none'}" />
 		<category  :style="{display:current == 4 ? 'block' : 'none'}" />
 		
 		<view class="supBottomNav">
@@ -46,15 +46,15 @@
 	import home from '@/pages/shopHomePage/shopHomePage.vue'
 	import allproduct from '@/pages/shopHomePage/allProduct.vue'
 	import activity from '@/pages/shopHomePage/activity.vue'
-	import order from '@/pages/shopHomePage/order.vue'
+	import cart from '@/pages/shopHomePage/cart.vue'
 	import category from '@/pages/shopHomePage/category.vue'
 	
 	export default {
-		components:{home,allproduct,activity,order,category},
+		components:{home,allproduct,activity,cart,category},
 		
 		data() {
 			return {
-				current:0,
+				current:-1,
 				pages:[
 					{
 						name:'首页',
@@ -89,14 +89,24 @@
 				],
 			}
 		},
-		onLoad(option){
-			this.$store.commit('SET_SHOPID',option.id)
+		onLoad(){
+			console.log('loaded')
+			 // this.$store.commit('ADD_CART',true) //改变状态，重新加载购物车
+			  this.changeidx(this.$store.state.currentIndex)
+			 
+		},
+		onShow() {
+			// console.log('show')
+			//  this.$store.commit('ADD_CART',true)
+			 this.changeidx(this.$store.state.currentIndex)
+			
+			 
 		},
 		methods: {
 			changeidx(idx){
-				this.current = idx
-				  console.log(this.current)
+				// console.log(this.current)
 				 this.$store.commit('SET_CURRENINDEX',idx)
+				 this.current = idx
 			}
 		}
 	}

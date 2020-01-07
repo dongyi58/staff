@@ -1,0 +1,196 @@
+
+<template>
+  <div class="wxc-stepper">
+    <div class="stepper-minus"
+         @click="minusClicked"
+         aria-label="减数"
+         :accessible="true"
+		 
+		 >
+      <text class="stepper-icon" :style="{ color: isLess?'#cccccc':'#666666' }">-</text>
+    </div>
+		<view class="stepper-input"
+           :style="disableStyle"
+		   @click="click($event,valueString)"
+			>
+			<text class="weex-size-14">{{valueString}}</text>
+		 </view>
+    <div class="stepper-plus"
+         @click="plusClicked"
+         aria-label="加数"
+         :accessible="true"
+		 :style="{ backgroundColor: isOver?'#cccccc':'#EE453C' }"
+		 >
+      <text class="stepper-icon" :style="{ color: isOver ? '#ffffff': '#ffffff' }">+</text>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+  .wxc-stepper {
+    flex-direction: row;
+  }
+
+  .stepper-plus, .stepper-minus {
+    width: 56rpx;
+    height: 56rpx;
+    background-color: #ededed;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6rpx;
+  }
+
+  .stepper-input {
+    border-width: 0;
+    text-align: center;
+    color: #3d3d3d;
+    font-size: 30rpx;
+    line-height: 56rpx;
+    height: 56rpx;
+    width: 86rpx;
+	justify-content: center;
+	align-items: center;
+  }
+
+  .stepper-icon {
+    font-size: 36rpx;
+    color: #666666;
+    margin-top: -4rpx;
+  }
+
+</style>
+
+<script>
+  export default {
+    props: {
+      min: {
+        type: [String, Number],
+        default: 1
+      },
+      max: {
+        type: [String, Number],
+        default: 100
+      },
+      step: {
+        type: [String, Number],
+        default: 1
+      },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      defaultValue: {
+        type: [String, Number],
+        default: 1
+      },
+      readOnly: {
+        type: Boolean,
+        default: false
+      },
+	  goodsItem:{
+		  type:Object
+	  }
+    },
+    computed: {
+      disableStyle () {
+        if (this.disabled) {
+          return {
+            color: '#cccccc'
+          }
+        }
+      },
+      valueString () {
+        return this.value.toString();
+      }
+    },
+    data: () => ({
+      value: 1,
+      isLess: false,
+      isOver: false
+    }),
+    watch: {
+      defaultValue (newNum) {
+        this.value = newNum;
+      }
+    },
+    created () {
+		console.log(this.disabled)
+      this.value = parseInt(this.defaultValue, 10);
+      if (this.disabled) {
+        this.isLess = true;
+        this.isOver = true;
+      }
+    },
+    methods: {
+		click(e,val){
+			 e.stopPropagation();
+			if(!this.disabled){
+				this.$emit('inputClick',{value:val,items:this.goodsItem})
+			}
+		},
+      minusClicked (e) {
+		 e.stopPropagation();
+        if (this.disabled) {
+          return;
+        }
+        const isMinOver = this.value <= this.min;
+        const nowNum = this.value - parseInt(this.step, 10);
+        if (isMinOver) {
+          this.$emit('wxcStepperValueIsMinOver', { value: this.value });
+        } else {
+          this.value = nowNum;
+          this.resetDisabledStyle();
+        }
+        // 由于此处已经减step
+        if (nowNum <= this.min) {
+          this.value = parseInt(this.min, 10);
+          this.isLess = true;
+        }
+        this.$emit('wxcStepperValueChanged', { value: this.value },this.goodsItem);
+      },
+      plusClicked (e) {
+		   e.stopPropagation();
+        if (this.disabled) {
+          return;
+        }
+        const isMaxOver = this.value >= this.max;
+        const nowNum = this.value + parseInt(this.step, 10);
+        if (isMaxOver) {
+          this.$emit('wxcStepperValueIsMaxOver', { value: this.value });
+        } else {
+          this.value = nowNum;
+          this.resetDisabledStyle();
+        }
+        // 由于此处已经加step
+        if (nowNum >= this.max) {
+          this.value = parseInt(this.max, 10);
+          this.isOver = true;
+        }
+        this.$emit('wxcStepperValueChanged', { value: this.value },this.goodsItem);
+      },
+      onInput (e) {
+        this.correctInputValue(e.value);
+      },
+      onBlur (e) {
+        this.correctInputValue(e.value);
+      },
+      correctInputValue (v) {
+        const lastValue = this.value;
+        if (/^[1-9]\d{0,}$/.test(v) && parseInt(v, 10) >= this.min && parseInt(v, 10) <= this.max) {
+          this.value = parseInt(v, 10);
+        } else {
+          this.value = '';
+          setTimeout(() => {
+            this.value = lastValue;
+          }, 1);
+        }
+        this.$emit('wxcStepperValueChanged', { value: this.value },this.goodsItem);
+      },
+
+      resetDisabledStyle () {
+        this.isLess = false;
+        this.isOver = false;
+      }
+    }
+  };
+</script>

@@ -257,7 +257,12 @@
 							uni.hideLoading();
 							this.checkSucess = true
 							this.checkText = '打卡成功'
-							console.log(res)
+							setTimeout(()=>{
+								uni.navigateBack({
+									delta:1
+								})
+							},1000)
+							
 						})
 				})
 			

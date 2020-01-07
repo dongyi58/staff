@@ -138,7 +138,9 @@
 				}).then(res=>{
 					// console.log(res.data.data)
 					res.data.data.map((item,idx)=>{
-						
+							if(item.memo == 'null'){
+								item.memo="无订单备注"
+							}
 						//处理商品信息
 							item.goods.map((gitem,idx)=>{
 									this.$set(gitem,'show',false)
@@ -160,6 +162,7 @@
 									 }
 									 
 									 gitem.img =this.domain + gitem.img
+									
 												 
 							})
 							this.orderDetailInfo.push(item)

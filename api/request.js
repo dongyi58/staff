@@ -1,9 +1,13 @@
 // 全局请求配置
 const domain = 'http://dsales.ddddian.com'
+let expiredLen = 0
  const request = function(options) {
-			uni.showLoading({
-				title:'加载中..'
-			})
+			if(!options.hideLoading){
+				uni.showLoading({
+					title:'加载中..'
+				})
+			}
+			
 		
 			return new Promise((resolve,reject)=>{
 				
@@ -25,21 +29,25 @@ const domain = 'http://dsales.ddddian.com'
 						method:options.method,
 						header:{'Content-type': 'application/x-www-form-urlencoded'},
 						success(res){
+							
 							uni.hideLoading();
 							if(res.data.code == 1){
-								uni.showToast({
-									icon:"none",
-								    title:'登陆过期,请重新登录',
-								    duration: 2000,
-									complete(){
-										setTimeout(()=>{
-											uni.navigateTo({
-									                url: '/pages/login/login' 
-									            });
-										},2000)
-										
-									}
-								})
+								expiredLen++
+								if(expiredLen == 1){
+									uni.showToast({
+										icon:"none",
+										title:'登陆过期,请重新登录',
+										duration: 2000,
+										complete(){
+											setTimeout(()=>{
+												uni.navigateTo({
+										                url: '/pages/login/login' 
+										            });
+											},2000)
+											
+										}
+									})
+								}
 							}else{
 								resolve(res)
 							}

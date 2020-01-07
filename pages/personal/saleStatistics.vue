@@ -174,7 +174,7 @@
 			>
 					<shopList @selectShop="getShopId"></shopList>
 		 </popup>
-		 
+			
 	</view>
 </template>
 
@@ -642,7 +642,8 @@
 		height:calc(100vh - 335px - var(--status-bar-height))
 	}
 	.uni-popup__wrapper-box{
-		padding:0;
+		height:400px !important;
+		padding:0 !important; 
 	}
 	.tips{
 		color:#ccc;
