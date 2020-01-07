@@ -52,7 +52,7 @@
 								<span>{{goodsDetail.supplier.address}}</span>
 							</view>
 							<view class="cell_right">
-								<i class="iconfont icon-you"></i>
+								<!-- <i class="iconfont icon-you"></i> -->
 							</view>
 						</view>
 						<view class="send_cell info_cell" @click="showSpec(3)">
@@ -78,12 +78,61 @@
 						<view class="send_cell info_cell" v-if="zhekouman">
 							<view class="cell_left">
 								<span>满减</span>
-								<span>现在购买满{{activityRule[0].money}}元立减{{activityRule[0].rebate}}元</span>
+								<span>现在购买满<i style="color:red">{{activityRule[0].money}}</i>元立减<i style="color:red">{{activityRule[0].rebate}}</i>元</span>
 							</view>
 							<view class="cell_right">
 								<!-- <i class="iconfont icon-you"></i> -->
 							</view>
 						</view>
+						<!-- 满赠 -->
+						<view class="send_cell info_cell" v-if="manzeng" @click="showmz">
+							<view class="cell_left">
+								<span>满增</span>
+								<span v-for="(j,k,l) in activityRule" :key="l">
+										购买满<i style="color:red">{{k}}</i>元可获得赠品
+								</span>
+							</view>
+							<view class="cell_right">
+								<i class="iconfont icon-you"></i>
+							</view>
+							
+						</view>
+						<view class="mzgoods_list" 
+							:style="{height:mheight+'px'}"
+							v-for="(j,k,l) in activityRule" :key="l" v-if="manzeng">
+							<view v-for="(g,i) in j" :key="g.product_id" class="mzgoods_item">
+								<view class="mzgoods_item_left">
+									<image :src="domain+g.spec_img" mode="" class="mzgoods_img"></image> 
+									<span>{{g.product_name}}</span>
+								</view>
+								<span class="mzgoods_item_right">剩余{{g.stock}}件</span>
+							</view>
+						</view>
+						<!-- 买赠 -->
+						
+						<view class="send_cell info_cell" v-if="maizeng" @click="showmz">
+							<view class="cell_left">
+								<span>买赠</span>
+								<span>
+									购买此商品即可获得精美赠品
+								</span>
+							</view>
+							<view class="cell_right">
+								<i class="iconfont icon-you"></i>
+							</view>
+							
+						</view>
+						<view class="mzgoods_list" 
+							:style="{height:mheight+'px'}"
+							 v-if="maizeng">
+							<view v-for="maizeng in activityRule" :key="maizeng.product_id" class="mzgoods_item">
+								<view class="mzgoods_item_left">
+									<image :src="domain+maizeng.spec_img" mode="" class="mzgoods_img"></image> 
+									<span>{{maizeng.product_name}}</span>
+								</view>
+							</view>
+						</view>
+						
 						<!-- 特价 -->
 						<view class="tejie_cell" v-if="tejia">
 							<view class=" tejia_left">
@@ -377,15 +426,21 @@
 				},
 				//badage宽度
 				width:0,
+				
 				//普通商品/活动商品详情
 				goodsId:0,
 				dtype:0,//区分活动普通商品
 				zhekou:false,//折扣，显示不同活动的规则文字
 				zhekouman:false,//满减
 				tejia:false,//特价
+				manzeng:false,//满赠
+				maizeng:false,//买赠
 				activityRule:[],
 				activityType:'',//活动名称
-				tejiaTips:[]//特价的提示
+				tejiaTips:[],//特价的提示
+				manzengList:[],
+				mzflag:false,
+				mheight:0
 			};
 		},
 	computed:{
@@ -440,6 +495,12 @@
 			//根据选中的规格改变价钱库存等
 			selectSpecInfo(){
 				let spec = this.goodsInfoBySpec
+				let salenum = 0
+				if(this.activityType == 'maizeng'){
+					salenum = Number(this.goodsDetail.maizengAmount.getnum)
+				}else{
+					salenum = Number(spec.retail_sale_num)
+				}
 				//根据当前点击的价格类型，切换顶部的价格货号库存信息
 				//通过ps_idx变化触发更新
 					if(this.ps_idx == 1){
@@ -449,7 +510,7 @@
 							specTitle:spec.retail_specTitle,
 							productNo:spec.product_no,
 							stock:spec.retail_store+spec.retail_unit,
-							moq:Number(spec.retail_sale_num),
+							moq:salenum,
 							unit:spec.retail_unit
 						}
 						
@@ -460,7 +521,7 @@
 							specTitle:spec.whole_specTitle,
 							productNo:spec.product_no,
 							stock:spec.whole_store+spec.whole_unit,
-							moq:Number(spec.whole_sale_num),
+							moq:salenum,
 							unit:spec.whole_unit
 						}
 						
@@ -471,9 +532,6 @@
 			}
 		},
 	onLoad(option){
-		
-		
-		
 		this.goodsId = option.goods_id
 		this.dtype = option.dtype
 		this.activityType = option.type //manjian,zhekou
@@ -496,15 +554,16 @@
 			}else{
 				//活动商品
 				//展示对应的活动文字提示
-				
 				if(this.activityType=='zhekou'){
 					this.zhekou = true
-				}else if(this.activityType="tejia"){
-						console.log('tejia')
+				}else if(this.activityType == "tejia"){
 					this.tejia = true
-				}else if(this.activityType="zhekouman"){
-					console.log('zhekouman')
+				}else if(this.activityType == "zhekouman"){
 					this.zhekouman=true
+				}else if(this.activityType == "manzeng"){
+					this.manzeng=true
+				}else{
+					this.maizeng=true
 				}
 					
 				// console.log(this.activityType,this.tejia,this.zhekouman)
@@ -546,17 +605,36 @@
 			// console.log(this.transOpacity)
 		},
 		methods:{
+			//展开满赠赠品列表
+			showmz(){
+				this.mzflag = !this.mzflag
+				let mmheight=0
+				if(this.manzeng){
+					for(let i in this.activityRule){
+						mmheight = this.activityRule[i].length  * 50
+					}
+				}else{
+					mmheight = this.activityRule.length  * 50
+				}
+				
+				if(this.mzflag){
+					this.mheight = mmheight
+				}else{
+					this.mheight = 0
+				}
+				console.log(this.mheight)
+			},
 			goCart(){
 				this.$store.commit('ADD_CART',true)
 				this.$store.commit('SET_CURRENINDEX',3) 
 				
-				// uni.redirectTo({
-				// 	url:'/pages/shopHomePage/homeindex?id='+this.selectGoods.id
-				// })
+				uni.navigateTo({
+					url:'/pages/shopHomePage/homeindex'
+				})
 				
-				uni.navigateBack({
-				    delta:1
-				});
+				// uni.navigateBack({
+				//     delta:1
+				// });
 				
 			},
 			//切换价格类型，并更新头部展示的价格库存货号等、
@@ -1121,7 +1199,7 @@
 		left: 2.5%;
 		width:95%;
 		top:120px;
-		height:calc(100vh - 260px);
+		height:calc(100vh - 315px);
 		transition:all .6s
 	}
 	body{

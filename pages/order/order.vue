@@ -46,6 +46,24 @@
 							<view class="priceBox">
 								<!-- 订单选项 -->
 								<view class="orderOptItem_wrap">
+									
+										<view class="orderOptItem" v-if="showfree">
+											<span class="orderOptItem_left">选择赠品</span> 
+											<view class="orderOptItem_right">
+												<dselect 
+													:list="freelist"
+													:clearable="false"
+													:showItemNum="5" 
+													:listShow="false"
+													:isCanInput="false"  
+													:style_Container="'height: 30px; font-size: 12px;'"
+													:placeholder = "'placeholder'"
+													:initValue="freelist[0]"
+													:selectHideType="'hideAll'"
+												>
+												</dselect>
+											</view>
+										</view>
 										<view class="orderOptItem" @click="payType">
 											<span class="orderOptItem_left">结算方式</span> 
 											<view class="orderOptItem_right">
@@ -96,7 +114,7 @@
 			<span class="tcv_left">共{{orderDetailInfo.totalquantity}}件</span>
 			<view class="tcv_right">
 				<view>合计：<span>￥{{totalPrice}}</span></view>
-				<button size="mini" @click="orderSubmit">去付款</button>
+				<button size="mini" @click="orderSubmit($event)">去付款</button>
 			</view>
 		</view>
 		<!-- 结算方式 选择 -->
@@ -147,8 +165,9 @@
 	//popup弹出层
 	import popup from'@/components/uni-popup/uni-popup.vue'
 	
+	import dselect from '@/components/xfl-select/xfl-select.vue';
 	export default {
-		components:{customnav,popup},
+		components:{customnav,popup,dselect},
 		data() {
 			return {
 				orderDetailInfo:{},
@@ -217,7 +236,10 @@
 				sellerId:'',
 				type:'',
 				cartDetailRequest:{},
-				multipleData : {} //批量购买数据
+				multipleData : {} ,//批量购买数据
+				//赠品列表
+				showfree:false,//有无赠品
+				freelist:[]
 			};
 				
 				
@@ -372,6 +394,13 @@
 								 tempGoods.push(ordergoods[i][j])
 								 quantityCount+= ordergoods[i][j].quantity
 								 // this.cartList.push(data1[i][j])
+								 //判断是否有赠品
+								console.log(ordergoods[i][j].rule.freeProductName)
+									 if(ordergoods[i][j].rule.freeProductName){
+										this.showfree = true
+										this.freelist = ordergoods[i][j].rule.freeProductName
+										this.freegoodsId = ordergoods[i][j].rule.freeProductId
+									 }
 								}
 								//重新组装数据，将对应小店和商品组装在一起 
 								this.orderGoodsList.push({
@@ -381,6 +410,7 @@
 								})
 							
 						}
+						//console.log(this.freegoodsId)
 						//console.log(this.orderGoodsList)
 					
 				})
@@ -479,7 +509,8 @@
 			},
 		
 			//提交订单
-			orderSubmit(){
+			orderSubmit(e,idx){
+				
 				let submitRequest={}
 				if(this.type == 1){
 					submitRequest = {
@@ -496,7 +527,7 @@
 								activity_id:this.priceParams.activity_id,
 								order_type:this.priceParams.order_type,
 								period_id:this.priceParams.period_id,
-								productname:'',
+								productname:idx ? this.freegoodsId[idx] : this.freegoodsId[0],
 								delivery_id:this.priceParams.delivery_id,
 								memo:this.memo
 							}
@@ -522,7 +553,7 @@
 					
 					setTimeout(()=>{
 						this.$store.commit('ADD_CART',true)
-						this.$store.commit('SET_CURRENINDEX',3)
+						this.$store.commit('SET_CURRENINDEX',0)
 						uni.navigateTo({
 						    url: '/pages/shopHomePage/homeindex'
 						});

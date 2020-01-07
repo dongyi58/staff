@@ -336,7 +336,7 @@
 	
 	span:last-child{
 		display: inline-block;
-		max-width:150px;
+		// max-width:150px;
 		margin-left:10px;
 		@include longtext;
 		i{
@@ -388,6 +388,34 @@
 			color:red;
 		}
 		
+	}
+}
+.mzgoods_list{
+	display: flex;
+	flex-direction: column;
+	transition: height .3s;
+	overflow: hidden;
+	.mzgoods_item{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom:1px solid #f5f5f5;
+		padding:10px;
+		&_left{
+			display: flex;
+			align-items: center;
+			span{
+				margin-left:10px;
+			}
+			.mzgoods_img{
+				width:30px;
+				height:30px;
+				border-radius: 5px;
+			}
+		}
+		&_right{
+			color:#999;
+		}
 	}
 }
 .info3_img{
