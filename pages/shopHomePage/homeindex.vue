@@ -90,7 +90,7 @@
 			}
 		},
 		onLoad(){
-			  // console.log('loaded')
+			  console.log('loaded')
 			  // this.$store.commit('ADD_CART',true) //改变状态，重新加载购物车
 			  this.changeidx(this.$store.state.currentIndex)
 			 
@@ -99,13 +99,14 @@
 			// console.log('show')
 			//  this.$store.commit('ADD_CART',true)
 			 this.changeidx(this.$store.state.currentIndex)
-			
+			// console.log(this.$store.state.currentIndex)
 			 
 		},
 		methods: {
 			changeidx(idx){
 				// console.log(this.current)
 				 this.$store.commit('SET_CURRENINDEX',idx)
+				 // console.log(idx)
 				 this.current = idx
 			}
 		}

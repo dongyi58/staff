@@ -13,9 +13,9 @@
 		 <view class="shopInfo_content">
 			<ul>
 				<li><span>店名</span><span>{{ shopInfo.shopname }}</span></li>
-				<li><span>店主</span><span>{{ shopInfo.username }}</span></li>
+				<!-- <li><span>店主</span><span>{{ shopInfo.username }}</span></li> -->
 				<li><span>小店类型</span><span>{{ shopInfo.business_scope }}</span></li>
-				<li><span>主营类目</span><span>{{ shopInfo.shopname }}</span></li>
+				<!-- <li><span>主营类目</span><span>{{ shopInfo.shopname }}</span></li> -->
 				<li><span>入驻人手机号</span><span>{{ shopInfo.phone }}</span></li>
 				<li><span>所在地区</span><span>{{ shopInfo.area }}</span></li>
 			</ul>

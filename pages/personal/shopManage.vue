@@ -44,7 +44,7 @@
 				 		 
 				 	<view class="shoplist_content dutyShop" v-if="currentidx==0">
 				 			<view class="shoplist_content_item" 
-				 			v-for="(item,idx) of dutyShopList"
+				 			v-for="(item,idx) of shopList"
 				 			:key="idx"
 				 			>
 				 				<view class="shoplist_content_item_top">
@@ -67,13 +67,13 @@
 				 				</view>
 				 				<view class="shoplist_content_item_bottom">
 									<p><i class="iconfont icon-weizhi"></i> {{item.address}}</p>
-									<span @click="gotoShopDetail(item.id)">前往 <i class="iconfont icon-you"></i></span>
+									<!-- <span @click="gotoShopDetail(item.id)">前往 <i class="iconfont icon-you"></i></span> -->
 				 				</view>
 				 			</view>
 				 	</view>
 					<view class="shoplist_content tjShop" v-if="currentidx==1">
 							<view class="shoplist_content_item" 
-							v-for="(item,idx) of shopList"
+							v-for="(item,idx) of dutyShopList"
 							:key="idx"
 							>
 								<view class="shoplist_content_item_top">
@@ -96,7 +96,7 @@
 								</view>
 								<view class="shoplist_content_item_bottom">
 									<p><i class="iconfont icon-weizhi"></i> {{item.address}}</p>
-									<span @click="gotoShopDetail(item.id)">前往 <i class="iconfont icon-you"></i></span>
+									<!-- <span @click="gotoShopDetail(item.id)">前往 <i class="iconfont icon-you"></i></span> -->
 								</view>
 							</view>
 					</view>
@@ -170,7 +170,9 @@
 				this.$dyrequest({
 					url:'/SmallShop/getShopMsg',
 					method:'POST',
-					type:_this.type
+					data:{
+						type:this.type
+					}
 				}).then(res=>{
 					
 					_this.dutyShopList = res.data.data.ShopMsg

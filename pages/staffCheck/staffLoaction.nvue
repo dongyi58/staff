@@ -84,7 +84,11 @@
 			
 		},
 		onLoad() {
-		
+			let sh = uni.getSystemInfoSync().statusBarHeight + 44
+			const subNVue = uni.getSubNVueById('mapTop')  
+			subNVue.setStyle({  
+			    top: sh+'px'
+			})
 			let _this = this
 			//监听右侧按钮事件
 			uni.$on('right-click',(res)=>{
@@ -360,7 +364,6 @@
 	.map_position,.map_wrap{
 		position: relative;
 		width:750rpx;
-		
 		flex:1;
 	}
 	.checkmap{

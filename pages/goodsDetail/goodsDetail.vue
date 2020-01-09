@@ -1,9 +1,9 @@
 <template>
 	<view class="goodsDetail_wrap">
 		<view class="status_bar detail_status_bar" :style="{'opacity':transOpacity}"></view>
-		<customnav  :isSearch="true" :transOpacity="transOpacity" :transColor="transColor" setFixed/>
+		<customnav  :isSearch="false" :transOpacity="transOpacity" :transColor="transColor" setFixed/>
 		
-		<view class="detail_list" >
+		<view class="detail_list" :class="{'noscroll':disabelScroll}">
 			<view class="detail_box">
 				<!-- 轮播图 -->
 				<view class="detail-swiper-box">
@@ -29,7 +29,7 @@
 								</view>
 							</view>
 							<view class="goods_name">
-								<span>厂家直销</span>{{goodsDetail.goods.name || '商品名称'}}
+								<!-- <span>厂家直销</span> -->{{goodsDetail.goods.name || '商品名称'}}
 							</view>
 							<!-- <view class="adtext">奥术大师多撒大所大</view> -->
 						</view>
@@ -55,7 +55,7 @@
 								<!-- <i class="iconfont icon-you"></i> -->
 							</view>
 						</view>
-						<view class="send_cell info_cell" @click="showSpec(3)">
+						<!-- <view class="send_cell info_cell" @click="showSpec(3)">
 							<view class="cell_left">
 								<span>选择</span>
 								<span>{{selectSkuText}}</span>
@@ -63,7 +63,7 @@
 							<view class="cell_right">
 								<i class="iconfont icon-you"></i>
 							</view>
-						</view>
+						</view> -->
 						<!-- 打折 -->
 						<view class="send_cell info_cell" v-if="zhekou">
 							<view class="cell_left">
@@ -114,7 +114,7 @@
 							<view class="cell_left">
 								<span>买赠</span>
 								<span>
-									购买此商品即可获得精美赠品
+									{{maizengText}}
 								</span>
 							</view>
 							<view class="cell_right">
@@ -178,7 +178,7 @@
 							<view class="tabs" v-show="currentTabs == 2">
 								<view class="tabs_cell" v-for="(gp,idx) of goodsParams" :key="idx">
 									<span>{{gp.attribute_name}}</span>
-									<span>{{gp.attribute_value}}</span>
+									<p>{{gp.attribute_value}}</p>
 								</view>
 							</view>
 					</view>
@@ -187,6 +187,7 @@
 		</view>
 		<view class="actionBar">
 			<view class="action_left">
+				
 				<span><i class="iconfont icon-dianpu-tap"></i>店铺</span>
 				<span><i class="iconfont icon-lianxikefu"></i>客服</span>
 				<span @click="goCart">
@@ -217,6 +218,7 @@
 										<span class="spec_describe">{{selectSpecInfo.specTitle}}</span>
 										<span class="spec_num">货号:{{selectSpecInfo.productNo}}</span>
 										<span class="spec_stock">库存:{{selectSpecInfo.stock}}</span>
+										<span class="spec_stock">活动库存:{{selectSpecInfo.activityStock}}</span>
 									</view>
 								</view>
 								<i class="iconfont icon-ziyuan" @click="closeSpec"></i>
@@ -244,24 +246,26 @@
 									<!-- 价格类型 -->
 									<view class="priceOption">
 											<view class="sku_parent">
-												  <h1 class="skuname">单价</h1> 
+												  <h1 class="skuname">销售方式</h1> 
+												  
 												  <ul class="skuChild">
 														<li class="priceBox " 
 														@click="priceSelect(1)" 
 														:class="[ps_idx == 1 ? 'active_price' : '']"
 														v-if="specPriceType == 2 || specPriceType == 3"
 														>
-															
-															<view class="price_head">零售价: <span>￥<i>{{goodsInfoBySpec.retail_price}}</i></span>/{{goodsInfoBySpec.retail_unit}}</view>
-															<view class="spec_text">{{goodsInfoBySpec.retail_specTitle}}</view>
+														
+															<view class="price_head">单品价: <span>￥<i>{{goodsInfoBySpec.retail_price}}</i></span></view>
+															<view class="spec_text">{{goodsInfoBySpec.retail_priceTitle}}</view>
 														</li>
 														<li class="priceBox"
 														 @click="priceSelect(2)" 
 														:class="[ps_idx == 2 ? 'active_price' : '']"
 														 v-if="specPriceType == 1 || specPriceType == 3"
 														>
-															<view class="price_head">批发价: <span>￥<i>{{goodsInfoBySpec.wholesale_price}}</i></span>/{{goodsInfoBySpec.whole_unit}}</view>
-															<view class="spec_text">{{goodsInfoBySpec.whole_specTitle}}</view>
+														
+															<view class="price_head">整件价: <span>￥<i>{{goodsInfoBySpec.wholesale_price}}</i></span></view>
+															<view class="spec_text">{{goodsInfoBySpec.whole_priceTitle}}</view>
 														</li>
 												  </ul>
 											</view>
@@ -310,7 +314,7 @@
 								</view>
 								<view class="yhq_left_two">
 									<span>满{{item.rule[0].money}}元使用</span>
-									<span>全部商品通用<br>(特价除外)</span>
+									<span>部分商品可用<br>(特价除外)</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -332,7 +336,7 @@
 								</view>
 								<view class="yhq_left_two">
 									<span>满{{item.rule[0].money}}元使用</span>
-									<span>全部商品通用<br>(特价除外)</span>
+									<span>部分商品通用<br>(特价除外)</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -438,9 +442,11 @@
 				activityRule:[],
 				activityType:'',//活动名称
 				tejiaTips:[],//特价的提示
+				maizengText:'',
 				manzengList:[],
 				mzflag:false,
-				mheight:0
+				mheight:0,
+				disabelScroll:false
 			};
 		},
 	computed:{
@@ -499,7 +505,12 @@
 				if(this.activityType == 'maizeng'){
 					salenum = Number(this.goodsDetail.maizengAmount.getnum)
 				}else{
-					salenum = Number(spec.retail_sale_num)
+					if(this.ps_idx == 1){
+						salenum = Number(spec.retail_sale_num)
+					}else{
+						salenum = Number(spec.whole_sale_num)
+					}
+					
 				}
 				//根据当前点击的价格类型，切换顶部的价格货号库存信息
 				//通过ps_idx变化触发更新
@@ -507,9 +518,10 @@
 						//单价
 						return {
 							specPrice:spec.retail_price,
-							specTitle:spec.retail_specTitle,
+							specTitle:spec.retail_priceTitle,
 							productNo:spec.product_no,
 							stock:spec.retail_store+spec.retail_unit,
+							activityStock:spec.retail_store_activity+spec.retail_unit,
 							moq:salenum,
 							unit:spec.retail_unit
 						}
@@ -518,9 +530,10 @@
 						// 整件价
 						return  {
 							specPrice:spec.wholesale_price,
-							specTitle:spec.whole_specTitle,
+							specTitle:spec.whole_priceTitle,
 							productNo:spec.product_no,
 							stock:spec.whole_store+spec.whole_unit,
+							activityStock:spec.whole_store_activity+spec.whole_unit,
 							moq:salenum,
 							unit:spec.whole_unit
 						}
@@ -532,69 +545,69 @@
 			}
 		},
 	onLoad(option){
-		this.goodsId = option.goods_id
-		this.dtype = option.dtype
-		this.activityType = option.type //manjian,zhekou
-		
-		// console.log(this.activityType,this.dtype)
-			//请求商品详情参数
-			if(this.dtype == 1){ //普通商品
-				
-				this.goodsInfoParams = {
-					method:'POST',
-					url:'/Goods/detail',
-					data:{
-						goodsId:option.goods_id,
-						shopId:this.shopId,
-						activityId:'',
-						activityType:'',
-						productId:''
-					}
-				}
-			}else{
-				//活动商品
-				//展示对应的活动文字提示
-				if(this.activityType=='zhekou'){
-					this.zhekou = true
-				}else if(this.activityType == "tejia"){
-					this.tejia = true
-				}else if(this.activityType == "zhekouman"){
-					this.zhekouman=true
-				}else if(this.activityType == "manzeng"){
-					this.manzeng=true
-				}else{
-					this.maizeng=true
-				}
+			this.goodsId = option.goods_id
+			this.dtype = option.dtype
+			this.activityType = option.type //manjian,zhekou
+			
+			// console.log(this.activityType,this.dtype)
+				//请求商品详情参数
+				if(this.dtype == 1){ //普通商品
 					
-				// console.log(this.activityType,this.tejia,this.zhekouman)
-				this.goodsInfoParams = {
-					method:'POST',
-					url:'/Goods/productDetail',
-					data:{
-						id:this.shopId,
-						activityId:option.activityId,
-						productId:option.productId,
-						sale_type:'',
-						type:option.type
+					this.goodsInfoParams = {
+						method:'POST',
+						url:'/Goods/detail',
+						data:{
+							goodsId:option.goods_id,
+							id:this.shopId,
+							activityId:'',
+							activityType:'',
+							productId:''
+						}
 					}
-				
+				}else{
+					//活动商品
+					//展示对应的活动文字提示
+					if(this.activityType=='zhekou'){
+						this.zhekou = true
+					}else if(this.activityType == "tejia"){
+						this.tejia = true
+					}else if(this.activityType == "zhekouman"){
+						this.zhekouman=true
+					}else if(this.activityType == "manzeng"){
+						this.manzeng=true
+					}else{
+						this.maizeng=true
+					}
+						
+					// console.log(this.activityType,this.tejia,this.zhekouman)
+					this.goodsInfoParams = {
+						method:'POST',
+						url:'/Goods/productDetail',
+						data:{
+							id:this.shopId,
+							activityId:option.activityId,
+							productId:option.productId,
+							sale_type:'',
+							type:option.type
+						}
+					
+					}
 				}
-			}
-			
-			//加入购物车信息
-			this.selectGoods.goodsId = option.goods_id
-			this.selectGoods.id = this.shopId
-			
-			
-			
-			this.getDetail()
-			
-			//获取购物车数量
-			this.$store.dispatch('getCartNum',{id:this.shopId}).then(()=>{
-				this.cartNum = this.$store.state.cartNum
-				this.width = `width: ${String(this.cartNum).length * 8 + 8}px`
 				
-			})
+				//加入购物车信息
+				this.selectGoods.goodsId = option.goods_id
+				this.selectGoods.id = this.shopId
+				
+				
+				
+				this.getDetail()
+				
+				//获取购物车数量
+				this.$store.dispatch('getCartNum',{id:this.shopId}).then(()=>{
+					this.cartNum = this.$store.state.cartNum
+					this.width = `width: ${String(this.cartNum).length * 8 + 8}px`
+					
+				})
 			
 		},
 		onPageScroll(e){
@@ -625,16 +638,16 @@
 				console.log(this.mheight)
 			},
 			goCart(){
-				this.$store.commit('ADD_CART',true)
+				// this.$store.commit('ADD_CART',true)
 				this.$store.commit('SET_CURRENINDEX',3) 
 				
-				uni.navigateTo({
-					url:'/pages/shopHomePage/homeindex'
-				})
+				// uni.navigateTo({
+				// 	url:'/pages/shopHomePage/homeindex'
+				// })
 				
-				// uni.navigateBack({
-				//     delta:1
-				// });
+				uni.navigateBack({
+				    delta:1
+				});
 				
 			},
 			//切换价格类型，并更新头部展示的价格库存货号等、
@@ -697,6 +710,18 @@
 								})
 							}
 					}
+					//买赠规则文字
+					if(this.activityType == 'maizeng'){
+						//买赠起订量
+						let mzNum = this.goodsDetail.maizengAmount.getnum
+						if(this.goodsDetail.price.sale_type == 1){
+						
+							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.whole_unit || ''}及可获得赠品`
+						}else{
+							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.retail_unit || ''}及可获得赠品`
+						}
+					}
+					
 					// console.log(this.activityRule)
 					//商家星级
 					this.star = this.goodsDetail.ct.star
@@ -707,7 +732,6 @@
 					
 					//获取加入购物车所需数据,购买规格类型
 					this.selectGoods.buy_type = this.goodsDetail.buy_type
-					
 					//根据价格类型添加active样式。根据sale_type默认添加购买规格类型
 					if(this.goodsDetail.price.sale_type == 1){
 						this.ps_idx = 2
@@ -752,12 +776,16 @@
 							let temparr=[]
 						
 							if(Array.isArray(item.value)){
+								
 								item.value.map(citem=>{
-									temparr.push({value:citem,isShow:true})
-									temp={
-										name: item.name,
-										item:temparr
+									if(citem != ''){
+										temparr.push({value:citem,isShow:true})
+										temp={
+											name: item.name,
+											item:temparr
+										}
 									}
+									
 								})
 							}else{
 								initarr.push(item.value)
@@ -769,6 +797,7 @@
 							}	
 							this.skuData.push(temp)
 						})
+						// console.log(this.skuData)
 						if(this.dtype == 1){
 							this.getSku()
 						}else{
@@ -793,15 +822,24 @@
 						 
 						 //规格选择提示
 						 this.selectSkuText = '已选:默认规格'
-						 
-						//合并规格名称展示 25g/听  
-						let whole =  this.goodsDetail.price.whole_spec
+						//包装规格展示
+						let wholePriceTitle = ''
+						let retailPriceTitle = ''
+						if(specInfo.pack_type == 1){
+							retailPriceTitle = `${specInfo.net_weight}/${specInfo.retail_unit}`;
+							wholePriceTitle = `${specInfo.net_weight}*${specInfo.spec}${specInfo.retail_unit}/${specInfo.whole_unit}`
+						}else{
+							
+							retailPriceTitle = `${specInfo.retail_spec}${specInfo.bulk_unit}`;
+							wholePriceTitle = `${specInfo.whole_spec}${specInfo.bulk_unit}/${specInfo.whole_unit}`
+							
+						}	
+						this.$set(specInfo,'retail_priceTitle',retailPriceTitle)
+						this.$set(specInfo,'whole_priceTitle',wholePriceTitle)
 						
-						let retail= this.goodsDetail.price.retail_spec
 						
-						this.$set(specInfo,'retail_specTitle',retail)
-						this.$set(specInfo,'whole_specTitle',whole)
 						this.goodsInfoBySpec = specInfo
+						console.log(this.goodsInfoBySpec)
 					}
 					
 					
@@ -921,7 +959,7 @@
 					 this.selectGoods.productId = specInfo.product_id
 					 
 					 //stepper当前起订量,默认获取的是单个商品起订量
-					 // console.log(this.ps_idx)
+					
 					 if(this.ps_idx == 1){
 						  this.quantity = Number(specInfo.retail_sale_num)
 					 }else{
@@ -932,13 +970,29 @@
 					
 					 //规格图片
 					 this.specImgUrl = this.domain + specInfo.spec_img
-					//合并规格名称展示 25g/听  
-					let whole =  this.goodsDetail.price.whole_spec
-					
-					let retail= this.goodsDetail.price.retail_spec
-					
-					this.$set(specInfo,'retail_specTitle',retail)
-					this.$set(specInfo,'whole_specTitle',whole)
+					 
+				
+					//包装规格展示
+					let wholePriceTitle = ''
+					let retailPriceTitle = ''
+					// if(specInfo.sale_type == 1){
+					// 	if(specInfo.pack_type == 1){
+					// 		wholePriceTitle = `${specInfo.net_weight}*${specInfo.spec}${specInfo.retail_unit}/${specInfo.whole_unit}`
+					// 	}else{
+					// 		wholePriceTitle = `${specInfo.whole_spec}${specInfo.bulk_unit}/${specInfo.whole_unit}`
+					// 	}
+					// }else{
+						
+					// }
+					if(specInfo.pack_type == 1){
+						retailPriceTitle = `${specInfo.net_weight}/${specInfo.retail_unit}`;
+						wholePriceTitle = `${specInfo.net_weight}*${specInfo.spec}${specInfo.retail_unit}/${specInfo.whole_unit}`
+					}else{
+						retailPriceTitle = `${specInfo.retail_spec}${specInfo.bulk_unit}`;
+						wholePriceTitle = `${specInfo.whole_spec}${specInfo.bulk_unit}/${specInfo.whole_unit}`
+					}	
+					this.$set(specInfo,'retail_priceTitle',retailPriceTitle)
+					this.$set(specInfo,'whole_priceTitle',wholePriceTitle)
 					
 					this.goodsInfoBySpec = specInfo	
 					// console.log(this.goodsInfoBySpec)
@@ -1003,17 +1057,22 @@
 			
 								//初始化时默认选中
 								if(this.init){
+									
 									//利用存储的规格组合跟每一种规格下面的规格值比对，比对成功后将该下标的规格值设置为选中状态
 									if(initArr[idx] == childItem.value){
 										this.selectIdx[idx] = childIdx
+										
 									}
+									result[idx] = childItem.value //覆盖result的值，
 									
+									this.$set(childItem,'isShow',this.checkStock(result)) 
 								}else{
 			                        //非初始化，
 			                        
 			                        //用户点击一个规格值时，循环出每种规格可能的组合
-			                      
+			                      // console.log(result)
 									result[idx] = childItem.value //覆盖result的值，
+									
 									this.$set(childItem,'isShow',this.checkStock(result)) //根据checkStock返回的状态设置当前规格值是否可选
 								}
 								 
@@ -1033,6 +1092,7 @@
 				        return true; //如果数组里有为空的值，那直接返回true
 				    }
 				}
+				// console.log(this.skuInfo[result])
 				 //无空值下，判断是否有库存和是否启用，
 				 return this.skuInfo[result].stock == 0 ? false : (this.skuInfo[result].is_use == 1 ? true : false);
 			},
@@ -1135,6 +1195,7 @@
 						});
 						return
 				 }
+				this.disabelScroll=true
 			     this.$refs.popup.open()
 			  },
 			 
@@ -1166,6 +1227,7 @@
 			 //关闭优惠券弹窗
 			 closePopup(){
 				this.$refs.popup.close()
+				this.disabelScroll=false
 			 },
 			 //显示规格选项
 			 showSpec(type){
@@ -1205,6 +1267,10 @@
 	body{
 		overflow:scroll !important;
 	}
+	//弹窗时禁止滚动
+	.noscroll{
+		height:100vh
+	}
 	.detail_status_bar{
 		z-index:999;
 		position:fixed;
@@ -1215,6 +1281,7 @@
 	}
 	.goodsDetail_wrap{
 		width: 100vw;
+		overflow: hidden;
 		background: #f6f6f6;
 	}
 	.detail_box{

@@ -23,6 +23,7 @@ let expiredLen = 0
 						 data.phone = phone;
 						
 					}
+					// console.log(data)
 					uni.request({
 						url:domain + options.url,
 						data:data,
@@ -57,7 +58,7 @@ let expiredLen = 0
 							reject(err)
 							uni.showToast({
 								icon:"none",
-							    title:'请求超时',
+							    title:'网络错误',
 							    duration: 2000
 							});
 						}

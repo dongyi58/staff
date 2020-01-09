@@ -52,7 +52,7 @@
 							
 						</view>
 						<!-- 活动专区 -->
-						<view class='activity_banner'>
+						<!-- <view class='activity_banner'>
 							<view class="content_header">
 									<span>活动专区</span>
 									<span @click="activeMore">更多<i class="iconfont icon-youxiang"></i></span>
@@ -61,7 +61,7 @@
 							<view style="background:url(../../static/images/activity.gif)"
 							class="activity_banner_img">
 							</view>
-						</view>
+						</view> -->
 						<!-- 商品列表 -->
 						<view class="goods_list_wrap">
 							<view class="content_header">
@@ -72,24 +72,28 @@
 							<!-- 商品列表 -->
 							 <view class="goods_list">
 								
-								<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)" v-if="idx != 0" v-for="(item,idx) of goodsList" :key="idx">
+								<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)"  v-for="(item,idx) of goodsList" :key="idx">
 									<view class="goods_img_box">
 										<!-- <image lazy-load class="image" :src="item.img"  mode="aspectFill" /> -->
 										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show?item.img:''" />
 										<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 									</view>
 									<p class="goods_name">{{item.name}}</p>
-									<view class="goods_price"><view  class="priceBox"><span class="priceTypeSpan">{{item.priceType}}</span>  ¥{{item.showPrice}}</view> <!-- <i class="iconfont icon-jia"></i> --></view>
+									<view class="goods_price">
+										<view  class="priceBox"><span class="priceTypeSpan">{{item.priceType}}</span>  ¥{{item.showPrice}}</view> <!-- <i class="iconfont icon-jia"></i> -->
+										<image v-if="item.activity" class="activity_gif" src="../../static/images/fire.gif" mode=""></image>
+									</view>
+										
 								</view>
-								<view class="goods_item_one" @click="goto_goodsdetail(item.goods_id)" v-else>
+								<!-- <view class="goods_item_one" @click="goto_goodsdetail(item.goods_id)" v-else>
 									<view class="goods_img_box">
-										<!-- <image class="goods_img" :src="goods_one.img" mode="aspectFill" :lazy-load="true"></image> -->
+										<image class="goods_img" :src="goods_one.img" mode="aspectFill" :lazy-load="true"></image>
 										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="0" @load="imageLoad" :src="item.show?item.img:''" />
 										<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 									</view>
 									<p class="goods_name">{{item.name}}</p>
-									<view class="goods_price"><view class="priceBox"><span class="priceTypeSpan">{{item.priceType}}</span>  ¥{{item.showPrice}}</view><!-- <i class="iconfont icon-jia"></i> --></view>
-								</view> 
+									<view class="goods_price"><view class="priceBox">{{item.showPrice}}</view><i class="iconfont icon-jia"></i></view>
+								</view> -->
 								<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 							</view>
 							
@@ -110,12 +114,12 @@
 						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
 							<view class="yhq_left">
 								<view class="yhq_left_one">
-									<span><i>¥</i>{{item.rule[0].rebate}}</span>
+									<span>{{item.rule[0].rebate}} 折</span>
 									<span>{{item.start_time}} - {{item.end_time}}</span>
 								</view>
 								<view class="yhq_left_two">
 									<span>满{{item.rule[0].money}}元使用</span>
-									<span>全部商品通用<br>(特价除外)</span>
+									<span>部分商品可用<br>(特价除外)</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -137,7 +141,7 @@
 								</view>
 								<view class="yhq_left_two">
 									<span>满{{item.rule[0].money}}元使用</span>
-									<span>全部商品通用<br>(特价除外)</span>
+									<span>部分商品通用<br>(特价除外)</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -188,6 +192,7 @@
 			getcurrent(){
 				return this.$store.state.currentIndex
 			},
+			
 		},
 		watch:{
 			// getcurrent(n,o){
@@ -329,7 +334,7 @@
 							_this.$store.commit('SET_SUPPLIERID',_this.supllierInfo.id)
 							//小店信息
 							_this.shopInfo = res.data.data.shopmsg
-							
+							this.$store.commit('SET_SHOPINFO',_this.shopInfo)
 							//排名前三商品
 							// _this.salesrank= res.data.data.goods.sales_rank
 							 res.data.data.goods.sales_rank.map(item=>{
@@ -355,13 +360,16 @@
 							item.img = _this.domain + item.img
 								 _this.$set(item,'show',false)
 								 _this.$set(item,'loaded',false)
-								 if(item.sale_type == 1){
-									  _this.$set(item,'priceType','整件价')
-									  _this.$set(item,'showPrice',item.wholesale_price)
+								 
+								 if(item.sale_type == 3){
+									  _this.$set(item,'showPrice',item.retail_price+'-'+item.wholesale_price)
+								 	
+								 }else if(item.sale_type == 2){
+								 		 _this.$set(item,'showPrice',item.retail_price)
 								 }else{
-									 _this.$set(item,'priceType','零售价')
-									 _this.$set(item,'showPrice',item.retail_price)
+								 	 _this.$set(item,'showPrice',item.wholesale_price)
 								 }
+								 
 							    _this.goodsList.push(item)
 								
 							 
@@ -383,9 +391,13 @@
 <style lang="scss">
 	@import '@/static/css/style.scss';
 	.homepage_list{
-		margin-top:45px;
+		margin-top:28px;
 		width: 100%;
 		height: calc(100vh - 240px);
+	}
+	.activity_gif{
+		width:50px;
+		height:20px;
 	}
 .header-bkg{
 		position:absolute;

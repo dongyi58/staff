@@ -97,8 +97,9 @@
 						"id": "mapTop", 
 						"path": "pages/staffCheck/subNVues/mapTop.nvue",
 						"style": { 	
+							"position":"absolute",
+							"top":"0",
 							"height":"65px",
-							"top":"70px",
 							"background":"transparent"
 						} 
 					},
@@ -167,7 +168,10 @@
         ,{
             "path" : "pages/order/order",
             "style" : {}
-        }
+        },
+		{
+			 "path" :"pages/shopHomePage/categoryGoods"
+		}
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

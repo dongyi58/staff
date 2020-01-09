@@ -259,7 +259,7 @@
 							this.checkText = '打卡成功'
 							setTimeout(()=>{
 								uni.navigateBack({
-									delta:1
+									delta:2
 								})
 							},1000)
 							

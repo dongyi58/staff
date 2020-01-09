@@ -51,7 +51,7 @@
 										 <span class="c_price" v-if="goods.goods_status == 2">￥{{goods.goods_price}}</span>
 										 <span v-else-if="goods.store == 0">已售罄</span>
 										 <span v-else>已下架</span>
-										 <stepper :min="goods.mop"  @change="quantityNum($event,idx,gidx)" :max="99" :value="goods.quantity" :disabled="goods.goods_status == 3 ? true : false"></stepper>
+										 <stepper :min="goods.mop"  @change="quantityNum($event,idx,gidx,goods.id)" :max="99" :value="goods.quantity" :disabled="goods.goods_status == 3 ? true : false"></stepper>
 									 </view>
 									
 								 </view>
@@ -166,7 +166,7 @@
 							
 					})
 					return {
-							totalPrice:totalPrice,
+							totalPrice:totalPrice.toFixed(2),
 							count:count,
 							cartId:cartIdArr,
 							sellerId:sellerId
@@ -200,8 +200,16 @@
 							return
 						}
 					}else{
-						cartId = this.checkedGoods.cartId
-						this.checkall=false 
+						if(this.checkedGoods.cartId.length == 0){
+							uni.showToast({
+								icon:'none',
+								title: '您还没有选择商品',
+							})
+							cartId = this.checkedGoods.cartId
+							this.checkall=false
+							return
+						}
+						 
 					}
 					this.$dyrequest({
 						url:'/CartSales/delCart',
@@ -284,9 +292,22 @@
 				})
 			},
 			//更改购买数量
-			quantityNum(quantity,pidx,cidx){
+			quantityNum(quantity,pidx,cidx,id){
 				let selectedItem = this.cartGoodsList[pidx].goodsInfo[cidx]
 				this.$set(selectedItem,'quantity',quantity)
+				
+				this.$dyrequest({
+					url:'/CartSales/editCart',
+					method:'POST',
+					hideLoading:true,
+					data:{
+						id:this.shopId,
+						cartId:id,
+						quantity:quantity
+					}
+				}).then(res=>{
+					console.log(res)
+				})
 			},
 			
 			//循环所有小店是否被选中，都被选中勾选全选按钮
@@ -380,7 +401,7 @@
 				// 			 })
 				// 		})
 				// })
-				this.$store.commit('SET_CURRENINDEX',0)
+				// this.$store.commit('SET_CURRENINDEX',0)
 				uni.navigateTo({
 					url:'/pages/order/order?type=2&sellerId='+this.checkedGoods.sellerId+'&cartId='+this.checkedGoods.cartId
 				})

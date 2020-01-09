@@ -114,16 +114,18 @@
 		methods:{
 			//返回按钮
 			getback(){
-				if(this.backType == 1){
-					uni.navigateTo({
-						url:'/pages/shops/shops'
-					})
-				}else{
+				// if(this.backType == 1){
+				// 	uni.navigateTo({
+				// 		url:'/pages/shops/shops'
+				// 	})
+				// }else{
+				// 	uni.navigateBack({
+				// 	    delta:1
+				// 	});
+				// }
 					uni.navigateBack({
 					    delta:1
 					});
-				}
-
 				
 				
 			},

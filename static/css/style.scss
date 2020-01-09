@@ -465,8 +465,10 @@
 	padding:10px;
 	span:first-child{
 		width:80px;
+		flex-shrink: 0;
 	}
-	span:last-child{
+	p{
+		word-break: break-all;
 		color:#999
 	}
 }
@@ -795,11 +797,12 @@
 	background:#fff;
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	padding:8px 15px;
 	border-top:1px solid #f8f8f8;
 	&>view{
 		display: flex;
-		flex:1;
+		
 		align-items: center;
 	}
 	.total_check{

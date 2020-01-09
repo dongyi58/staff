@@ -74,9 +74,9 @@
 				uni.navigateTo({
 				    url: '/pages/shopHomePage/homeindex'
 				});
-				this.$store.commit('ADD_CART',true)
+				// this.$store.commit('ADD_CART',true)
 				this.$store.commit('SET_SHOPID',id) //存储点击小店id
-				this.$store.commit('SET_CURRENINDEX',0) //显示供应商首页
+				// this.$store.commit('SET_CURRENINDEX',0) //显示供应商首页
 			},
 			callsupplier(phonenum){
 					uni.makePhoneCall({

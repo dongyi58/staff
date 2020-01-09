@@ -7,7 +7,7 @@
 				<view class="ranklist_wrap">
 					<!-- 前三商品 -->
 					<view class="top3_box">
-						<view class="top3_item" v-if="idx <= 2" v-for="(item,idx) of rankList" :key="idx">
+						<view class="top3_item" @click="goto_goodsdetail(item.goods_id)" v-if="idx <= 2" v-for="(item,idx) of rankList" :key="idx">
 							<view class="top3_idx" :class="[idx == 0 ? 'top3Idx_color0' : (idx==1?'top3Idx_color1' : 'top3Idx_color2') ]">NO.<i >{{idx+1}}</i></view>
 							<view class="top3_imgbox">
 								
@@ -21,8 +21,8 @@
 						</view>
 					</view>
 					<view  class="otherrank_box">
-						<view class="otherrank_item" v-if="oidx >= 3" v-for="(item,oidx) of rankList" :key="oidx">
-							<i class="rank_idx">{{oidx}}</i>
+						<view class="otherrank_item" @click="goto_goodsdetail(item.goods_id)" v-if="oidx >= 3" v-for="(item,oidx) of rankList" :key="oidx">
+							<i class="rank_idx">{{oidx+1}}</i>
 							<view class="other_imgbox">
 								
 								<image class=" otherimg image" :class="{lazy:!item.show}" :data-index="oidx" @load="imageLoad" :src="item.show ? item.img:''" />
@@ -30,9 +30,9 @@
 							</view>
 							<view class="other_content">
 								<p>
-									蒙牛甄选纯牛奶蒙牛周年庆店促过时不候！过时不
+									{{item.name}}
 								</p>
-								<p>牛奶香浓,丝般感受，德芙，此刻尽丝滑！</p>
+								<p>日销量：{{item.sale}}</p>
 							</view>
 						</view>
 					</view>
@@ -67,6 +67,12 @@
 			this.getrankList()
 		},
 		methods:{
+			goto_goodsdetail(goodsId){
+							
+							 uni.navigateTo({
+							 	url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
+							 })
+			},
 			//图片懒加载
 			scroll(){
 				this.load()

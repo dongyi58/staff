@@ -55,8 +55,8 @@
 		data() {
 			return {
 				incomeList:[],
-				recommendTotal:'',
-				recommendRefund:'',
+				recommendTotal:'草拟吗',
+				recommendRefund:0.00,
 				monthVal:'',
 				dateSet:{
 					"startYear":2019,
@@ -112,10 +112,15 @@
 						 time:this.monthVal
 					 }
 				 }).then(res=>{
-					 console.log(res.data.data)
-					this.incomeList=res.data.data.data
+					
+					
 					this.recommendTotal = res.data.data.recommendAmount
-					this.recommendRefund = res.data.data.recommendReturn
+					this.recommendRefund = res.data.data.recommendReturn.toFixed(2)
+					
+					res.data.data.data.map(item=>{
+						this.$set(item,'fee',Number(item.fee).toFixed(2))
+						this.incomeList.push(item)
+					})
 					this.dateSet.startYear = parseFloat(res.data.data.salesCreateTime.split('-')[0])
 				 })
 			}

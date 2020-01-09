@@ -12,7 +12,7 @@
 						<view class="loaction_box">
 								 <span class="location_icon"><i class="iconfont icon-round_location_fill"></i></span>
 								 <view class="location">
-									 <view class="contact_info">{{orderDetailInfo.smallshop.shopname}}<span>{{orderDetailInfo.smallshop.contacts}}</span></view>
+									 <view class="contact_info">{{orderDetailInfo.smallshop.shopname}}<span>{{orderDetailInfo.smallshop.contacts || ''}}</span></view>
 									 <p>{{orderDetailInfo.smallshop.address}}</p>
 								 </view>
 						</view>
@@ -56,7 +56,7 @@
 													:showItemNum="5" 
 													:listShow="false"
 													:isCanInput="false"  
-													:style_Container="'height: 30px; font-size: 12px;'"
+													:style_Container="'width:calc(100vw - 115px);height: 30px; font-size: 12px;'"
 													:placeholder = "'placeholder'"
 													:initValue="freelist[0]"
 													:selectHideType="'hideAll'"
@@ -88,7 +88,9 @@
 								</view>
 								<!-- 价格明细 -->
 								<view class="orderOptItem_wrap price_info">
-										<view class="orderOptItem" v-for="(item,idx) of priceItem" :key="idx">
+										<view class="orderOptItem"
+										v-if="item.price != 0"
+										 v-for="(item,idx) of priceItem" :key="idx">
 											<span class="orderOptItem_left">{{item.name}}</span> 
 											<view class="orderOptItem_right">
 												{{item.price}}
@@ -123,6 +125,7 @@
 			 class="home_popup" 
 			 @change="handlePopChange"
 			:popstyle="{width:'80%',minHeight:'300px',overflow:'hidden'}">
+				<i class="iconfont icon-ziyuan close" @click="closePop"></i>
 				<view class="payType_wrap" v-if="showPopup.payPop">
 						<view class="pt_title">结算方式</view>
 						<view class="pt_item" v-for="(item,idx) of buyType" :key="idx">
@@ -395,7 +398,7 @@
 								 quantityCount+= ordergoods[i][j].quantity
 								 // this.cartList.push(data1[i][j])
 								 //判断是否有赠品
-								console.log(ordergoods[i][j].rule.freeProductName)
+								// console.log(ordergoods[i][j].rule.freeProductName)
 									 if(ordergoods[i][j].rule.freeProductName){
 										this.showfree = true
 										this.freelist = ordergoods[i][j].rule.freeProductName
@@ -465,8 +468,8 @@
 						
 						data = res.data[this.sellerId]
 					}
-					console.log(data)
-					this.priceItem.map(item=>{
+					// console.log(data)
+					this.priceItem.map((item,idx)=>{
 						 switch(item.priceType){
 								case 1:this.$set(item,'price',data.order_price);
 								break;
@@ -479,11 +482,13 @@
 								case 5:this.$set(item,'price',data.freight);
 								break;
 						 }
+						this.$set(this.priceItem[idx],'price',Number(this.priceItem[idx].price).toFixed(2))
+					
 					})
 					
-				
+					
 					this.freight = data.freight 
-					this.totalPrice = data.fact_price
+					this.totalPrice = data.fact_price.toFixed(2)
 					this.formatFreight()
 					
 				})
@@ -551,13 +556,13 @@
 					
 					//返回购物车重新加载数据
 					
-					setTimeout(()=>{
-						this.$store.commit('ADD_CART',true)
-						this.$store.commit('SET_CURRENINDEX',0)
-						uni.navigateTo({
-						    url: '/pages/shopHomePage/homeindex'
-						});
-					},2500)
+					// setTimeout(()=>{
+					// 	this.$store.commit('ADD_CART',true)
+					// 	this.$store.commit('SET_CURRENINDEX',0)
+					// 	uni.navigateTo({
+					// 	    url: '/pages/shopHomePage/homeindex'
+					// 	});
+					// },2500)
 					
 					
 				})
@@ -570,6 +575,9 @@
 			deliverType(){
 					this.showPopup.deliverPop=true
 					this.$refs.popup.open()
+			},
+			closePop(){
+				 this.$refs.popup.close()
 			},
 			handlePopChange(e){
 				if(!e.show){
@@ -597,6 +605,10 @@
 		width:80%;
 		min-height:300px;
 		overflow: hidden;
+	}
+	.close{
+		position:absolute;
+		right:10px;
 	}
 	.detailHeader{
 		width:100%;

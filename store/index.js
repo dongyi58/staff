@@ -12,12 +12,13 @@ const store = new Vuex.Store({
 		shopId:'',
 		supplierId:'',
 		staffInfo:{},
-		currentIndex:-1,
+		currentIndex:0,
 		index:0,
 		locationInfo:{},
 		cartNum:0,//购物车商品数量
 		addCart:true ,//判断用户是否有加入购物车的操作,有的话当用户进入购物车重新获取数据
-		buyProductParam:{}
+		buyProductParam:{},
+		shopInfo:{}
 	},
 	getters: {
 		
@@ -38,7 +39,7 @@ const store = new Vuex.Store({
 		//在homeindex切换时存储当前页面下标
 		SET_CURRENINDEX(state,currentIndex){
 				state.currentIndex = currentIndex
-				
+				console.log(currentIndex)
 		},
 		//存储业务员信息
 		SET_STAFFINFO(state,info){
@@ -61,6 +62,10 @@ const store = new Vuex.Store({
 		//存储购买商品所需参数
 		SET_BUYPARAM(state,param){
 			state.buyProductParam = param
+		},
+		//存储小店信息
+		SET_SHOPINFO(state,info){
+			state.shopInfo = info
 		},
 	},
 	actions:{

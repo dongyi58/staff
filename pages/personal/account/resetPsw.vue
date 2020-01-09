@@ -92,7 +92,13 @@
 				}
 			},
 			changePsw(){
-				
+				if(this.oldPsw == this.newPsw){
+					uni.showToast({
+						icon:'none',
+						title:'新旧密码不能相同'
+					})
+					return
+				}
 				
 				this.$dyrequest({
 					url:'/PersonSales/modifyPassword',

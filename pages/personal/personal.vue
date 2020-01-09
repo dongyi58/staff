@@ -66,7 +66,7 @@
 						<button type="warn" @click="logout">退出当前账号</button>
 					</view>
 		 </popup>
-		 <popup ref="popup2" type="center" class="home_popup" :popstyle="{display:'flex',width:'90%',maxHeight:'350px',overflow:'hidden',alignItems:'flex-start'}">
+		 <popup ref="popup2" type="center" class="feed_popup" :popstyle="{display:'flex',width:'90%',height:'250px',overflow:'hidden'}">
 		 			<view class="feedBack">
 						<h4>功能反馈 <i class="iconfont icon-ziyuan" @click="closeFeedBack"></i> </h4>
 		 				<textarea class="fb_textarea"  v-model="feedtext" placeholder="非常感谢你的建议" />
@@ -168,28 +168,37 @@
 <style lang="scss">
 	@import '@/static/css/style.scss';
 	//个人中心
+	.feedBack{
+		width:90%;
+		overflow: hidden;
+	}
 	.feedBack h4{
 		position:relative;
 		text-align: center;
 		padding:5px 0;
 		font-size:14px;
+		margin-bottom:10px;
 		i{
 			position: absolute;
+			top:5px;
 			right:0;
 		}
 	}
 	.submit_feedback{
 		background:linear-gradient(to right,#21A5F9,#1A6FE8);
 		color:#fff;
-		margin-top:10px;
+		margin-top:20px;
 		font-size:12px;
 		
 	}
 	.fb_textarea{
+		width:100%;
+		height:100px;
 		border:1px solid #f8f8f8;
 		border-radius: 4px;
 		padding:5px;
 		font-size:12px;
+		box-sizing: border-box;
 	}
 	.content_wrap{
 		position:relative
@@ -197,10 +206,12 @@
 	.logout_box{
 		flex:1
 	}
-	.home_popup .uni-popup__wrapper-box{
+	.feed_popup .uni-popup__wrapper-box{
 		display: flex;
-		align-items: center;
-		height:100px;
+		justify-content:center;
+		width:90%;
+		height:250px;
+		overflow: hidden !important;
 	}
 	.personal_header{
 		height:150px;
