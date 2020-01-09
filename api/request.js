@@ -50,11 +50,13 @@ let expiredLen = 0
 									})
 								}
 							}else{
+										
 								resolve(res)
 							}
 							
 						},
 						fail(err){
+					
 							reject(err)
 							uni.showToast({
 								icon:"none",

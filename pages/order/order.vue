@@ -242,7 +242,8 @@
 				multipleData : {} ,//批量购买数据
 				//赠品列表
 				showfree:false,//有无赠品
-				freelist:[]
+				freelist:[],
+				freegoodsId:[]
 			};
 				
 				
@@ -358,7 +359,7 @@
 					//获取默认配送方式+默认配送id
 					this.deliverText = this.orderDetailInfo.shipping_method[0].temp_name
 					this.priceParams.delivery_id =  this.orderDetailInfo.shipping_method[0].id
-				
+					//默认选中第一个配送方式
 					this.orderDetailInfo.shipping_method.map((item,idx)=>{
 						
 							if(idx == 0){
@@ -370,14 +371,6 @@
 							
 						    this.deliverList.push(item)
 					})
-					
-					 this.deliverList.push({
-						 id: "300",
-						 temp_name: "送货上门",
-						 price: "3.00",
-						 j_price: "10.00",
-						 checked:false
-					 })
 					
 					this.getPrice()
 					
@@ -532,7 +525,7 @@
 								activity_id:this.priceParams.activity_id,
 								order_type:this.priceParams.order_type,
 								period_id:this.priceParams.period_id,
-								productname:idx ? this.freegoodsId[idx] : this.freegoodsId[0],
+								productname:idx ? this.freegoodsId[idx] : (this.freegoodsId.length==0 ? '':this.freegoodsId[0]),
 								delivery_id:this.priceParams.delivery_id,
 								memo:this.memo
 							}
@@ -547,6 +540,7 @@
 						}
 					}
 				}
+				
 				this.$dyrequest(submitRequest).then(res=>{
 					uni.showToast({
 						title:res.data.data.info,

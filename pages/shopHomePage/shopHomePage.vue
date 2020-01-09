@@ -316,7 +316,7 @@
 				})
 			},
 			 //获取商品列表
-			 getgoods_list(id){
+	 getgoods_list(id){
 				let _this = this
 				 this.$dyrequest({
 						url:'/IndexSales/goodsIndex', 
@@ -330,6 +330,7 @@
 						 if(_this.page == 1){
 							//供应商信息
 							_this.supllierInfo = res.data.data.suppliermsg
+							console.log(_this.supllierInfo)
 							// 存储供应商id
 							_this.$store.commit('SET_SUPPLIERID',_this.supllierInfo.id)
 							//小店信息
@@ -397,7 +398,7 @@
 	}
 	.activity_gif{
 		width:50px;
-		height:20px;
+		height:18px;
 	}
 .header-bkg{
 		position:absolute;

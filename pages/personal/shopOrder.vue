@@ -90,8 +90,8 @@
 					 <view class="total_box">
 						 <view class="total_one">
 								<view class="to_left">
-									<span class="sh_btn">申请售后</span>
-									<span class="qrcode_btn" v-if="item.order_status != 2">生成二维码</span>
+									<span class="sh_btn" v-if="item.order_status == 4">申请售后</span>
+									<span class="qrcode_btn" v-if="item.order_status != 5">生成二维码</span>
 								</view>
 								<view class="to_right">
 									<span>共{{item.number}}件</span>

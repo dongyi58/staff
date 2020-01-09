@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<popup ref="popup" type="center"  :popstyle="{width:'80%',overflow:'hidden'}">
+		<popup ref="popup" type="center" class="level_popup" :popstyle="{width:'80%',overflow:'hidden'}">
 					<view class="level_wrap">
 						<h4>申请等级</h4>
 						<view class="currentLv"><span>当前等级:{{shopLv || '无'}}</span><span>账期:无</span></view>
@@ -49,6 +49,7 @@
 				}).then(res=>{
 					
 					this.levelOption = res.data.data.all
+					this.typeId = this.levelOption[0].id
 					this.shopLv = res.data.data.shopLevel
 					
 				})
@@ -66,22 +67,21 @@
 					this.$refs.popup.close()
 					return
 				}
-				const _this = this
-				_this.$dyrequest({
+				this.$dyrequest({
 					url:'/SmallShop/applyStar',
 					method:'POST',
 					data:{
 						id:1079,
 						typeId:this.typeId
 					}
-					
 				}).then(res=>{
-					
+					console.log(res)
 					uni.showToast({
 						icon:'none',
 					    title: res.data.msg,
 					    duration: 2000
 					});
+					this.$refs.popup.close()
 				})
 			}
 		}
@@ -89,6 +89,9 @@
 </script>
 
 <style lang="scss">
+	.level_popup .uni-popup__wrapper-box{
+		width:90%;
+	}
 	.active{
 		background:#157AEC !important
 	}
