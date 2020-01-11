@@ -371,7 +371,7 @@
 							
 						    this.deliverList.push(item)
 					})
-					
+					//获取订单信息后查询价格
 					this.getPrice()
 					
 					

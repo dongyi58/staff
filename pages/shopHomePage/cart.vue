@@ -1,7 +1,10 @@
 <template>
 	<view class="wrap">
 		<view class="status_bar index_status_bar"></view>
-		<customnav :navtitle="cartTitle" :ismsg="false"  :isedit="true" :back="false" @edit="edit"/>
+		<customnav :navtitle="cartTitle" 
+		:ismsg="false"  
+		:isedit="true" 
+		:back="false" />
 		
 		<scroll-view scroll-y="true" class="cart_scrollview"  v-if="cartGoodsList.length">
 			
@@ -13,11 +16,8 @@
 							   <checkbox-group  @change="checkShopAllgoods(idx)">
 							   	<checkbox :checked="item.checked" color="#fff" class="cartCheckBox" /> 
 							   </checkbox-group>
-							   <span>{{item.shopName}} <i class="iconfont icon-you"></i></span>
+							   <span>{{item.shopName}} </span>
 						   </view>
-							
-
-							<span>查看活动</span>
 					 </view>
 					 <!-- 商品详情 -->
 					 <uni-swipe-action>
@@ -27,12 +27,12 @@
 							 :key="gidx" 
 							 :options="options" 
 							 @click="delCartGoods($event,goods.id)">
-							 <view>
-								  <checkbox-group  @change="checkGoods(idx,gidx)">
-									<checkbox :checked="goods.checked"  color="#fff" class="cartCheckBox" />
-								   </checkbox-group>
-							 </view>
-								<view class="o-left">
+								 <view>
+									  <checkbox-group  @change="checkGoods(idx,gidx)">
+										<checkbox :checked="goods.checked"  color="#fff" class="cartCheckBox" />
+									   </checkbox-group>
+								 </view>
+								<view class="o-left"  @click="goto_goodsdetail(goods.goods_id)">
 									
 									<!-- <image class="order_img" src="../../static/images/activity.jpeg" mode="aspectFill"></image> -->
 									 <image class=" order_img image" 
@@ -44,7 +44,7 @@
 									 <view class="image placeholder loadimg" :class="{loaded:goods.loaded}" ><i class="iconfont icon-image"></i></view>	
 								 </view>
 								
-								 <view class="omid" :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
+								 <view class="omid"  @click="goto_goodsdetail(goods.goods_id)" :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
 									 <p>{{goods.goods_name}}</p>
 									 <span class="skustr">规格:{{goods.spec_str}}</span>
 									 <view class="omid_bottom">
@@ -105,7 +105,7 @@
 				domain:this.$store.state.domain,
 				checkall:false,
 				cartTitle:'',
-				editFlag:false,
+				
 				options:[
 				        {
 				            text: '取消',
@@ -120,7 +120,7 @@
 				        }
 				      ],
 				loaded:false,
-				show:false
+				show:false,
 			};
 		},
 		
@@ -132,6 +132,7 @@
 					if(n == 3){
 						 console.log('重新加载了')
 						this.init()
+					
 					}
 					
 				},
@@ -141,6 +142,9 @@
 		computed:{
 			shopId(){
 				return this.$store.state.shopId
+			},
+			editFlag(){
+				return this.$store.state.editFlag
 			},
 			getcurrent(){
 				return this.$store.state.currentIndex
@@ -181,7 +185,8 @@
 					this.cartTitle = `采购单(${this.$store.state.cartNum})`;
 					
 				})
-				// this.$store.commit('ADD_CART',false)
+				
+				this.$store.commit('CHANGE_EDITSTATUS',false) //恢复编辑状态
 				this.cartGoodsList = []
 				this.getCartList()
 				
@@ -205,11 +210,9 @@
 								icon:'none',
 								title: '您还没有选择商品',
 							})
-							cartId = this.checkedGoods.cartId
-							this.checkall=false
 							return
 						}
-						 
+						 cartId = this.checkedGoods.cartId
 					}
 					this.$dyrequest({
 						url:'/CartSales/delCart',
@@ -221,6 +224,7 @@
 					}).then(res=>{
 						this.cartGoodsList=[]
 						this.getCartList()
+						this.checkall=false
 						this.$store.dispatch('getCartNum',{id:this.shopId}).then(()=>{
 							this.cartTitle = `采购单(${this.$store.state.cartNum})`
 						})
@@ -229,10 +233,6 @@
 				
 			},
 			
-			edit(flag){
-				this.editFlag = flag
-			
-			},
 			//勾选小店后，选取此小店下所有商品
 			checkShopAllgoods(idx){
 				this.checkall=false //取消勾选全选按钮
@@ -276,6 +276,12 @@
 					 	}else{
 							 this.cartGoodsList[pidx].checked = false
 						}
+					 }else{
+						 if(this.cartGoodsList[pidx].goodsInfo.length == 1){
+							  this.cartGoodsList[pidx].checked = false
+							  this.mapGoods()
+						 }
+						 //console.log(this.cartGoodsList[pidx].goodsInfo.length)
 					 }
 					
 				})
@@ -382,6 +388,12 @@
 				})
 			},
 			
+			goto_goodsdetail(goodsId){
+							
+					 uni.navigateTo({
+						url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
+					 })
+			},
 			//结算跳转至确认订单
 			goOrder(){
 				if(this.checkedGoods.cartId.length == 0){

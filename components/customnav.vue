@@ -55,7 +55,7 @@
 			},
 			ismsg:{
 				type:Boolean,
-				default:true
+				default:false
 			},
 			isRightText:{
 				type:Boolean,
@@ -95,38 +95,44 @@
 			transOpacity:{
 				default:0
 			},
-			transColor:''
+			transColor:'',
+			searchkey:''
+			
 		},
 		data() {
 			return {
-				searchkey:'',
+			
 				transOpacity2:0,
-				editTxt:'管理',
-				editFlag:false
+				// csearchkey:'',
+				editTxt:'管理'
+				
 			};
 		},
-		// watch:{
-		// 	transOpacity(o,n){
-		// 		 console.log(n)
-		// 		this.transOpacity2 = o
-		// 	}
-		// },
+		computed:{
+			editFlag(){
+				return this.$store.state.editFlag
+			},
+		},
+		watch:{
+			editFlag(n,o){
+				if(n){
+					this.editTxt = '完成'
+					
+				}else{
+					this.editTxt = '管理'
+					
+				}
+			},
+			// searchkey(n,o){
+			// 	console.log(n)
+			// }
+		},
 		methods:{
 			//返回按钮
 			getback(){
-				// if(this.backType == 1){
-				// 	uni.navigateTo({
-				// 		url:'/pages/shops/shops'
-				// 	})
-				// }else{
-				// 	uni.navigateBack({
-				// 	    delta:1
-				// 	});
-				// }
-					uni.navigateBack({
+				uni.navigateBack({
 					    delta:1
 					});
-				
 				
 			},
 			//消息页
@@ -143,6 +149,14 @@
 			},
 			//跳转搜索结果页面
 			gotoSearchResult(){
+				let historyList = uni.getStorageSync('searchHistory')
+				if(historyList.indexOf(this.searchkey) < 0){
+					historyList.push(this.searchkey)
+				}
+				
+				
+				uni.setStorageSync('searchHistory',historyList)
+				// console.log(historyList)
 				uni.redirectTo({
 					url:'/pages/search/searchResult?keywords='+this.searchkey
 				})
@@ -153,14 +167,8 @@
 			},
 			//购物车编辑按钮
 			edit(){
-				this.editFlag = !this.editFlag
-				if(this.editFlag){
-					this.editTxt='完成'
-				}else{
-					this.editTxt='管理'
-				}
-				
-				this.$emit('edit',this.editFlag)
+				this.$store.commit('CHANGE_EDITSTATUS',!this.editFlag)
+				 
 			},
 		}
 	}

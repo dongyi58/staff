@@ -18,7 +18,8 @@ const store = new Vuex.Store({
 		cartNum:0,//购物车商品数量
 		addCart:true ,//判断用户是否有加入购物车的操作,有的话当用户进入购物车重新获取数据
 		buyProductParam:{},
-		shopInfo:{}
+		shopInfo:{},
+		editFlag:false //购物车编辑状态
 	},
 	getters: {
 		
@@ -39,7 +40,7 @@ const store = new Vuex.Store({
 		//在homeindex切换时存储当前页面下标
 		SET_CURRENINDEX(state,currentIndex){
 				state.currentIndex = currentIndex
-				console.log(currentIndex)
+				//console.log(currentIndex)
 		},
 		//存储业务员信息
 		SET_STAFFINFO(state,info){
@@ -53,7 +54,7 @@ const store = new Vuex.Store({
 		//如果用户添加了新商品到购物车
 		ADD_CART(state,iscart){
 			state.addCart = iscart
-			 console.log(iscart)
+			 //console.log(iscart)
 		},
 		//存储购物车商品数量
 		CART_NUM(state,num){
@@ -66,6 +67,10 @@ const store = new Vuex.Store({
 		//存储小店信息
 		SET_SHOPINFO(state,info){
 			state.shopInfo = info
+		},
+		//修改购物车编辑状态
+		CHANGE_EDITSTATUS(state,status){
+			state.editFlag = status
 		},
 	},
 	actions:{

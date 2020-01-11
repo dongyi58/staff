@@ -184,7 +184,11 @@
 				background:#eee;
 				border-radius: 20px;
 				color:$color-1;	
-				padding:3px 5px
+				padding:3px 5px;
+				 white-space: nowrap;
+				    max-width: 150px;
+				    overflow: hidden;
+				    text-overflow: ellipsis;
 			}
 		}
 		&_right{

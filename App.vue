@@ -17,6 +17,7 @@
 			});
 			
 			// #endif
+			uni.setStorageSync('searchHistory',[]);
 		},
 		// onShow: function() {
 		// 	console.log('App Show')

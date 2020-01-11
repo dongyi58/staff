@@ -89,7 +89,7 @@
 							<view class="cell_left">
 								<span>满增</span>
 								<span v-for="(j,k,l) in activityRule" :key="l">
-										购买满<i style="color:red">{{k}}</i>元可获得赠品
+										购买满<i style="color:red">{{k}}</i>元即可获得如下赠品(任选其一)
 								</span>
 							</view>
 							<view class="cell_right">
@@ -188,8 +188,8 @@
 		<view class="actionBar">
 			<view class="action_left">
 				
-				<span><i class="iconfont icon-dianpu-tap"></i>店铺</span>
-				<span><i class="iconfont icon-lianxikefu"></i>客服</span>
+				<!-- <span><i class="iconfont icon-dianpu-tap"></i>店铺</span>
+				<span><i class="iconfont icon-lianxikefu"></i>客服</span> -->
 				<span @click="goCart">
 					<i class="badage" :style="width">{{cartNum}}</i>
 					<i class="iconfont icon-dingdan"></i>采购单
@@ -309,11 +309,11 @@
 						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
 							<view class="yhq_left">
 								<view class="yhq_left_one">
-									<span><i>¥</i>{{item.rule[0].rebate}}</span>
+									<span><i>¥</i>{{item.rule[0].rebate*10}}折</span>
 									<span>{{item.start_time}} - {{item.end_time}}</span>
 								</view>
 								<view class="yhq_left_two">
-									<span>满{{item.rule[0].money}}元使用</span>
+									<!-- <span>满{{item.rule[0].money}}元使用</span> -->
 									<span>部分商品可用<br>(特价除外)</span>
 								</view>
 							</view>
@@ -715,10 +715,9 @@
 						//买赠起订量
 						let mzNum = this.goodsDetail.maizengAmount.getnum
 						if(this.goodsDetail.price.sale_type == 1){
-						
-							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.whole_unit || ''}及可获得赠品`
+							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.whole_unit || ''}即可获得如下赠品(任选其一)`
 						}else{
-							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.retail_unit || ''}及可获得赠品`
+							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.retail_unit || ''}即可获得如下赠品(任选其一)`
 						}
 					}
 					
@@ -750,11 +749,14 @@
 					this.swiperTotal = this.goodsDetail.goodsImg.length
 					
 					//优惠券
-					this.goodsDiscount = this.goodsDetail.coupon || []
+					
 					if(this.goodsDiscount){
-						this.goodsDiscount.map(item=>{
-							 item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
-							 item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
+						this.goodsDetail.coupon.map(item=>{
+							if(item.rule[0].status != 1){
+								item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
+								item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
+								this.goodsDiscount.push(item)
+							}
 						})
 					}
 					

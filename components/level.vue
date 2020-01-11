@@ -3,7 +3,7 @@
 		<popup ref="popup" type="center" class="level_popup" :popstyle="{width:'80%',overflow:'hidden'}">
 					<view class="level_wrap">
 						<h4>申请等级</h4>
-						<view class="currentLv"><span>当前等级:{{shopLv || '无'}}</span><span>账期:无</span></view>
+						<view class="currentLv"><span>当前等级:{{shopLv || '无'}}</span><!-- <span>账期:无</span> --></view>
 						<view class="level_option">
 							<ul v-if="levelOption.length != 0">
 								<li v-for="(item,idx) of levelOption" :key="idx"

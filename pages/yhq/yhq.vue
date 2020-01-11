@@ -7,48 +7,45 @@
 		:midtitle="false"
 		placeholder="在结果中搜索"
 		:cancletext="false"
-		:searchinp="true"
+		:searchinp="false"
 		 :focus="false"
 		 />
-		 <view class="filter_bar">
-		 	<ul>
-		 		<li @click="changeFilter(0)"
-		 		 :class="filterIdx == 0 ? 'activeFitler' : ''">分类</li>
-		 		<li 
-		 			@click="changeFilter('sales')"
-		 		 class="hl_box" >
-		 			销量
-		 			<i class="iconfont icon-icon-arrow-top2" 
-		 			:class="salesup && filterIdx ==1 ? 'activeFitler' : ''"></i>
-		 			<i class="iconfont icon-icon-arrow-bottom2" 
-		 			:class="!salesup && filterIdx ==1 ? 'activeFitler' : ''"></i>
-		 		</li>
-		 		<li 
-		 		@click="changeFilter('price')"
-		 		class="hl_box" :class="filterIdx == 2 ? 'activeFitler' : ''">
-		 			价格
-		 		<i class="iconfont icon-icon-arrow-top2"
-		 		:class="priceup && filterIdx ==2 ? 'activeFitler' : ''"></i>
+		<!-- <view class="filter_bar">
+		 <ul>
+		 	<li @click="changeFilter(0)"
+		 	 :class="filterIdx == 0 ? 'activeFitler' : ''">最新</li>
+		 	<li 
+		 		@click="changeFilter('sales')"
+		 	 class="hl_box" >
+		 		销量
+		 		<i class="iconfont icon-icon-arrow-top2" 
+		 		:class="salesup && filterIdx ==1 ? 'activeFitler' : ''"></i>
 		 		<i class="iconfont icon-icon-arrow-bottom2" 
-		 		:class="!priceup && filterIdx ==2 ? 'activeFitler' : ''"></i>
-		 		</li>
-		 		<li 
-		 		@click="changeFilter(3)"
-		 		:class="filterIdx == 3 ? 'activeFitler' : ''">评论</li>
-		 	</ul>
-		 </view>
+		 		:class="!salesup && filterIdx ==1 ? 'activeFitler' : ''"></i>
+		 	</li>
+		 	<li 
+		 	@click="changeFilter(2)"
+		 	class="hl_box" :class="filterIdx == 2 ? 'activeFitler' : ''">
+		 		分类
+		 
+		 	</li>
+		 	<li 
+		 	@click="changeFilter(3)"
+		 	:class="filterIdx == 3 ? 'activeFitler' : ''">品牌</li>
+		 </ul>
+		 </view> -->
 		 <scroll-view class="yhq_list" @scroll="scroll" scroll-y >
 		 		<!-- 优惠券商品列表 -->
 		 			<view class="goods_list_wrap">
 		 				<view class="goods_list">
-		 					<view class="goods_item" v-for="(item,idx) of allYhqgoods" :key="idx">
+		 					<view class="goods_item" 	@click="goto_goodsdetail(item.goods_id)"  v-for="(item,idx) of allYhqgoods" :key="idx">
 		 						<view class="goods_img_box">
 		 							<!-- <image class="goods_img" :src="item.img" lazy-load mode="aspectFill"></image> -->
 		 							<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
 		 							<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 		 						</view>
 		 						<p class="goods_name">{{item.name}}</p>
-		 						<view class="goods_price">¥{{item.fact_price}} <i class="iconfont icon-jia"></i></view>
+		 						<view class="goods_price">¥{{item.showPrice}} </view>
 		 					</view>
 		 					<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 		 				</view>
@@ -109,6 +106,12 @@
 			}
 		},
 		methods:{
+			goto_goodsdetail(goodsId){
+				 uni.navigateTo({
+					 
+					url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
+				 })
+			},
 			//图片懒加载
 			scroll(){
 				this.load()
@@ -157,6 +160,14 @@
 							 _this.$set(item,'loaded',false)
 							 
 							 item.img = _this.domain + item.img
+							 if(item.sale_type == 3){
+							 	 _this.$set(item,'showPrice',item.price[0]+'-'+item.price[1])
+							 	
+							 }else if(item.sale_type == 2){
+							 		 _this.$set(item,'showPrice',item.price)
+							 }else{
+							 	 _this.$set(item,'showPrice',item.price)
+							 }
 							 
 							 _this.yhqList.push(item)
 					 								 

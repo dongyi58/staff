@@ -44,7 +44,7 @@
 				 		 
 				 	<view class="shoplist_content dutyShop" v-if="currentidx==0">
 				 			<view class="shoplist_content_item" 
-				 			v-for="(item,idx) of shopList"
+				 			v-for="(item,idx) of dutyShopList"
 				 			:key="idx"
 				 			>
 				 				<view class="shoplist_content_item_top">
@@ -73,7 +73,7 @@
 				 	</view>
 					<view class="shoplist_content tjShop" v-if="currentidx==1">
 							<view class="shoplist_content_item" 
-							v-for="(item,idx) of dutyShopList"
+							v-for="(item,idx) of shopList"
 							:key="idx"
 							>
 								<view class="shoplist_content_item_top">

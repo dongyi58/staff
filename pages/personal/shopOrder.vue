@@ -58,7 +58,7 @@
 						 <view class="ordernum_left">
 							 <span>订单编号:{{item.orderno}}</span>
 							 <span>{{item.order_type == 1 ? '账期订单' : (item.order_type == 2 ? '到付订单' : '现付订单')}}</span>
-						 </view>
+						 </view>	
 						 <span> 
 							<i v-if="item.order_role==2" class="iconfont icon-daifu"></i>
 							{{orderStatus[item.order_status-1]}}
@@ -82,7 +82,9 @@
 							 <view class="or-bottom">
 								 <span>× {{goods.quantity}}</span>
 								 <span v-if="parseFloat(goods.coupon_fee)  != 0 ">优惠：{{goods.coupon_fee}}</span>
+								 <span style="margin-top:5px">共{{item.number}}件</span>
 							 </view>
+							 	
 						 </view>
 					 </view>
 					 
@@ -90,17 +92,20 @@
 					 <view class="total_box">
 						 <view class="total_one">
 								<view class="to_left">
-									<span class="sh_btn" v-if="item.order_status == 4">申请售后</span>
+									<!-- 已完成订单和已取消订单不显示售后 -->
+									<span class="sh_btn" v-if="item.order_status != 4 && item.order_status != 5">申请售后</span>
+									
 									<span class="qrcode_btn" v-if="item.order_status != 5">生成二维码</span>
 								</view>
 								<view class="to_right">
-									<span>共{{item.number}}件</span>
+								
 									<span>运费:￥{{item.freight}}</span>
+									<span>应付:￥{{item.cope_with}}</span>
 								</view>
 						 </view>
 						<view class="total_two">
 							<span>下单时间:{{item.create_time}}</span>
-							<span>实付:￥{{item.fact_pay_price}}</span>
+							<span>实付:￥{{item.fact_price}}</span>
 						</view>
 					 </view>
 					
@@ -134,7 +139,7 @@
 				finshed:false,
 				type:'',
 				goodsIndex:-1,
-				orderStatus:['待付款','已付款','已发货','已完成订单','已取消订单'],//订单类型：1 账期订单 2 到付订单 3 现付订单
+				orderStatus:['待付款','待发货','待收货','已完成订单','已取消订单'],//订单类型：1 账期订单 2 到付订单 3 现付订单
 				//图片懒加载
 				windowHeight: 0,
 				show: false,
@@ -251,16 +256,25 @@
 					this.shopInfo = res.data.data.shopMsg
 				
 					res.data.data.orderList.map((item,idx)=>{
-						
+							 _this.$set(item,'showQrcode',false)
+							 _this.$set(item,'showShouhou',false)
 							item.order_status = Number(item.order_status)
-						
+							
+							if(item.order_status != 4 && item.order_status!=5){
+								 _this.$set(item,'showShouhou',true)
+							}
+							if(item.order_type == 2 && item.order_status == 1){
+								 _this.$set(item,'showQrcode',true)
+							}
 							//处理商品信息
 							item.goods.map((gitem,idx)=>{
 									 _this.$set(gitem,'show',false)
 									 _this.$set(gitem,'loaded',false)
-									  _this.$set(gitem,'format_spec',false)
-									  _this.goodsIndex+=1
-									   _this.$set(gitem,'goodsIndex',_this.goodsIndex)
+									 _this.$set(gitem,'format_spec',false)
+									  _this.$set(gitem,'goodsIndex',_this.goodsIndex)
+									
+									 _this.goodsIndex+=1
+									
 									 //格式化规格
 									 if(gitem.price_type == 'whole'){//整件价
 										 if(gitem.pack_type == 1){//1，整件 2 ，散装
@@ -354,7 +368,7 @@
 	
 		display: flex;
 		justify-content: space-between;
-		align-items: stretch;
+		align-items: center;
 		border-top:1px solid #eee;
 		padding:15px 0;
 		.o-left{
@@ -420,7 +434,10 @@
 		.total_one{
 			padding:10px 0 ;
 			display: flex;
+			justify-content: center;
 			.to_left{
+				display: flex;
+				align-items: center;
 				width:50%;
 				span{
 					border-radius:20px;
@@ -441,7 +458,9 @@
 			.to_right{
 				width:50%;
 				display: flex;
-				justify-content: flex-end;
+				flex-direction: column;
+				align-items: flex-end;
+				justify-content: center;
 				color:#999;
 				
 				span{

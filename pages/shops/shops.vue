@@ -9,12 +9,12 @@
 			<input type="text" 
 			confirm-type="search" 
 			@confirm="shopSearch"
+			v-model="shopname"
 			placeholder="请输入小店名称">
 		</view>
 		
 		<scroll-view scroll-y="true" 
-					
-					 class="shoplist_scroll_view_height">
+					class="shoplist_scroll_view_height">
 				
 			<view class="shoplist_content">
 					<view class="shoplist_content_item" 
@@ -57,18 +57,28 @@
 				op:0,
 				bcolor:'#d2d2d2',
 				domain:this.$store.state.domain,
-				domain2:this.$store.state.domain2
+				domain2:this.$store.state.domain2,
+				shopname:''
 			};
 		},
 		mounted() {
 			this.loadShoplist()
 			
 		},
-	
+		watch:{
+			shopname(n,o){
+				if(n==''){
+					
+					this.shop_list=[]
+					this.loadShoplist()
+				}
+			},
+		},
 		methods:{
 			
 			shopSearch(){
-				console.log(111)
+				this.shop_list=[]
+				this.loadShoplist()
 			},
 			gotoShopDetail(id){
 				uni.navigateTo({
@@ -88,7 +98,10 @@
 					let _this = this
 					this.$dyrequest({
 					     url:'/SmallShop/chooseShop', 
-					 	method:'POST'
+					 	method:'POST',
+						data:{
+							shopname:this.shopname
+						}
 					 }).then(res=>{
 						 _this.shop_list= res.data.data
 					 })

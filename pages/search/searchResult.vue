@@ -113,12 +113,20 @@
 						 
 					 }
 				 }).then(res=>{
-					 console.log(res)
+					
 					 res.data.data.data.map((item,idx)=>{
 							 _this.$set(item,'show',false)
 							 _this.$set(item,'loaded',false)
 							 
 							 item.img = _this.domain + item.img
+							 if(item.sale_type == 3){
+							 	 _this.$set(item,'showPrice',item.retail_price+'-'+item.wholesale_price)
+							 	
+							 }else if(item.sale_type == 2){
+							 	 _this.$set(item,'showPrice',item.retail_price)
+							 }else{
+							 	 _this.$set(item,'showPrice',item.wholesale_price)
+							 }
 							 
 							 _this.resultList.push(item)
 					 								 

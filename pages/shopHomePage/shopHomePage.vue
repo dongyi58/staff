@@ -1,12 +1,12 @@
 <template>
 	<view class="wrap shop_homepage_wrap">
 			<view class="status_bar index_status_bar"></view>
-			<customnav :navtitle="supllierInfo.contactname" :isSearch="true"  backType="1" />
+			<customnav :navtitle="supllierInfo.contactname" :ismsg="false" :isSearch="true"  backType="1" />
 			
 			<view class="header-bkg"></view>
 			<!-- 小店信息展示 -->
 			<view class="supInfo">
-				<view class="getcut"><span>已选择小店</span><span @click="openPopup">领取优惠券</span></view>
+				<view class="getcut"><span>已选择小店</span><span @click="openPopup">领取供应商优惠券</span></view>
 				<view class="supInfo-top">
 					<view class="st-left">
 						
@@ -21,7 +21,7 @@
 						</view>
 					</view>
 					<view>
-						<i class="iconfont icon-you"></i>
+						<!-- <i class="iconfont icon-you"></i> -->
 					</view>
 				</view>
 			</view>
@@ -114,17 +114,17 @@
 						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
 							<view class="yhq_left">
 								<view class="yhq_left_one">
-									<span>{{item.rule[0].rebate}} 折</span>
+									<span>{{item.rule[0].rebate*10}} 折</span>
 									<span>{{item.start_time}} - {{item.end_time}}</span>
 								</view>
 								<view class="yhq_left_two">
-									<span>满{{item.rule[0].money}}元使用</span>
+								<!-- 	<span>满{{item.rule[0].money}}元使用</span> -->
 									<span>部分商品可用<br>(特价除外)</span>
 								</view>
 							</view>
 							<view class="yhq_right">
 								<span>店铺折扣券</span>
-								<span  class="usestyle2" v-if="!item.take" @click="getYhq(item.activity_id,'',idx)">领 取</span>
+								<span  class="usestyle2" v-if="!item.take && item.rule[0].status !=1" @click="getYhq(item.activity_id,'',idx)">领 取</span>
 								<span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 							</view>
 						</view>
@@ -146,7 +146,7 @@
 							</view>
 							<view class="yhq_right">
 								<span>店铺满减券</span>
-								<span  class="usestyle" v-if="!item.take" @click="getYhq(item.activity_id,item.rule[0].money,idx)">领 取</span>
+								<span  class="usestyle" v-if="!item.take && item.rule[0].status !=1" @click="getYhq(item.activity_id,item.rule[0].money,idx)">领 取</span>
 								<span  class="takestyle" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 							</view>
 						</view>
@@ -352,7 +352,7 @@
 									 item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
 								})
 							}
-							
+							console.log(_this.goodsDiscount)
 						 }
 						 
 						 //全部商品列表

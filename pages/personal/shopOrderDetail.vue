@@ -72,7 +72,7 @@
 						 		<view v-if="item.staff_name"><span>代下单员:</span><span>{{item.staff_name}}</span></view>
 						 		<view><span>配送方式:</span><span>快递配送</span></view>
 						 	</view>
-							<view class='make-qrcode-box'><button type="warn" size="mini" class="make-qrcode">生成二维码</button></view>
+							<view class='make-qrcode-box' v-if="item.order_status != 5 && item.order_status != 2"><button type="warn" size="mini" class="make-qrcode">生成二维码</button></view>
 						  </view>
 					 </view>
 		</scroll-view>

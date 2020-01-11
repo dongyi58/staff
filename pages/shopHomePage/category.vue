@@ -1,10 +1,10 @@
 <template>
 	<view class="wrap">
 		<view class="status_bar index_status_bar"></view>
-		<customnav :back="false" navtitle="分类" />
-		<view class="header-bkg"></view>
+		<customnav :back="false" navtitle="分类" :ismsg="false" />
+		<!-- <view class="header-bkg"></view> -->
 		<!-- 小店信息展示 -->
-		<view class="supInfo">
+		<!-- <view class="supInfo">
 			<view class="getcut"><span>已选择小店</span><span @click="openPopup">领取优惠券</span></view>
 			<view class="supInfo-top">
 				<view class="st-left">
@@ -23,8 +23,8 @@
 					<i class="iconfont icon-you"></i>
 				</view>
 			</view>
-		</view>
-		<view style="margin-top:50px">
+		</view> -->
+		<view style="margin-top:10px">
 			<recursion :datas="categoryList" @foldOption='foldOption'></recursion>
 		</view>
 		
