@@ -1,7 +1,7 @@
 <template>
 	<view class="goodsDetail_wrap">
 		<view class="status_bar detail_status_bar" :style="{'opacity':transOpacity}"></view>
-		<customnav  :isSearch="false" :transOpacity="transOpacity" :transColor="transColor" setFixed/>
+		<customnav  :isSearch="false" :transOpacity="transOpacity" :transColor="transColor" :ismsg="false" setFixed/>
 		
 		<view class="detail_list" :class="{'noscroll':disabelScroll}">
 			<view class="detail_box">
@@ -161,8 +161,8 @@
 								</view>
 							</view>
 							<view class="cell_right">
-								<span>进入店铺</span>
-								<i class="iconfont icon-you"></i>
+							<!-- 	<span>进入店铺</span>
+								<i class="iconfont icon-you"></i> -->
 							</view>
 						</view>
 					</view>
@@ -309,12 +309,12 @@
 						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
 							<view class="yhq_left">
 								<view class="yhq_left_one">
-									<span><i>¥</i>{{item.rule[0].rebate*10}}折</span>
+									<span>{{item.rule[0].rebate*10}}折</span>
 									<span>{{item.start_time}} - {{item.end_time}}</span>
 								</view>
 								<view class="yhq_left_two">
 									<!-- <span>满{{item.rule[0].money}}元使用</span> -->
-									<span>部分商品可用<br>(特价除外)</span>
+									<span>部分商品可用</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -641,13 +641,13 @@
 				// this.$store.commit('ADD_CART',true)
 				this.$store.commit('SET_CURRENINDEX',3) 
 				
-				// uni.navigateTo({
-				// 	url:'/pages/shopHomePage/homeindex'
-				// })
+				uni.navigateTo({
+					url:'/pages/shopHomePage/homeindex'
+				})
 				
-				uni.navigateBack({
-				    delta:1
-				});
+				// uni.navigateBack({
+				//     delta:1
+				// });
 				
 			},
 			//切换价格类型，并更新头部展示的价格库存货号等、
@@ -750,7 +750,7 @@
 					
 					//优惠券
 					
-					if(this.goodsDiscount){
+					if(this.goodsDetail.coupon){
 						this.goodsDetail.coupon.map(item=>{
 							if(item.rule[0].status != 1){
 								item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")

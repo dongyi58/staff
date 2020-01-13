@@ -1,7 +1,7 @@
 <template>
 	<view class="wrap shoplist_wrap">
 		<view class="status_bar index_status_bar"></view>
-		<customnav  :isSearch="false" navtitle="选择代下单小店" />
+		<customnav  :isSearch="false" navtitle="选择代下单小店" backType="1" backurl="/pages/index/index" />
 		<!-- 搜索栏 -->
 		<view class="shoplist_content_search">
 			<view class="searchbkg"></view>

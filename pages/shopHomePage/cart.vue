@@ -44,8 +44,8 @@
 									 <view class="image placeholder loadimg" :class="{loaded:goods.loaded}" ><i class="iconfont icon-image"></i></view>	
 								 </view>
 								
-								 <view class="omid"  @click="goto_goodsdetail(goods.goods_id)" :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
-									 <p>{{goods.goods_name}}</p>
+								 <view class="omid"  :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
+									 <p  @click="goto_goodsdetail(goods.goods_id)">{{goods.goods_name}}</p>
 									 <span class="skustr">规格:{{goods.spec_str}}</span>
 									 <view class="omid_bottom">
 										 <span class="c_price" v-if="goods.goods_status == 2">￥{{goods.goods_price}}</span>

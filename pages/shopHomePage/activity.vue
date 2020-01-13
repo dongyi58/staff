@@ -54,7 +54,7 @@
 								</view>
 								<p class="goods_name">{{item.name}}</p>
 								<p class="active_name">{{item.title}}</p>
-								<view class="goods_price">¥{{item.sale_type == 1 ? item.wholesale_price : item.retail_price}} <span>已售出{{item.sale}}件</span></view>
+								<view class="goods_price">¥{{item.showPrice}} <span>已售出{{item.sale}}件</span></view>
 							</view>
 							<view class="loadfinshed_text" v-if="allgoodsList.length>3" >没有更多商品了</view>
 						</view>
@@ -66,13 +66,15 @@
 		<view class="drawer" :class="{'drawer_show' : showDrawer}">
 				
 					<view class="drawer_title">按{{drawerTitle}}查询</view>
-					<ul class="cateList">
-						<li 
-						:class="[currentCate == cateidx ? 'activeCate':'']" 
-						@click="cateClick(cateidx,cate.id)"
-						v-for="(cate,cateidx) of drawerList" :key="cate.id">{{cate.name}}</li>
-					</ul>
-				
+					
+					<view  class="cateList">
+						<ul>
+							<li 
+							:class="[currentCate == cateidx ? 'activeCate':'']" 
+							@click="cateClick(cateidx,cate.id)"
+							v-for="(cate,cateidx) of drawerList" :key="cate.id">{{cate.name}}</li>
+						</ul>
+					</view>
 				
 				<view class="confirm"><button @click="ensure">确定</button></view>
 			
@@ -306,6 +308,14 @@
 								this.$set(item,'show',false)
 								this.$set(item,'loaded',false)
 								item.img = this.domain + item.img
+								if(item.sale_type == 3){
+									this.$set(item,'showPrice',item.retail_price+'-'+item.wholesale_price)
+									
+								}else if(item.sale_type == 2){
+									 this.$set(item,'showPrice',item.retail_price)
+								}else{
+									 this.$set(item,'showPrice',item.wholesale_price)
+								}
 								this.allgoodsList.push(item)
 							})
 						}else{
@@ -400,15 +410,22 @@
 		height:100vh;
 	}
 	.cateList{
-		display: flex;
-		flex-wrap: wrap;
-		li{
-			border:1px solid #f5f5f5;
-			color:#383838;
-			border-radius: 5px;
-			margin:0 10px 10px 0;
-			padding:5px 10px;
-		}
+		
+		height: calc(100vh - 150px);
+		 overflow: scroll;
+		  -webkit-overflow-scrolling:touch;
+		  ul{
+			  display: flex;
+			  flex-wrap: wrap;
+			  li{
+			  	border:1px solid #f5f5f5;
+			  	color:#383838;
+			  	border-radius: 5px;
+			  	margin:0 10px 10px 0;
+			  	padding:5px 10px;
+			  }
+		  }
+		
 		.activeCate{
 			background:linear-gradient(to right, #21A5F9, #1A6FE8);
 			color:#fff;
@@ -438,7 +455,7 @@
 		height: 100%;
 		width: 70%;
 		background-color: #fff;
-		overflow-x: hidden;
+		overflow: hidden;
 		transition:transform 0.3s ease;
 		transform: translateX(100%);
 		&_show{

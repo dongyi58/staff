@@ -54,13 +54,13 @@
 						 	 
 						 	 <!-- 商品价格总和 -->
 						 	 <view class="price_box">
-						 			<view v-if="item.freight!=0">商品运费<span>+{{Number(item.freight).toFixed(2)}}</span></view>
-						 			<view v-if="item.coupon_fee!=0">优惠券优惠<span>-{{Number(item.coupon_fee).toFixed(2)}}</span></view>
-									<view v-if="item.activity_fee!=0">活动优惠<span>-{{Number(item.activity_fee).toFixed(2)}}</span></view>
-						 			<view v-if="item.period_fee!=0">账期溢价<span>+{{Number(item.period_fee).toFixed(2)}}</span></view>
-						 			<view>应付金额<span>￥{{Number(item.fact_price).toFixed(2)}}</span></view>
+						 			<view v-if="item.freight!=0">商品运费<span>+{{item.freight}}</span></view>
+						 			<view v-if="item.coupon_fee!=0">优惠券优惠<span>-{{item.coupon_fee}}</span></view>
+									<view v-if="item.activity_fee!=0">活动优惠<span>-{{item.activity_fee}}</span></view>
+						 			<view v-if="item.period_fee!=0">账期溢价<span>+{{item.period_fee}}</span></view>
+						 			<view>应付金额<span>￥{{item.cope_with}}</span></view>
 						 			<!-- <view>预付金额<span>￥{{item.period_fee}}</span></view> -->
-						 			<view>实付款(含运费)<span style="font-weight: 600;">￥{{Number(item.fact_pay_price).toFixed(2)}}</span></view>
+						 			<view>实付款(含运费)<span style="font-weight: 600;">￥{{item.fact_price}}</span></view>
 						 	</view>
 						 	<!-- 订单信息 -->
 						 	<view class="orderInfo_box">

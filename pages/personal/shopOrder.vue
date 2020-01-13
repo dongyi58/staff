@@ -92,10 +92,10 @@
 					 <view class="total_box">
 						 <view class="total_one">
 								<view class="to_left">
-									<!-- 已完成订单和已取消订单不显示售后 -->
-									<span class="sh_btn" v-if="item.order_status != 4 && item.order_status != 5">申请售后</span>
 									
-									<span class="qrcode_btn" v-if="item.order_status != 5">生成二维码</span>
+									<span class="sh_btn" v-if="item.showShouhou">申请售后</span>
+									
+									<span class="qrcode_btn" v-if="item.showQrcode">生成二维码</span>
 								</view>
 								<view class="to_right">
 								
@@ -259,22 +259,32 @@
 							 _this.$set(item,'showQrcode',false)
 							 _this.$set(item,'showShouhou',false)
 							item.order_status = Number(item.order_status)
-							
+							//订单状态不为已完成订单和取消订单的不展示售后按钮
 							if(item.order_status != 4 && item.order_status!=5){
 								 _this.$set(item,'showShouhou',true)
 							}
-							if(item.order_type == 2 && item.order_status == 1){
+							
+							//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
+							if(item.order_status == 3 && item.order_type == 1){
+								 _this.$set(item,'showQrcode',true)
+							}
+							if(item.order_status == 3 && item.order_type == 2){
+								 _this.$set(item,'showQrcode',true)
+							}
+							//订单状态为待付款且订单类型为现付显示付款二维码按钮
+							if(item.order_status == 1 && item.order_type == 3){
 								 _this.$set(item,'showQrcode',true)
 							}
 							//处理商品信息
 							item.goods.map((gitem,idx)=>{
+								_this.goodsIndex+=1
 									 _this.$set(gitem,'show',false)
 									 _this.$set(gitem,'loaded',false)
 									 _this.$set(gitem,'format_spec',false)
 									  _this.$set(gitem,'goodsIndex',_this.goodsIndex)
 									
-									 _this.goodsIndex+=1
-									
+									 
+									console.log(_this.goodsIndex)
 									 //格式化规格
 									 if(gitem.price_type == 'whole'){//整件价
 										 if(gitem.pack_type == 1){//1，整件 2 ，散装

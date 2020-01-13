@@ -76,6 +76,9 @@
 			backType:{
 				type:[Number,String]
 			},
+			backurl:{
+				type:[Number,String]
+			},
 			searchinp:{
 				type:Boolean,
 				default:false
@@ -130,9 +133,18 @@
 		methods:{
 			//返回按钮
 			getback(){
-				uni.navigateBack({
-					    delta:1
-					});
+				if(this.backType == 1){
+					uni.navigateTo({
+						url:this.backurl,
+						animationType: 'slide-in-left',
+						animationDuration: 200
+					})
+				}else{
+					uni.navigateBack({
+						    delta:1
+						});
+				}
+				
 				
 			},
 			//消息页

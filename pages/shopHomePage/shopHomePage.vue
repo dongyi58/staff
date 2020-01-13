@@ -1,7 +1,7 @@
 <template>
 	<view class="wrap shop_homepage_wrap">
 			<view class="status_bar index_status_bar"></view>
-			<customnav :navtitle="supllierInfo.contactname" :ismsg="false" :isSearch="true"  backType="1" />
+			<customnav :navtitle="supllierInfo.contactname" :ismsg="false" :isSearch="true"  backType="1" backurl="/pages/shops/shops" />
 			
 			<view class="header-bkg"></view>
 			<!-- 小店信息展示 -->
@@ -119,7 +119,7 @@
 								</view>
 								<view class="yhq_left_two">
 								<!-- 	<span>满{{item.rule[0].money}}元使用</span> -->
-									<span>部分商品可用<br>(特价除外)</span>
+									<span>部分商品可用</span>
 								</view>
 							</view>
 							<view class="yhq_right">
@@ -346,12 +346,12 @@
 							
 							//优惠券
 							_this.goodsDiscount = res.data.data.coupon || []
-							if(_this.goodsDiscount.length > 0){
-								res.data.data.coupon.map(item=>{
-									 item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
-									 item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
-								})
-							}
+							// if(_this.goodsDiscount.length > 0){
+							// 	res.data.data.coupon.map(item=>{
+							// 		 item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
+							// 		 item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
+							// 	})
+							// }
 							console.log(_this.goodsDiscount)
 						 }
 						 
@@ -394,7 +394,7 @@
 	.homepage_list{
 		margin-top:28px;
 		width: 100%;
-		height: calc(100vh - 240px);
+		height: calc(100vh - 213px);
 	}
 	.activity_gif{
 		width:50px;

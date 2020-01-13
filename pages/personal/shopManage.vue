@@ -176,7 +176,12 @@
 				}).then(res=>{
 					
 					_this.dutyShopList = res.data.data.ShopMsg
-					_this.tabs.push('责任小店('+_this.dutyShopList.length+')')
+					if(_this.dutyShopList && _this.dutyShopList.length > 0){
+						_this.tabs.push('责任小店('+_this.dutyShopList.length+')')
+					}else{
+						_this.tabs.push('责任小店(0)')
+					}
+					
 					
 				})
 			},
@@ -188,7 +193,12 @@
 				}).then(res=>{
 					
 					_this.shopList = res.data.data.ShopMsg
-					_this.tabs.push('推荐小店('+_this.shopList.length+')')
+					if(_this.shopList && _this.shopList.length>0){
+						_this.tabs.push('推荐小店('+_this.shopList.length+')')
+					}else{
+						_this.tabs.push('推荐小店(0)')
+					}
+					
 				})
 				
 			}

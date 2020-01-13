@@ -186,7 +186,7 @@
 				color:$color-1;	
 				padding:3px 5px;
 				 white-space: nowrap;
-				    max-width: 150px;
+				    max-width: 135px;
 				    overflow: hidden;
 				    text-overflow: ellipsis;
 			}

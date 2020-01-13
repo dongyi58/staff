@@ -2,7 +2,7 @@
 	<view class="personal_wrap wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="个人中心"

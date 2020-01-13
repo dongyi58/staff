@@ -53,12 +53,14 @@
 				<view class="drawer" :class="{'drawer_show' : showDrawer}">
 						
 							<view class="drawer_title">按{{drawerTitle}}查询</view>
-							<ul class="cateList">
-								<li 
-								:class="[currentCate == cateidx ? 'activeCate':'']" 
-								@click="cateClick(cateidx,cate.id)"
-								v-for="(cate,cateidx) of drawerList" :key="cate.id">{{cate.name}}</li>
-							</ul>
+							<view class="cateList">
+								<ul>
+									<li 
+									:class="[currentCate == cateidx ? 'activeCate':'']" 
+									@click="cateClick(cateidx,cate.id)"
+									v-for="(cate,cateidx) of drawerList" :key="cate.id">{{cate.name}}</li>
+								</ul>
+							</view>
 						
 						
 						<view class="confirm"><button @click="ensure">确定</button></view>
@@ -327,15 +329,20 @@
 		height:100vh;
 	}
 	.cateList{
-		display: flex;
-		flex-wrap: wrap;
-		li{
-			border:1px solid #f5f5f5;
-			color:#383838;
-			border-radius: 5px;
-			margin:0 10px 10px 0;
-			padding:5px 10px;
-		}
+		height: calc(100vh - 150px);
+		 overflow: scroll;
+		  -webkit-overflow-scrolling:touch;
+		  ul{
+			  display: flex;
+			  flex-wrap: wrap;
+			  li{
+			  	border:1px solid #f5f5f5;
+			  	color:#383838;
+			  	border-radius: 5px;
+			  	margin:0 10px 10px 0;
+			  	padding:5px 10px;
+			  }
+		  }
 		.activeCate{
 			background:linear-gradient(to right, #21A5F9, #1A6FE8);
 			color:#fff;
@@ -365,7 +372,7 @@
 		height: 100%;
 		width: 70%;
 		background-color: #fff;
-		overflow-x: hidden;
+		overflow: hidden;
 		transition:transform 0.3s ease;
 		transform: translateX(100%);
 		&_show{
