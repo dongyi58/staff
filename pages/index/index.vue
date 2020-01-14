@@ -43,10 +43,10 @@
 				<view class="item_two_text">小店管理、报表管理、收入管理一目了然</view>
 				
 			</view>
-			<view class="msg_box" @click="checkMessage">
+			<!-- <view class="msg_box" @click="checkMessage">
 				<i class="new_msg_tip"></i>
 				<i class="iconfont icon-xiaoxi"></i>
-			</view>
+			</view> -->
 		</view>
 		
 	</view>

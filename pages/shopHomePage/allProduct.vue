@@ -29,7 +29,7 @@
 					:class="filterIdx == 3 ? 'activeFitler' : ''">品牌</li>
 				</ul>
 			</view>
-			<scroll-view class="allgoods_list"  scroll-y @scrolltolower="handlescroll">
+			<scroll-view class="allgoods_list" :scroll-top="scrollTop" @scroll="handleScroll" scroll-y @scrolltolower="handlescroll">
 					<!-- 全部商品列表 -->
 						<view class="goods_list_wrap">
 							<view class="goods_list">
@@ -67,6 +67,7 @@
 					
 				</view>
 				<view class="mask" v-if="showDrawer"  @click="cancel" :class="{'showmask':showDrawer}"></view>
+				<backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
 
@@ -101,7 +102,9 @@
 				//分类列表
 				 drawerList:[],
 				 currentCate:-1,
-				 drawerTitle:''
+				 drawerTitle:'',
+				 topval:0,
+				 scrollTop:-1
 			};
 		},
 		//根据当前页面下标加载相应数据
@@ -145,7 +148,15 @@
 		},
 		
 		methods:{
-			 
+			 backTop(){
+			 	this.scrollTop = 0
+				setTimeout(()=>{
+					this.scrollTop = -1
+				},500)
+			 },
+			 handleScroll(e){
+			 	this.topval = e.target.scrollTop
+			 },
 			cateClick(idx,id){
 				this.currentCate = idx
 				if(this.filterIdx == 2){
@@ -161,6 +172,7 @@
 			},
 			//确定
 			ensure(){
+				this.page = 1
 				this.allgoodsList=[]
 				this.getgoods_list()
 				this.showDrawer = false;

@@ -49,7 +49,7 @@
 			 				<uni-list>
 			 				    <uni-list-item @click="goAccount" title="账户与安全" :show-extra-icon="true" iconclass="icon-zhanghao personal_icon1" ></uni-list-item>
 			 					<uni-list-item @click="goStaffFile" title="业务员档案" :show-extra-icon="true" iconclass="icon-renyuandanganguanli personal_icon2" ></uni-list-item>
-			 					<uni-list-item @click="clearCache" title="清理缓存" :badge-text="cacheSize+' M'"  :show-badge="true"  :show-extra-icon="true"  iconclass="icon-qinglihuancun personal_icon3" ></uni-list-item>
+			 					<!-- <uni-list-item @click="clearCache" title="清理缓存" :badge-text="cacheSize+' M'"  :show-badge="true"  :show-extra-icon="true"  iconclass="icon-qinglihuancun personal_icon3" ></uni-list-item> -->
 			 				</uni-list>
 			 			</view>
 			 			<view class="pc_item">
@@ -61,15 +61,16 @@
 			 			</view>
 			 </view>
 		 </view>
+		
 		<popup ref="popup" type="bottom" class="home_popup" :popstyle="{display:'flex',width:'100%',height:'100px',overflow:'hidden',alignItems:'center'}">
 					<view class="logout_box">
 						<button type="warn" @click="logout">退出当前账号</button>
 					</view>
 		 </popup>
 		 <popup ref="popup2" type="center" class="feed_popup" :popstyle="{display:'flex',width:'90%',height:'250px',overflow:'hidden'}">
-		 			<view class="feedBack">
+		 			<view class="feedBack" >
 						<h4>功能反馈 <i class="iconfont icon-ziyuan" @click="closeFeedBack"></i> </h4>
-		 				<textarea class="fb_textarea"  v-model="feedtext" placeholder="非常感谢你的建议" />
+		 				<textarea v-if='showarea' class="fb_textarea"  placeholder-class="ph" placeholder="非常感谢你的建议" v-model="feedtext"  />
 						<button class="submit_feedback" @click="sendFeedBack">提交反馈</button>
 		 			</view>
 		  </popup>
@@ -96,7 +97,7 @@
 			return {
 				cacheSize:0,
 				feedtext:'',
-			
+			showarea:false
 			};
 		},
 		computed:{
@@ -111,11 +112,6 @@
 		
 		},
 		methods:{
-			
-			
-			
-			
-			
 			sendFeedBack(){
 				console.log(this.feedtext)
 				uni.showToast({
@@ -127,6 +123,9 @@
 				},1000)
 			},
 			feedBack(){
+				setTimeout(()=>{
+					this.showarea=true
+				},100)
 				  this.$refs.popup2.open()
 			},
 			closeFeedBack(){
@@ -197,9 +196,11 @@
 		border:1px solid #f8f8f8;
 		border-radius: 4px;
 		padding:5px;
-		font-size:12px;
+		font-size:12px !important;
 		box-sizing: border-box;
+		
 	}
+	
 	.content_wrap{
 		position:relative
 	}
@@ -212,6 +213,8 @@
 		width:90%;
 		height:250px;
 		overflow: hidden !important;
+		color:#999;
+		font-size:12px !important
 	}
 	.personal_header{
 		height:150px;

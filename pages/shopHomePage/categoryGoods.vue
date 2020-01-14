@@ -89,6 +89,7 @@
 				this.$dyrequest({
 					url:'/index.php/Category/cateGoods',
 					method:'POST',
+					hideLoading:true,
 					data:{
 					 cid:this.categoryId,
 					 seller_id:this.supplierId,
@@ -107,7 +108,7 @@
 					}
 					
 					//数据加载完毕
-					if(!tempData||!tempData.length||tempData.length<15){ 
+					if(!tempData||!tempData.length||tempData.length<10){ 
 						this.loaded=true;
 						this.loadStatus="noMore";
 					}

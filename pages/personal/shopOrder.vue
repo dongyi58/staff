@@ -2,7 +2,7 @@
 	<view class="wrap shopOreder_wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="订单管理"
@@ -45,13 +45,13 @@
 			 animationLineWidth="70"
 		 >
 		 </qstab>
-		 <scroll-view 
-		 scroll-y="true" 
-		 class="order_list" 
-		 @scroll="scroll" 
-		 @scrolltolower="handlescroll" 
-		 :scroll-top="setMarkTop"
-		 >
+			 <scroll-view 
+			 scroll-y="true" 
+			 class="order_list" 
+			 @scroll="scroll" 
+			 @scrolltolower="handlescroll" 
+			 :scroll-top="setMarkTop"
+			 >
 		 		 <view class="order_box" v-for="(item,idx) of orderList" :key="idx">
 					 <!-- 订单号 -->
 					 <view class="ordernum">
@@ -65,17 +65,18 @@
 						 </span>
 					 </view>
 					 <!-- 商品详情 -->
-					 <view class="order_item" @click="orderDetail(item.id,item.order_status)" v-for="(goods,gidx) of item.goods" :key="gidx">
-						
+					 <view class="order_item" :class="{'disableGoods':goods.status == 3 }" @click="orderDetail(item.id,item.order_status)" v-for="(goods,gidx) of item.goods" :key="gidx">
 						 <view class="o-left">
 							<!-- <image class="order_img" src="../../static/images/activity.jpeg" mode="aspectFill"></image> -->
-							 <image class=" order_img image" :class="{lazy:!goods.show}" :data-index="goods.goodsIndex" @load="imageLoad" :src="goods.show ? goods.img:''" />
+							 <image class=" order_img image" :class="{lazy:!goods.show}"  :data-index="goods.goodsIndex" @load="imageLoad" :src="goods.show ? goods.img:''" />
 							 <view class="image placeholder loadimg" :class="{loaded:goods.loaded}" ><i class="iconfont icon-image"></i></view>	
 						 </view>
 						
 						 <view class="omid">
 							 <p>{{goods.name}}</p>
-							 <span>规格:{{goods.format_spec}}</span>
+							 <span v-if="goods.status == 2">规格:{{goods.format_spec}}</span>
+							 <span v-else-if="goods.store == 0">已售罄</span>
+							 <span v-else>已下架</span>
 						 </view>
 						 <view class="o-right">
 							 <span>￥{{goods.price}}</span>
@@ -113,6 +114,7 @@
 				  <view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 		 </scroll-view>
 		 <level ref="levelRef"/>
+		 <backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
 
@@ -144,11 +146,12 @@
 				windowHeight: 0,
 				show: false,
 				 //图片懒加载
-				 setMarkTop:0,
+				 setMarkTop:-1,
 				 marktop1:0,
 				 marktop2:0,
 				 marktop3:0,
 				 marktop4:0,
+				 topval:0,
 				
 			};
 		},
@@ -163,8 +166,16 @@
 			
 		},
 		methods:{
+			backTop(){
+				this.setMarkTop = 0
+				setTimeout(()=>{
+					this.setMarkTop = -1
+				},500)
+			},	
+			
 			//图片懒加载
 			scroll(e){
+				this.topval = e.target.scrollTop
 				this.load()
 				//记录上次滚动位置，tab切换时回到上次位置
 				switch(this.currentidx+1){
@@ -209,7 +220,6 @@
 				}
 				
 			},
-			//图片懒加载
 			handleChange(idx){
 				
 				this.currentidx = idx
@@ -259,8 +269,9 @@
 							 _this.$set(item,'showQrcode',false)
 							 _this.$set(item,'showShouhou',false)
 							item.order_status = Number(item.order_status)
-							//订单状态不为已完成订单和取消订单的不展示售后按钮
-							if(item.order_status != 4 && item.order_status!=5){
+							
+							//订单状态为待收货显示售后按钮
+							if(item.order_status == 3){
 								 _this.$set(item,'showShouhou',true)
 							}
 							
@@ -283,8 +294,11 @@
 									 _this.$set(gitem,'format_spec',false)
 									  _this.$set(gitem,'goodsIndex',_this.goodsIndex)
 									
-									 
-									console.log(_this.goodsIndex)
+									 if(gitem.status == 3){
+										 _this.$set(item,'showQrcode',false)
+										 _this.$set(item,'showShouhou',false)
+									 }
+									// console.log(_this.goodsIndex)
 									 //格式化规格
 									 if(gitem.price_type == 'whole'){//整件价
 										 if(gitem.pack_type == 1){//1，整件 2 ，散装
@@ -343,7 +357,9 @@
 	//height:541px;
 }
 //订单列表
-
+.uni-popup__wrapper-box{
+		width:80%;
+	}
 .order_box{
 	background:#fff;
 	margin-bottom:10px;

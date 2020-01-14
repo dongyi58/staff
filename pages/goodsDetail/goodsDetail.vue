@@ -78,7 +78,7 @@
 						<view class="send_cell info_cell" v-if="zhekouman">
 							<view class="cell_left">
 								<span>满减</span>
-								<span>现在购买满<i style="color:red">{{activityRule[0].money}}</i>元立减<i style="color:red">{{activityRule[0].rebate}}</i>元</span>
+								<span>现在购买满<i style="color:red">{{activityRule[0].money}}</i>元立享<i style="color:red">{{activityRule[0].rebate*10}}</i>折优惠</span>
 							</view>
 							<view class="cell_right">
 								<!-- <i class="iconfont icon-you"></i> -->
@@ -218,7 +218,7 @@
 										<span class="spec_describe">{{selectSpecInfo.specTitle}}</span>
 										<span class="spec_num">货号:{{selectSpecInfo.productNo}}</span>
 										<span class="spec_stock">库存:{{selectSpecInfo.stock}}</span>
-										<span class="spec_stock">活动库存:{{selectSpecInfo.activityStock}}</span>
+										<span class="spec_stock" v-if="dtype==2">活动库存:{{selectSpecInfo.activityStock}}</span>
 									</view>
 								</view>
 								<i class="iconfont icon-ziyuan" @click="closeSpec"></i>
@@ -295,58 +295,40 @@
 		
 		<!-- 领取优惠券 -->
 		<popup ref="popup" type="center" class="home_popup" :popstyle="{width:'90%',height:'350px',overflow:'hidden'}">
-					 <!-- 折扣券 -->
-					<view class="yhq_title">来领券吧
-					 <i class="iconfont icon-ziyuan" @click="closePopup()"></i>
-					 </view>
-					<view class="yhqbox">
-						<view 
-						class="yhq_item"
-						v-for="(item,idx) of goodsDiscount"
-						v-if="item.way_id == 1"
-						:key="idx"
-						style="background:url(../../static/images/yhq.png)">
-						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
-							<view class="yhq_left">
-								<view class="yhq_left_one">
-									<span>{{item.rule[0].rebate*10}}折</span>
-									<span>{{item.start_time}} - {{item.end_time}}</span>
+					<!-- way_id=1折扣券,way_id=2满减券 -->
+						<view class="yhq_title">来领券吧
+						 <i class="iconfont icon-ziyuan" @click="closePopup()"></i>
+						 </view>
+						<view class="yhqbox">
+							<view class="yhq_item_box"  v-for="(item,idx) of goodsDiscount" :key="idx">
+								<view
+								class="yhq_item"
+								v-for="(yitem,yid) of item.rule"
+								:key="yid"
+								:class="[item.way_id == 1 ? 'zkbj' : 'mjbj']">
+								   <image v-if="yitem.take" class="takeimg" src="../../static/images/take.png"></image>
+									<view class="yhq_left">
+										<view class="yhq_left_one">
+											<span  v-if="item.way_id == 1">{{yitem.rebate*10}} 折</span>
+											<span v-else><i>¥</i>{{yitem.rebate}}</span>
+											<span>{{item.start_time}} - {{item.end_time}}</span>
+											
+										</view>
+										<view class="yhq_left_two">
+											<span v-if="item.way_id == 1">部分商品可用</span>
+											<span v-if="item.way_id == 5">满{{yitem.money}}元使用</span>
+											<span v-if="item.way_id == 5">部分商品通用<br>(特价除外)</span>
+										</view>
+									</view>
+									<view class="yhq_right">
+										<span v-if="item.way_id == 1">店铺折扣券</span>
+										<span v-else>店铺满减券</span>
+										<span  class="usestyle2" v-if="!yitem.take && yitem.status !=1" @click="getYhq(item.activity_id,yitem.money,idx,yid)">领 取</span>
+										<span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
+									</view>
 								</view>
-								<view class="yhq_left_two">
-									<!-- <span>满{{item.rule[0].money}}元使用</span> -->
-									<span>部分商品可用</span>
-								</view>
-							</view>
-							<view class="yhq_right">
-								<span>店铺折扣券</span>
-								<span  class="usestyle2" v-if="!item.take" @click="getYhq(item.activity_id,'',idx)">领 取</span>
-								<!-- <span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span> -->
 							</view>
 						</view>
-						<!-- 满减券 -->
-						<view
-						class="yhq_item"
-						v-else
-						style="background:url(../../static/images/yhq2.png)">
-						   <image v-if="item.take" class="takeimg" src="../../static/images/take.png"></image>
-							<view class="yhq_left">
-								<view class="yhq_left_one">
-									<span><i>¥</i>{{item.rule[0].rebate}}</span>
-									<span>{{item.start_time}} - {{item.end_time}}</span>
-								</view>
-								<view class="yhq_left_two">
-									<span>满{{item.rule[0].money}}元使用</span>
-									<span>部分商品通用<br>(特价除外)</span>
-								</view>
-							</view>
-							<view class="yhq_right">
-								<span>店铺满减券</span>
-								<span  class="usestyle" v-if="!item.take" @click="getYhq(item.activity_id,item.rule[0].money,idx)">领 取</span>
-								<!-- <span  class="takestyle" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span> -->
-							</view>
-						</view>
-						
-					</view>
 		 </popup>
 	</view>
 </template>
@@ -502,6 +484,7 @@
 			selectSpecInfo(){
 				let spec = this.goodsInfoBySpec
 				let salenum = 0
+				//判断买赠的起订量
 				if(this.activityType == 'maizeng'){
 					salenum = Number(this.goodsDetail.maizengAmount.getnum)
 				}else{
@@ -1266,6 +1249,9 @@
 		height:calc(100vh - 315px);
 		transition:all .6s
 	}
+	.home_popup .uni-popup__wrapper-box{
+		width:90%;
+	}
 	body{
 		overflow:scroll !important;
 	}
@@ -1343,6 +1329,7 @@
 					i{
 						font-size:16px;
 						margin-right:3px;
+						font-style: normal;
 					}
 				}
 				span:last-child{
@@ -1384,5 +1371,11 @@
 				color:#fff;
 			}
 		}
+	}
+	.zkbj{
+		background:url('../../static/images/yhq.png')
+	}
+	.mjbj{
+		background:url('../../static/images/yhq2.png')
 	}
 </style>

@@ -2,7 +2,7 @@
 	<view class="wrap salesChart_wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="销售统计"

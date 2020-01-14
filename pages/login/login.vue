@@ -8,7 +8,7 @@
 				<view class="login-item"><i class="iconfont icon-mima"></i><input type="password" v-model="psw" placeholder="请输入密码"></view>
 			</view>
 			<view class='login-btn'><button @click="login">登录</button></view>
-			<view class="forget-psw">忘记密码？</view>
+			<view class="forget-psw" @click="goFpsw">忘记密码？</view>
 		</view>
 		
 		
@@ -17,11 +17,12 @@
 				<view>2018 ddddian.com版权所有 店店店商城</view>
 				<view>ICP证:属ICP备18022554号-1</view>
 			</view>
-			<view class="call-service">
-					<image src="../../static/images/slogo.png" class="bottom-logo"></image>
-					<view class="getcall"><a href="tel:15228730508"><i class="iconfont icon-dianhua1"></i>呼叫加盟商客服</a></view>
-			</view>
-			
+		</view>
+		<view class="callService" @click="callsupplier">
+			<span>
+				<i class="iconfont icon-dianhua1"></i>
+				客服
+			</span>
 		</view>
 	</view>
 </template>
@@ -32,7 +33,8 @@
 		data() {
 			return {
 				phone:'18048911384',//18048911384
-				psw:'123456'
+				psw:'123456',
+				service:'028-83419849'
 			}
 		},
 		
@@ -45,6 +47,16 @@
 			}
 		},
 		methods: {
+			goFpsw(){
+				uni.navigateTo({
+					url:'/pages/forgetPsw/forgetPsw'
+				})
+			},
+			callsupplier(phonenum){
+					uni.makePhoneCall({
+					    phoneNumber:this.service  //仅为示例
+					});
+			},
 			login(){
 				
 				uni.showLoading({
@@ -165,6 +177,7 @@
 			.forget-psw{
 				width:100%;
 				text-align:right;
+				margin-top:10px;
 				padding:5px 0;
 				text-decoration: underline;
 				color:#fff;
@@ -181,26 +194,31 @@
 				margin-bottom:5px;
 			}
 		}
-		.call-service{
-			display:flex;
-			justify-content: space-around;
-			background:linear-gradient(#21A5F9,#0462E9);
-			padding:5px 0;
-			.bottom-logo{
-				width:80px;
-				height:30px;
-			}
-			.getcall{
-				
-				font-size:30rpx;
-				a{
-					display: flex;
-					align-items: center;
-				}
-				i{
-					font-size:1.8em;
-					margin-right:10px;
-				}
+		
+	}
+	.callService{
+		position:fixed;
+		bottom:10%;
+		right:5%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width:60px;
+		height:60px;
+		background: #2787F4;
+		border-radius: 50%;
+		span{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			color:#fff;
+			width:50px;
+			height:50px;
+			background:#4091EF;
+			border-radius: 50%;
+			i{
+				margin-bottom:5px;
 			}
 		}
 	}

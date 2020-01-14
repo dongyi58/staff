@@ -14,14 +14,15 @@
 		 		<!-- 全部商品列表 -->
 		 			<view class="goods_list_wrap">
 		 				<view class="goods_list">
-		 					<view class="goods_item" v-for="(item,idx) of allResultgoods" :key="idx">
+		 					<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)" v-for="(item,idx) of allResultgoods" :key="idx">
 		 						<view class="goods_img_box">
 		 							<!-- <image class="goods_img" :src="item.img" lazy-load mode="aspectFill"></image> -->
 		 							<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
 		 							<view class="image placeholder loadimg" :class="{loaded:item.loaded}" ><i class="iconfont icon-image"></i></view>	
 		 						</view>
 		 						<p class="goods_name">{{item.name}}</p>
-		 						<view class="goods_price">¥{{item.fact_price}}<!-- <i class="iconfont icon-jia"></i> --></view>
+		 						<view class="goods_price">¥{{item.fact_price}}<image v-if="item.activity" class="activity_gif" src="../../static/images/fire.gif" mode=""></image></view>
+								
 		 					</view>
 		 					<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 		 				</view>
@@ -77,6 +78,12 @@
 			}
 		},
 		methods:{
+			goto_goodsdetail(goodsId){
+							
+				 uni.navigateTo({
+					url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
+				 })
+			},
 			//图片懒加载
 			scroll(){
 				this.load()
@@ -157,6 +164,10 @@
 	@import '@/static/css/style.scss';
 	.result_list{
 		width: 100%;
-		height: calc(100vh - 45px);
+		height: calc(100vh - 45px - var(--status-bar-height));
+	}
+	.activity_gif{
+		width:50px;
+		height:18px;
 	}
 </style>

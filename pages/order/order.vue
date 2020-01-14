@@ -2,7 +2,7 @@
 	<view class="shopOrderDetail_wrap wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-			 :ismsg="true" 
+			 :ismsg="false" 
 			 :isSearch="false" 
 			 :midtitle="true"
 			 navtitle="确认订单"
@@ -248,6 +248,11 @@
 				
 				
 		},
+		computed:{
+			shopId(){
+				return this.$store.state.shopId
+			}
+		},
 		onLoad(option) {
 			//获取商品详情页存的商品参数
 			this.getParams = this.$store.state.buyProductParam
@@ -419,6 +424,7 @@
 				
 				let cartPriceRequest = {}
 				this.multipleData[this.sellerId]={
+					
 					"cart_id":this.cartId,
 					"memo":"",
 					"order_type":this.priceParams.order_type,
@@ -448,40 +454,63 @@
 						url:'/CartSales/count_goods_price',
 						method:'POST',
 						data:{
+							id:this.shopId,
 							order:JSON.stringify(this.multipleData)
 						}
 					}
 				}
 				this.$dyrequest(cartPriceRequest).then(res=>{
+					//type 1 单品购买，type 2 批量购买
 					let data = new Object
 					//单品购买和批量购买数据区分
 					if(this.type == 1){
 						data = res.data
 					}else{
 						
-						data = res.data[this.sellerId]
+						data = res.data.sum
 					}
 					// console.log(data)
 					this.priceItem.map((item,idx)=>{
-						 switch(item.priceType){
-								case 1:this.$set(item,'price',data.order_price);
-								break;
-								case 2:this.$set(item,'price',data.coupon_fee);
-								break;
-								case 3:this.$set(item,'price',data.activity_fee);
-								break;
-								case 4:this.$set(item,'price',data.period_fee);
-								break;
-								case 5:this.$set(item,'price',data.freight);
-								break;
-						 }
+						if(this.type == 1){
+							switch(item.priceType){
+									case 1:this.$set(item,'price',data.order_price);
+									break;
+									case 2:this.$set(item,'price',data.coupon_fee);
+									break;
+									case 3:this.$set(item,'price',data.activity_fee);
+									break;
+									case 4:this.$set(item,'price',data.period_fee);
+									break;
+									case 5:this.$set(item,'price',data.freight);
+									break;
+							}
+						}else{
+							switch(item.priceType){
+									case 1:this.$set(item,'price',data.sum_order_price);
+									break;
+									case 2:this.$set(item,'price',data.sum_coupon_fee);
+									break;
+									case 3:this.$set(item,'price',data.sum_activity_fee);
+									break;
+									case 4:this.$set(item,'price',data.sum_period_fee);
+									break;
+									case 5:this.$set(item,'price',data.sum_freight);
+									break;
+							}
+						}
+						
 						this.$set(this.priceItem[idx],'price',Number(this.priceItem[idx].price).toFixed(2))
 					
 					})
 					
+					if(this.type == 1){
+						this.freight = data.freight
+						this.totalPrice = data.fact_price.toFixed(2)
+					}else{
+						this.freight = data.sum_freight
+						this.totalPrice = data.sum_fact_price.toFixed(2)
+					}
 					
-					this.freight = data.freight 
-					this.totalPrice = data.fact_price.toFixed(2)
 					this.formatFreight()
 					
 				})

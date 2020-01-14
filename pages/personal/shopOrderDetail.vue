@@ -2,7 +2,7 @@
 	<view class="shopOrderDetail_wrap wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="订单详情"
@@ -11,15 +11,15 @@
 		 />
 		
 		
-					<view class="detailHeader">
-								 <view class="hleft">
-									 <span>{{statusText}}</span>
-									<!-- <span>剩余26分交易自动关闭</span> -->
-								 </view>
-								 <view class="hright">
-									 <i class="iconfont" :class="statusIcon"></i>
-								 </view>
-					</view>
+				<view class="detailHeader">
+							 <view class="hleft">
+								 <span>{{statusText}}</span>
+								<!-- <span>剩余26分交易自动关闭</span> -->
+							 </view>
+							 <view class="hright">
+								 <i class="iconfont" :class="statusIcon"></i>
+							 </view>
+				</view>
 				<scroll-view class="order_list" scroll-y="true">
 					 <view class="orderInfo" v-for="(item,idx) of orderDetailInfo" :key="idx">
 						 <view class="loaction_box">
@@ -30,13 +30,16 @@
 						 			 </view>
 						 </view>
 						   <view class="order_box">
-						 	 <view class="order_item" v-for="(goods,gidx) of item.goods" :key="gidx">
+						 	 <view class="order_item" :class="{'disableGoods':goods.status == 3 }" v-for="(goods,gidx) of item.goods" :key="gidx">
 						 			 <view class="o-left">
 						 				 <image class="order_img" :src="goods.img" mode="aspectFill"></image>
 						 			 </view>
 						 			 <view class="omid">
 						 				 <p>{{goods.name}}</p>
-						 				 <span v-if="goods.gift == 1 ">规格:{{goods.format_spec}}</span>
+						 				 
+										 <span v-if="goods.status == 2">规格:{{goods.format_spec}}</span>
+										 <span v-else-if="goods.store == 0">已售罄</span>
+										 <span v-else>已下架</span>
 						 			 </view>
 									 <!-- 普通商品 -->
 						 			 <view class="o-right" v-if="goods.gift == 1 ">
@@ -70,9 +73,12 @@
 						 		<view><span>创建时间:</span><span>{{item.create_time}}</span></view>
 						 		<view><span>结算方式:</span><span>{{item.order_type == 1 ? '账期订单' : (item.order_type == 2 ? '到付订单' : '现付订单')}}</span></view>
 						 		<view v-if="item.staff_name"><span>代下单员:</span><span>{{item.staff_name}}</span></view>
-						 		<view><span>配送方式:</span><span>快递配送</span></view>
+						 		<view><span>配送方式:</span><span>{{item.shipping_name}}</span></view>
 						 	</view>
-							<view class='make-qrcode-box' v-if="item.order_status != 5 && item.order_status != 2"><button type="warn" size="mini" class="make-qrcode">生成二维码</button></view>
+							<view class='make-qrcode-box'>
+								<span class="sh_btn" v-if="item.showShouhou">申请售后</span>
+								<span class="qrcode_btn" v-if="item.showQrcode">生成二维码</span>
+							</view>
 						  </view>
 					 </view>
 		</scroll-view>
@@ -113,7 +119,7 @@
 					break;
 				case 3:
 					this.statusIcon = 'icon-daishouhuo';
-					this.statusText = '商品正在运输中';
+					this.statusText = '等待买家收货';
 					break;
 				case 4:
 					this.statusIcon = 'icon-yishouhuo';
@@ -141,11 +147,33 @@
 							if(item.memo == 'null'){
 								item.memo="无订单备注"
 							}
+							this.$set(item,'showQrcode',false)
+							this.$set(item,'showShouhou',false)
+							//订单状态为待收货显示售后按钮
+							if(item.order_status == 3){
+								 this.$set(item,'showShouhou',true)
+							}
+							
+							//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
+							if(item.order_status == 3 && item.order_type == 1){
+								 this.$set(item,'showQrcode',true)
+							}
+							if(item.order_status == 3 && item.order_type == 2){
+								 this.$set(item,'showQrcode',true)
+							}
+							//订单状态为待付款且订单类型为现付显示付款二维码按钮
+							if(item.order_status == 1 && item.order_type == 3){
+								 this.$set(item,'showQrcode',true)
+							}
 						//处理商品信息
 							item.goods.map((gitem,idx)=>{
 									this.$set(gitem,'show',false)
 									this.$set(gitem,'loaded',false)
 									 this.$set(gitem,'format_spec',false)
+									 if(gitem.status == 3){
+										 this.$set(item,'showQrcode',false)
+										 this.$set(item,'showShouhou',false)
+									 }
 									 //格式化规格
 									 if(gitem.price_type == 'whole'){//整件价
 										 if(gitem.pack_type == 1){//1，整件 2 ，散装
@@ -256,19 +284,23 @@
 				flex-direction: column;
 				color:#505050;
 				padding-left:10px;
+				text-align: center;
 				flex:1;
 				p{
 					@include longtext2;
 					max-height:35px;
+					   
+					align-self: baseline;
+					text-align: left;
 				}
 				span{
 					@include longtext;
-					max-width:100px;
+					padding:3px 10px;
+				    margin-top: 5px;
+				    align-self: baseline;
 					background:#f5f5f5;
 					color:#999;
 					border-radius: 20px;
-					padding:3px;
-					margin-top:5px;
 				}
 			}
 			.gift-right{
@@ -336,9 +368,27 @@
 		}
 		.make-qrcode-box{
 			
-			display: flex;
-			justify-content: flex-end;
-			padding:10px;
+			
+				display: flex;
+				align-items: center;
+				    padding: 10px 0;
+				    justify-content: flex-end;
+				span{
+					border-radius:20px;
+					padding:3px 10px;
+					color:#fff;
+					text-align: center;
+					margin-right:10px;
+					box-sizing: border-box;
+				}
+				.sh_btn{
+					background:#078CF3
+				}
+				.qrcode_btn{
+					background:#EE453C
+				}
+				
+			
 		}
 		.make-qrcode,.make-qrcode:after{
 			border-radius:20px !important;

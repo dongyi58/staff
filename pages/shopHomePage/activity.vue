@@ -80,7 +80,7 @@
 			
 		</view>
 		<view class="mask" v-if="showDrawer"  @click="cancel" :class="{'showmask':showDrawer}"></view>
-		
+		<backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
 
@@ -110,6 +110,7 @@
 				windowHeight: 0,
 				show: false,
 				 //图片懒加载
+				 topval:0,
 				 scrollTop:-1,
 				 
 				 //分类品牌查询
@@ -175,8 +176,15 @@
 		// console.log(this.tabwidth)
 	},
 	methods:{
+			backTop(){
+				this.scrollTop = 0
+				setTimeout(()=>{
+					this.scrollTop = -1
+				},500)
+			},
 			//图片懒加载
 			scroll(e){
+				this.topval = e.target.scrollTop
 				// console.log(e)
 				this.load()
 			},

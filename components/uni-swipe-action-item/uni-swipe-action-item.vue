@@ -179,7 +179,7 @@
 	.uni-swipe_box {
 		/* #ifndef APP-NVUE */
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		width: 100%;
 		flex-shrink: 0;
 		/* #endif */

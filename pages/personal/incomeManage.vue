@@ -2,7 +2,7 @@
 	<view class="wrap income_wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="收入管理"

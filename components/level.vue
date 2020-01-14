@@ -89,7 +89,7 @@
 </script>
 
 <style lang="scss">
-	.level_popup .uni-popup__wrapper-box{
+	.uni-popup__wrapper-box{
 		width:90%;
 	}
 	.active{

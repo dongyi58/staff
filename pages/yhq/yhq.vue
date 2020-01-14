@@ -4,8 +4,8 @@
 		<customnav 
 		:ismsg="false" 
 		:isSearch="false" 
-		:midtitle="false"
-		placeholder="在结果中搜索"
+		:midtitle="true"
+		navtitle="优惠商品"
 		:cancletext="false"
 		:searchinp="false"
 		 :focus="false"

@@ -14,6 +14,8 @@
 		</view>
 		
 		<scroll-view scroll-y="true" 
+					@scroll="handleScroll"
+					:scroll-top="scrollTop"
 					class="shoplist_scroll_view_height">
 				
 			<view class="shoplist_content">
@@ -44,6 +46,7 @@
 					</view>
 			</view>
 		</scroll-view>
+		<backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
 
@@ -58,7 +61,9 @@
 				bcolor:'#d2d2d2',
 				domain:this.$store.state.domain,
 				domain2:this.$store.state.domain2,
-				shopname:''
+				shopname:'',
+				topval:0,
+				scrollTop:-1
 			};
 		},
 		mounted() {
@@ -75,7 +80,15 @@
 			},
 		},
 		methods:{
-			
+			backTop(){
+				this.scrollTop = 0
+				setTimeout(()=>{
+					this.scrollTop = -1
+				},500)
+			},
+			handleScroll(e){
+				this.topval = e.target.scrollTop
+			},
 			shopSearch(){
 				this.shop_list=[]
 				this.loadShoplist()
@@ -118,7 +131,7 @@
 		background:#F6F6F6;
 	}
 	.shoplist_scroll_view_height{
-		height:calc(100vh - 95px);
+		height:calc(100vh - 95px - var(--status-bar-height));
 	
 	}
 	.shoplist_content{

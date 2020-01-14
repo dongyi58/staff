@@ -2,7 +2,7 @@
 	<view class="shopmanage_wrap wrap">
 			<view class="status_bar index_status_bar"></view>
 			<customnav
-			 :ismsg="true" 
+			 :ismsg="false" 
 			 :isSearch="false" 
 			 :midtitle="true"
 			 navtitle="小店管理"
@@ -35,16 +35,19 @@
 					 	<i class="iconfont icon-sousuo"></i>
 					 	<input type="text" 
 					 	confirm-type="search" 
+						v-model="keyword"
 					 	@confirm="shopSearch"
 					 	placeholder="请输入小店名称">
 					 </view>
 				 </view>
-				<scroll-view scroll-y="true"
+				<scroll-view scroll-y="true" 
+							@scroll="handleScroll"
+							:scroll-top="scrollTop"
 				 			 class="shopmanage_list">
 				 		 
 				 	<view class="shoplist_content dutyShop" v-if="currentidx==0">
 				 			<view class="shoplist_content_item" 
-				 			v-for="(item,idx) of dutyShopList"
+				 			v-for="(item,idx) of shopList"
 				 			:key="idx"
 				 			>
 				 				<view class="shoplist_content_item_top">
@@ -73,7 +76,7 @@
 				 	</view>
 					<view class="shoplist_content tjShop" v-if="currentidx==1">
 							<view class="shoplist_content_item" 
-							v-for="(item,idx) of shopList"
+							v-for="(item,idx) of dutyShopList"
 							:key="idx"
 							>
 								<view class="shoplist_content_item_top">
@@ -103,6 +106,7 @@
 				 </scroll-view>
 			 </view>
 			<level ref="levelRef"/>
+			<backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
 
@@ -115,15 +119,38 @@
 		components: {qstab,customnav,level},
 		data() {
 			return {
-				tabs:[],
+				tabs:[
+					{
+						name:'推荐小店',type:'tj',
+					},
+					{
+						name:'责任小店',type:'duty'
+					}
+				],
 				tabwidth:0,
 				currentidx:0,
 				domain2:this.$store.state.domain2,
 				type:'duty',
 				shopList:[],
 				dutyShopList:[],
-				
+				topval:0,
+				scrollTop:-1,
+				keyword:''
 			};
+		},
+		watch:{
+			keyword(n,o){
+				if(n == ''){
+					if(this.currentidx == 0){
+						this.shopList=[]
+						this.getShop()
+					}else{
+						this.dutyShopList=[]
+						this.getDutyShop()
+					}
+				}
+				
+			},
 		},
 		computed:{
 			staffInfo(){
@@ -139,9 +166,25 @@
 			// this.tabs.push('责任小店('+dutyShopList.length+')','推荐小店('+dutyShopList.length+')')
 		},
 		methods:{
+			backTop(){
+				this.scrollTop = 0
+				setTimeout(()=>{
+					this.scrollTop = -1
+				},500)
+			},
+			handleScroll(e){
+				this.topval = e.target.scrollTop
+			},
 			handleChange(idx){
 				this.currentidx = idx
-				
+				this.keyword=''
+				if(this.currentidx == 0){
+					this.shopList=[]
+					this.getShop()
+				}else{
+					this.dutyShopList=[]
+					this.getDutyShop()
+				}
 			},
 			gotoShopDetail(id){
 				console.log(id)
@@ -165,58 +208,76 @@
 					url:'/pages/personal/shopBasicInfo?shopId='+shopId
 				})
 			},
-			getDutyShop(){
+			shopSearch(){
+				if(this.currentidx == 0){
+					this.shopList=[]
+					this.getShop()
+					
+				}else{
+					this.dutyShopList=[]
+					
+					this.getDutyShop()
+				}
+			},
+			
+			getShop(){
 				let _this = this
 				this.$dyrequest({
 					url:'/SmallShop/getShopMsg',
 					method:'POST',
 					data:{
-						type:this.type
+						keyword:this.keyword
 					}
 				}).then(res=>{
-					
-					_this.dutyShopList = res.data.data.ShopMsg
-					if(_this.dutyShopList && _this.dutyShopList.length > 0){
-						_this.tabs.push('责任小店('+_this.dutyShopList.length+')')
+						this.$set(this.tabs[0],'name','推荐小店')
+					_this.shopList = res.data.data.ShopMsg
+					if(_this.shopList && _this.shopList.length>0){
+						this.$set(this.tabs[0],'name',this.tabs[0].name+'('+this.shopList.length+')')
 					}else{
-						_this.tabs.push('责任小店(0)')
+						this.$set(this.tabs[0],'name',this.tabs[0].name+'(0)')
+						
+					}
+					
+				})
+				
+			},
+			getDutyShop(){
+				
+				this.$dyrequest({
+					url:'/SmallShop/getShopMsg',
+					method:'POST',
+					data:{
+						type:this.type,
+						keyword:this.keyword
+					}
+				}).then(res=>{
+					this.$set(this.tabs[1],'name','责任小店')
+					this.dutyShopList = res.data.data.ShopMsg
+					if(this.dutyShopList && this.dutyShopList.length > 0){
+						
+						this.$set(this.tabs[1],'name',this.tabs[1].name+'('+this.dutyShopList.length+')')
+					}else{
+						this.$set(this.tabs[1],'name',this.tabs[1].name+'(0)')
 					}
 					
 					
 				})
 			},
-			getShop(){
-				let _this = this
-				this.$dyrequest({
-					url:'/SmallShop/getShopMsg',
-					method:'POST'
-				}).then(res=>{
-					
-					_this.shopList = res.data.data.ShopMsg
-					if(_this.shopList && _this.shopList.length>0){
-						_this.tabs.push('推荐小店('+_this.shopList.length+')')
-					}else{
-						_this.tabs.push('推荐小店(0)')
-					}
-					
-				})
-				
-			}
 		}
 	}
 </script>
 
 <style lang="scss">
 @import '@/static/css/style.scss';
-.uni-popup__wrapper-box{
-	width:80%;
-}
-.shopmanage_list{
-		width:100%;
-		height:calc(100vh - 195px);
-	
+	.uni-popup__wrapper-box{
+		width:80%;
 	}
-	//小店管理
+	.shopmanage_list{
+			width:100%;
+			height:calc(100vh - 195px - var(--status-bar-height));
+		
+		}
+		//小店管理
 	
 	.shopmanage_header{
 		position:relative;

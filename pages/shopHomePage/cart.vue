@@ -6,7 +6,8 @@
 		:isedit="true" 
 		:back="false" />
 		
-		<scroll-view scroll-y="true" class="cart_scrollview"  v-if="cartGoodsList.length">
+		<scroll-view scroll-y="true" @scroll="handleScroll"
+					:scroll-top="scrollTop" class="cart_scrollview"  v-if="cartGoodsList.length">
 			
 			<view class="order_box" 
 					v-for="(item,idx) of cartGoodsList" :key="idx">
@@ -21,40 +22,42 @@
 					 </view>
 					 <!-- 商品详情 -->
 					 <uni-swipe-action>
-					     <uni-swipe-action-item class="order_item"  
-							
+						  <uni-swipe-action-item  
 							 v-for="(goods,gidx) of item.goodsInfo" 
 							 :key="gidx" 
 							 :options="options" 
 							 @click="delCartGoods($event,goods.id)">
-								 <view>
-									  <checkbox-group  @change="checkGoods(idx,gidx)">
-										<checkbox :checked="goods.checked"  color="#fff" class="cartCheckBox" />
-									   </checkbox-group>
-								 </view>
-								<view class="o-left"  @click="goto_goodsdetail(goods.goods_id)">
-									
-									<!-- <image class="order_img" src="../../static/images/activity.jpeg" mode="aspectFill"></image> -->
-									 <image class=" order_img image" 
-									 :class="[goods.goods_status == 3 ? 'disableGoods' : '']" 
-									 lazy-load 
-									 :data-index="goods.goodsIndex" 
-									 @load="imageLoad($event,idx)" :src="goods.goods_img" />
-									 
-									 <view class="image placeholder loadimg" :class="{loaded:goods.loaded}" ><i class="iconfont icon-image"></i></view>	
-								 </view>
+								<view class="goodsActiveTips" v-if="goods.activity == 1" @click="checkActivity(item.activity_rule)">查看活动</view>
+								<view class="order_item">
+										<view class="checkWrap">
+											   <checkbox-group  v-if="goods.goods_status!=3" @change="checkGoods(idx,gidx)">
+												<checkbox :checked="goods.checked"  color="#fff" class="cartCheckBox" />
+											   </checkbox-group>
+												<span v-else class="holderSpan"> </span>
+										 </view>
+										<view class="o-left"  @click="goto_goodsdetail(goods.goods_id,goods.goods_status)">
+											
+											<!-- <image class="order_img" src="../../static/images/activity.jpeg" mode="aspectFill"></image> -->
+											 <image class=" order_img image" 
+											 :class="[goods.goods_status == 3 ? 'disableGoods' : '']" 
+											 lazy-load 
+											 :data-index="goods.goodsIndex" 
+											 @load="imageLoad($event,idx)" :src="goods.goods_img" />
+											 
+											 <view class="image placeholder loadimg" :class="{loaded:goods.loaded}" ><i class="iconfont icon-image"></i></view>	
+										 </view>
+										<view class="omid"  :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
+											 <p  @click="goto_goodsdetail(goods.goods_id,goods.goods_status)">{{goods.goods_name}}</p>
+											 <span class="skustr">规格:{{goods.spec_str}}</span>
+											 <view class="omid_bottom">
+												 <span class="c_price" v-if="goods.goods_status == 2">￥{{goods.goods_price}}</span>
+												 <span v-else-if="goods.store == 0">已售罄</span>
+												 <span v-else>已下架</span>
+												 <stepper :min="goods.mop"  @change="quantityNum($event,idx,gidx,goods.id)" :max="99" :value="goods.quantity" :disabled="goods.goods_status == 3 ? true : false"></stepper>
+											 </view>
+										</view>
+								</view>
 								
-								 <view class="omid"  :class="[goods.goods_status == 3 ? 'disableGoods' : '']">
-									 <p  @click="goto_goodsdetail(goods.goods_id)">{{goods.goods_name}}</p>
-									 <span class="skustr">规格:{{goods.spec_str}}</span>
-									 <view class="omid_bottom">
-										 <span class="c_price" v-if="goods.goods_status == 2">￥{{goods.goods_price}}</span>
-										 <span v-else-if="goods.store == 0">已售罄</span>
-										 <span v-else>已下架</span>
-										 <stepper :min="goods.mop"  @change="quantityNum($event,idx,gidx,goods.id)" :max="99" :value="goods.quantity" :disabled="goods.goods_status == 3 ? true : false"></stepper>
-									 </view>
-									
-								 </view>
 						  </uni-swipe-action-item>
 					 </uni-swipe-action>
 			</view>
@@ -82,6 +85,13 @@
 				<span class= "delBtn" v-else @click="delCartGoods(null)">删除</span>
 			</view>
 		</view>
+		<!-- <popup ref="popup" type="bottom">
+			<view>
+				<ul>
+					<li>{{activityRule[0].rebate}}</li>
+				</ul>
+			</view>
+		</popup> -->
 	</view>
 </template>
 
@@ -90,22 +100,25 @@
 	import customnav from '@/components/customnav.vue'
 	//步进器
 	import stepper from "@/components/uni-number-box/uni-number-box.vue"
+	//popup弹出层
+	import popup from'@/components/uni-popup/uni-popup.vue'
 	//滑动操作
 	import uniSwipeAction from '@/components/uni-swipe-action/uni-swipe-action.vue'
 	import uniSwipeActionItem from '@/components/uni-swipe-action-item/uni-swipe-action-item.vue'
 	export default {
-		components:{uniSwipeAction,uniSwipeActionItem,customnav,stepper},
+		components:{uniSwipeAction,uniSwipeActionItem,customnav,stepper,popup},
 		data() {
 			return {
 			
 				cartList:[],//存储重新组装的购物车列表，用来做选取后计算价格，全选等
 				cartGoodsList:[],//存放商品列表，用来做商品图片懒加载
+				disableGoods:[],
 				goodsIdx:-1,
 				cartNum:0,
 				domain:this.$store.state.domain,
 				checkall:false,
 				cartTitle:'',
-				
+				activityRule:{},
 				options:[
 				        {
 				            text: '取消',
@@ -121,6 +134,8 @@
 				      ],
 				loaded:false,
 				show:false,
+				topval:0,
+				scrollTop:-1
 			};
 		},
 		
@@ -159,12 +174,12 @@
 					let sellerId=""
 					this.cartGoodsList.map(item=>{
 							item.goodsInfo.map(gitem=>{
-								if(gitem.checked){
+								if(gitem.checked && gitem.goods_status !=3){
 									
-								  cartIdArr.push(gitem.id)
-								  sellerId = gitem.seller_id	
-								  totalPrice += gitem.goods_price * gitem.quantity
-								  count++
+									cartIdArr.push(gitem.id)
+									sellerId = gitem.seller_id	
+									totalPrice += gitem.goods_price * gitem.quantity
+									count++
 								}
 							})
 							
@@ -178,6 +193,19 @@
 			},
 		},
 		methods:{
+			backTop(){
+				this.scrollTop = 0
+				setTimeout(()=>{
+					this.scrollTop = -1
+				},500)
+			},
+			handleScroll(e){
+				this.topval = e.target.scrollTop
+			},
+			checkActivity(res){
+				this.activityRule = res
+				this.$refs.popup.open()
+			},
 			init(){
 				
 				this.cartTitle = ''
@@ -235,7 +263,7 @@
 			
 			//勾选小店后，选取此小店下所有商品
 			checkShopAllgoods(idx){
-				this.checkall=false //取消勾选全选按钮
+				 this.checkall=false //取消勾选全选按钮
 				 this.$set(this.cartGoodsList[idx],'checked',!this.cartGoodsList[idx].checked)//选中店铺
 				
 				//必须要if判断不能简写!checked，如果先单选的一个商品，再勾选小店的话，被单选过的会选不上，必须要显示的声明true或false
@@ -259,25 +287,34 @@
 			checkGoods(pidx,cidx){
 				let selectedItem = this.cartGoodsList[pidx].goodsInfo[cidx]
 				let count = 0
+				let len = this.cartGoodsList[pidx].goodsInfo.length
 				this.checkall=false //取消勾选全选按钮
 				
 				this.$set(selectedItem,'checked',!selectedItem.checked)
 				
+				this.cartGoodsList[pidx].goodsInfo.map(item=>{ //不计算并减去已失效的商品
+					if(item.goods_status == 3){
+						this.$set(item,'checked',false)
+						len--
+					}
+				})
+									 
 				//获取选中的商品个数，判断是否选中小店下所有商品，勾选小店
 				// this.mapGoods()
 				 this.cartGoodsList[pidx].goodsInfo.map(item=>{
+					
 					 if(item.checked){
 					 	count++
-						
-					 	if(count == this.cartGoodsList[pidx].goodsInfo.length){
-							
+						  
+					 	if(count == len){
 					 		 this.cartGoodsList[pidx].checked = true
 							 this.mapGoods()
 					 	}else{
 							 this.cartGoodsList[pidx].checked = false
 						}
 					 }else{
-						 if(this.cartGoodsList[pidx].goodsInfo.length == 1){
+						 //购物车剩最后一个商品时，并取消勾选时，同时取消小店勾选
+						 if(len == 1 && item.goods_status != 3){
 							  this.cartGoodsList[pidx].checked = false
 							  this.mapGoods()
 						 }
@@ -311,8 +348,6 @@
 						cartId:id,
 						quantity:quantity
 					}
-				}).then(res=>{
-					console.log(res)
 				})
 			},
 			
@@ -344,43 +379,56 @@
 					
 					let data1 =res.data.data.data1 //正常商品
 					let data2 = res.data.data.data2//失效商品
-					
+					let goodsarr=[]
 				   //将失效商品合并到一起
-					for(let j in data2){
-						for(let k in data2[j]){
-							data1[j].push(data2[j][k])
-							
-						}
-					}
+				   if(res.data.data.data1){
+					   for(let j in data2){
+					   	for(let k in data2[j]){
+					   		
+					   		data1[j].push(data2[j][k])
+					   		
+					   	}
+					   }
+					   goodsarr = data1
+				   }else{
+					    goodsarr= data2
+				   }
 					
-				for(let i in data1){
+					
+				for(let i in goodsarr){
 						let tempGoods=[]
 						 this.goodsIdx = -1
 						 
 						//存储该小店下面的商品
-						for(let j in data1[i]){
+						for(let j in goodsarr[i]){
 							 this.goodsIdx++
 							 //设置商品最小起订量
-							 if(data1[i][j].price_type == 'whole'){
-								  this.$set(data1[i][j],'mop',Number(data1[i][j].whole_sale_num))
+							 if(goodsarr[i][j].price_type == 'whole'){
+								  this.$set(goodsarr[i][j],'mop',Number(goodsarr[i][j].whole_sale_num))
 							 }else{
-								 this.$set(data1[i][j],'mop',Number(data1[i][j].retail_sale_num))
+								 this.$set(goodsarr[i][j],'mop',Number(goodsarr[i][j].retail_sale_num))
 							 }
 							  
-							 this.$set(data1[i][j],'goodsIndex',this.goodsIdx)
-							 this.$set(data1[i][j],'loaded',false)
-							 this.$set(data1[i][j],'checked',false)
-							 data1[i][j].goods_img = this.domain+ data1[i][j].goods_img
-							 tempGoods.push(data1[i][j])
+							 this.$set(goodsarr[i][j],'goodsIndex',this.goodsIdx)
+							 this.$set(goodsarr[i][j],'loaded',false)
+							 if(goodsarr[i][j].goods_status != 3){
+								 this.$set(goodsarr[i][j],'checked',false)
+							 }
+							 
+							 goodsarr[i][j].goods_img = this.domain+ goodsarr[i][j].goods_img
+							 tempGoods.push(goodsarr[i][j])
 							 // this.cartList.push(data1[i][j])
 							}
-						
+							
+							
 							//重新组装数据，将对应小店和商品组装在一起 
 							this.cartGoodsList.push({
 								shopName:i,
 								checked:false,
 								goodsInfo:tempGoods
 							})
+							
+							
 						
 					}
 					
@@ -388,8 +436,14 @@
 				})
 			},
 			
-			goto_goodsdetail(goodsId){
-							
+			goto_goodsdetail(goodsId,status){
+					if(status == 3){
+						uni.showToast({
+							icon:'none',
+							title:'商品已失效'
+						})
+						return
+					}
 					 uni.navigateTo({
 						url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
 					 })
@@ -426,7 +480,7 @@
 <style lang="scss">
 	@import '@/static/css/style.scss';
 	.cart_scrollview{
-		height:calc(100vh - 140px);
+		height:calc(100vh - 125px);
 		padding:10px;
 		box-sizing: border-box;
 	}
@@ -445,6 +499,7 @@
 			justify-content: space-between;
 			align-items: center;
 			padding:10px 0;
+			
 			&_left{
 				display: flex;
 				align-items: center;
@@ -479,12 +534,18 @@
 				color:#147AED
 			}
 		}
+		.checkWrap{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 		.order_item{
 		
 			display: flex;
 			justify-content: space-between;
-			align-items: stretch;
-			border-top:1px solid #eee;
+			align-items: center;
+			border-bottom:1px solid #eee;
+			width:100%;
 			padding:15px 0;
 			.o-left{
 				position:relative;
@@ -499,11 +560,7 @@
 					border:1px solid #eee;
 				}
 			}
-			.disableGoods{
-				color:#999 !important;
-				filter: gray;
-				filter: grayscale(100%);
-			}
+			
 			.omid{
 				display: flex;
 				flex-direction: column;
@@ -590,5 +647,15 @@
 				}
 			}
 		}
+	}
+	.holderSpan{
+		display: inline-block;
+		width:25px;
+	}
+	.goodsActiveTips{
+		width:100%;
+		text-align:right;
+		color:#147AED;
+		padding:5px 0;
 	}
 </style>

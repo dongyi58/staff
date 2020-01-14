@@ -2,31 +2,11 @@
 	<view class="wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav :back="false" navtitle="分类" :ismsg="false" />
-		<!-- <view class="header-bkg"></view> -->
-		<!-- 小店信息展示 -->
-		<!-- <view class="supInfo">
-			<view class="getcut"><span>已选择小店</span><span @click="openPopup">领取优惠券</span></view>
-			<view class="supInfo-top">
-				<view class="st-left">
-					
-					<image v-if="shopInfo.head_sculpture" class="st-left-img" :src="domain+shopInfo.head_sculpture" mode="aspectFill"></image>
-					<image v-else class="st-left-img" src="../../static/images/default-avatar.jpeg" mode="aspectFill"></image>
-					<view class="st-name">
-						<h4>{{shopInfo.shopname}}</h4>
-						<view class="h_location">
-							<i class="iconfont icon-weizhi"></i>
-							<p>{{shopInfo.address}}</p>
-						</view>
-					</view>
-				</view>
-				<view>
-					<i class="iconfont icon-you"></i>
-				</view>
+		<scroll-view scroll-y="true" class="cateList">
+			<view>
+				<recursion :datas="categoryList" @foldOption='foldOption'></recursion>
 			</view>
-		</view> -->
-		<view style="margin-top:10px">
-			<recursion :datas="categoryList" @foldOption='foldOption'></recursion>
-		</view>
+		</scroll-view>
 		
 	</view>
 </template>
@@ -68,7 +48,7 @@
 		},
 		methods:{
 			loadData(){
-				console.log(this.supplierId);
+				// console.log(this.supplierId);
 				this.$dyrequest({
 				     url:'/index.php/Category/indexOne',
 				     method:'POST',
@@ -76,9 +56,10 @@
 					  supplierId:this.supplierId
 				     }
 				    }).then(res=>{
-						console.log(res);
+						
 						this.handleCategory(res.data.data);
 						this.categoryList=res.data.data;
+						
 					})
 					.catch(err=>{
 						console.log(err);
@@ -86,15 +67,20 @@
 			},
 			handleCategory(datas){
 				datas.forEach(item=>{
+					// this.$set(item,'isClick',false)
 					item.unfold=false;
 					if(item.parent){
 						this.handleCategory(item.parent)
+					}else{
+						this.$set(item,'noChild',true)
 					}
 				})
+				// console.log(datas)
 			},
 			// 递归组件折叠操作
 			foldOption(e){
 				let tempId=e;
+				// console.log(tempId)
 				// // #ifndef H5
 				// 	tempId=e.detail.__args__[0];
 				// // #endif
@@ -117,6 +103,9 @@
 </script>
 
 <style lang="scss">
+	.cateList{
+		height:calc(100vh - 95px - var(--status-bar-height))
+	}
 .header-bkg{
 		position:absolute;
 		width: 100%;

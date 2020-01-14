@@ -2,7 +2,7 @@
 	<view class="wrap current_account_wrap">
 		<view class="status_bar index_status_bar"></view>
 		<customnav
-		 :ismsg="true" 
+		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
 		 navtitle="验证原手机号"
@@ -103,7 +103,7 @@
 		border:1px solid #F53430 !important;
 	}
 	.codeInp{
-		width:100%;
+		width:70%;
 		height:35px;
 		border-bottom:1px solid #f8f8f8;
 		font-size:12px;

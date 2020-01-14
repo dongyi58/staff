@@ -1,11 +1,13 @@
 <template>
-	<view class="wrapper cate">
+	<view class="wrapper">
 		<view class="item-wrapper" 
 		v-for="(item,idx) in datas"
 		:key="idx">
 			<view class="title" :class="{'unfold':item.unfold}">
-				<view v-if="item.parent&&item.parent.length" class="child-flag"></view>
-				<text @tap="goGoods(item)" class="font-28">{{item.name}}</text>
+				<view class="title_left">
+					<view v-if="item.parent&&item.parent.length" class="child-flag"></view>
+					<text @tap="goGoods(item)" class="font-28">{{item.name}}</text>
+				</view>
 				<i  class="iconfont" :class="item.unfold&&item.parent?'icon-icon-arrow-bottom2':'icon-you'" @tap.stop="foldOption(item)"></i>
 			</view>
 			
@@ -71,7 +73,7 @@ import recursion from '@/components/recursion.vue';
 	$white:#FFF;
 	
 	.iconfont{
-		color:#BFBFBF;	
+		color:#BFBFBF;
 	}
 	.item-wrapper{
 		padding-left:20.83rpx;
@@ -81,8 +83,13 @@ import recursion from '@/components/recursion.vue';
 	.title{
 		display:flex;
 		align-items:center;
+		justify-content: space-between;
 		padding:20.83rpx 0;
 		border-bottom:1.04rpx solid #F6F6F6;
+		.title_left{
+			display: flex;
+			align-items: center;
+		}
 		.child-flag{
 			width:8.33rpx;
 			height:20.83rpx;
@@ -94,6 +101,7 @@ import recursion from '@/components/recursion.vue';
 			
 		}
 		i{
+			flex:1;
 			text-align:end;
 			margin:0 20.83rpx;
 			flex-shrink:0;

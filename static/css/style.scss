@@ -94,8 +94,12 @@
 		opacity: 0;
 	}
 //公用loading样式
-
-
+//下架商品
+.disableGoods{
+				color:#999 !important;
+				filter: gray;
+				filter: grayscale(100%);
+			}
 // 公用过滤样式
 .filter_bar{
 	background:#fff;

@@ -172,6 +172,10 @@
 		{
 			 "path" :"pages/shopHomePage/categoryGoods"
 		}
+        ,{
+            "path" : "pages/forgetPsw/forgetPsw",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
