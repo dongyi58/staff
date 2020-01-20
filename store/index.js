@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
-		domain:'http://shop1.ddddian.com',
+		domain:'http://img.ddddian.com',
 		domain2:'http://dsales.ddddian.com',
 		shopId:'',
 		supplierId:'',
@@ -19,7 +19,8 @@ const store = new Vuex.Store({
 		addCart:true ,//判断用户是否有加入购物车的操作,有的话当用户进入购物车重新获取数据
 		buyProductParam:{},
 		shopInfo:{},
-		editFlag:false //购物车编辑状态
+		editFlag:false ,//购物车编辑状态
+		oldtype:''
 	},
 	getters: {
 		
@@ -72,8 +73,13 @@ const store = new Vuex.Store({
 		CHANGE_EDITSTATUS(state,status){
 			state.editFlag = status
 		},
+		//订单管理页面进入详情后保存上次点击过的订单类型
+		SAVE_STATUS(state,type){
+			state.oldtype=type//保留点击过的type
+		}
 	},
 	actions:{
+		//购物车数量
 		getCartNum({commit,state},shop){
 			return new Promise((resolve,reject)=>{
 				request({
@@ -89,6 +95,55 @@ const store = new Vuex.Store({
 			})
 			
 		},
+		//支付方式选择,获取支付方式
+		paymentType({dispatch},totalNum){
+			
+			return new Promise((resolve,reject)=>{
+				request({
+					url:'/MyWallet/pay',
+					method:'POST'
+				}).then(res=>{
+					let typelist=[]
+					res.data.map(item=>{
+						typelist.push(item.name)
+					})
+					uni.showActionSheet({
+					    itemList:typelist,
+					    success: function (action) {
+							
+					      dispatch('getPaymentQrCode',{
+							  orderid:totalNum,
+							  pay_id:res.data[action.tapIndex].id,
+							  client_type:res.data[action.tapIndex].client_type,
+							  idx:action.tapIndex
+						  }).then(info=>{
+							  resolve(info,)
+						  })
+					    },
+					    fail: function (res) {
+					        console.log(res.errMsg);
+					    }
+					});
+				})
+			})
+			
+			
+		},
+		//生成支付二维码
+		getPaymentQrCode({dispatch},opt){
+				return new Promise((resolve,reject)=>{
+					request({
+						url:'/MyWallet/sweepCodePay',
+						method:'POST',
+						data:opt
+					}).then(res=>{
+						resolve({info:res.data.info,idx:opt.idx})
+					})
+				})
+				
+		}
+		
+		
 	}
 
 })

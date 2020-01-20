@@ -1,7 +1,7 @@
 <template>
 	<view class="wrap shop_homepage_wrap">
 			<view class="status_bar index_status_bar"></view>
-			<customnav :navtitle="supllierInfo.contactname" :ismsg="false" :isSearch="true"  backType="1" backurl="/pages/shops/shops" />
+			<customnav :navtitle="supllierInfo.contactname" :ismsg="false" :isSearch="true"   />
 			
 			<view class="header-bkg"></view>
 			<!-- 小店信息展示 -->
@@ -72,7 +72,7 @@
 							<!-- 商品列表 -->
 							 <view class="goods_list">
 								
-								<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)"  v-for="(item,idx) of goodsList" :key="idx">
+								<view class="goods_item"  @click="goto_goodsdetail(item.goods_id,item.activity)"  v-for="(item,idx) of goodsList" :key="idx">
 									<view class="goods_img_box">
 										<!-- <image lazy-load class="image" :src="item.img"  mode="aspectFill" /> -->
 										<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show?item.img:''" />
@@ -98,8 +98,9 @@
 							</view>
 							
 						</view>
-					</scroll-view>
-			  <popup ref="popup" type="center" class="home_popup" :popstyle="{width:'90%',height:'350px',overflow:'hidden'}">
+			</scroll-view>
+			
+			 <popup ref="popup" type="center" class="home_popup" :popstyle="{width:'90%',height:'350px',overflow:'hidden'}">
 				  <!-- way_id=1折扣券,way_id=2满减券 -->
 					<view class="yhq_title">来领券吧
 					 <i class="iconfont icon-ziyuan" @click="closePopup()"></i>
@@ -111,7 +112,7 @@
 							v-for="(yitem,yid) of item.rule"
 							:key="yid"
 							:class="[item.way_id == 1 ? 'zkbj' : 'mjbj']">
-							   <image v-if="yitem.take" class="takeimg" src="../../static/images/take.png"></image>
+							   <image v-if="yitem.status==1" class="takeimg" src="../../static/images/take.png"></image>
 								<view class="yhq_left">
 									<view class="yhq_left_one">
 										<span  v-if="item.way_id == 1">{{yitem.rebate*10}} 折</span>
@@ -122,20 +123,23 @@
 									<view class="yhq_left_two">
 										<span v-if="item.way_id == 1">部分商品可用</span>
 										<span v-if="item.way_id == 5">满{{yitem.money}}元使用</span>
-										<span v-if="item.way_id == 5">部分商品通用<br>(特价除外)</span>
+										<span v-if="item.way_id == 5">部分商品可用</span>
 									</view>
 								</view>
 								<view class="yhq_right">
 									<span v-if="item.way_id == 1">店铺折扣券</span>
 									<span v-else>店铺满减券</span>
-									<span  class="usestyle2" v-if="!yitem.take && yitem.status !=1" @click="getYhq(item.activity_id,yitem.money,idx,yid)">领 取</span>
-									<span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
+									<span  :class="[item.way_id == 1 ? 'usestyle2' : 'usestyle']"
+									 v-if="!yitem.take && yitem.status !=1" 
+									 @click="getYhq(item.activity_id,yitem.money,idx,yid)">领 取</span>
+									<span  :class="[item.way_id == 1 ? 'takestyle2' : 'takestyle']" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 								</view>
 							</view>
 						</view>
 					</view>
 			</popup>
-			<backTop :scrollTop="topval" @backTop="backTop" />
+			 <backTop :scrollTop="topval" @backTop="backTop" />
+			 <pageLoad :hide="hide" />	
 		</view>
 </template>
 
@@ -166,7 +170,8 @@
 				 show: false,
 				  //图片懒加载
 				  topval:0,
-				  scrollTop:-1
+				  scrollTop:-1,
+				  hide:false
 			};
 		},
 		computed:{
@@ -201,17 +206,16 @@
 		},
 		mounted(){
 			
-			
 			//图片懒加载
-			this.windowHeight = uni.getSystemInfoSync().windowHeight-230
+			// this.windowHeight = uni.getSystemInfoSync().windowHeight-230
 			
-			if (!this.show) {
-				this.show = true
+			// if (!this.show) {
+			// 	this.show = true
 				
-				setTimeout(() => {
-					this.load()
-				}, 100)
-			}
+			// 	setTimeout(() => {
+			// 		this.load()
+			// 	}, 100)
+			// }
 			//图片懒加载
 		},
 		
@@ -233,28 +237,37 @@
 				query.selectAll('.lazy').boundingClientRect((images) => {
 			
 					images.forEach((image, index) => {
-						// console.log(image.top)
+						
 						if (image.top <= this.windowHeight) {
+							 console.log(this.goodsList[image.dataset.index].show)
 							this.goodsList[image.dataset.index].show = true;
+							
 						}
 					})
 				}).exec()
 			},
 			imageLoad(e) {
+				
 				this.goodsList[e.target.dataset.index].loaded = true
+				console.log(this.goodsList[e.target.dataset.index].loaded)
 			},
 			//图片懒加载
 			
 			//领取优惠券弹窗
 			 openPopup(){
-				 if(this.goodsDiscount.length == 0){
-						uni.showToast({
-							icon:'none',
-							title: '暂无可用优惠券'
-						});
-						return
-				 }
-			     this.$refs.popup.open()
+				 //暂时禁用
+				 	uni.showToast({
+				 		icon:'none',
+				 		title: '该功能正在优化，敬请期待'
+				 	});
+				 // if(this.goodsDiscount.length == 0){
+					// 	uni.showToast({
+					// 		icon:'none',
+					// 		title: '暂无可用优惠券'
+					// 	});
+					// 	return
+				 // }
+			  //    this.$refs.popup.open()
 			  },
 			  //使用优惠券
 			  
@@ -274,10 +287,10 @@
 				this.getgoods_list(this.shopId)
 				
 			 },
-			 goto_goodsdetail(goodsId){
+			 goto_goodsdetail(goodsId,activity){
 				
 				 uni.navigateTo({
-				 	url:'/pages/goodsDetail/goodsDetail?dtype=1&shopId='+this.shopId+'&goods_id='+goodsId
+				 	url:'/pages/goodsDetail/goodsDetail?activity='+activity+'&dtype=1&goods_id='+goodsId
 				 })
 			 },
 			 //更多活动
@@ -311,6 +324,7 @@
 				 this.$dyrequest({
 						url:'/IndexSales/goodsIndex', 
 						method:'POST',
+						hideLoading:true,
 						data:{
 							page:_this.page,
 							id:id
@@ -365,7 +379,21 @@
 								
 							 
 						 })
+						//图片懒加载 首次加载
+						this.windowHeight = uni.getSystemInfoSync().windowHeight-230
+						//数据加载完成后隐藏loading
+						setTimeout(()=>{
+							this.hide = true
+						},1500)
 						
+						if (!this.show) {
+							this.show = true
+							
+							setTimeout(() => {
+								this.load()
+							}, 100)
+						}
+						//图片懒加载
 						 //判断没有数据，不再请求
 						 if(res.data.data.goods.all.data.length == 0){
 							_this.finshed = true
@@ -386,10 +414,7 @@
 		width: 100%;
 		height: calc(100vh - 213px - var(--status-bar-height));
 	}
-	.activity_gif{
-		width:50px;
-		height:18px;
-	}
+
 .header-bkg{
 		position:absolute;
 		width: 100%;
@@ -514,7 +539,7 @@
 				display:flex;
 				flex-direction: column;
 				position:relative;
-				flex:0 1 28%;
+				width:28%;
 				list-style: none;
 				text-align:center;
 				
@@ -563,8 +588,9 @@
 				color:#fff;
 				font-weight: 600;
 				text-align:center;
-				line-height:40px;
+				line-height:35px;
 				border-radius:50%;
+				font-size:12px;
 				background:linear-gradient(to bottom,#FE8C58,#FD4940);
 			
 			}

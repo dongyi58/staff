@@ -16,9 +16,9 @@
 	<view>
 		<home  @changeidx='changeidx' :style="{display:current == 0 ? 'block' : 'none'}"/>
 		<allproduct  :style="{display:current == 1 ? 'block' : 'none'}" />
-		<activity  :style="{display:current == 2 ? 'block' : 'none'}" />
-		<cart :style="{display:current == 3 ? 'block' : 'none'}" />
-		<category  :style="{display:current == 4 ? 'block' : 'none'}" />
+		<!-- <activity  :style="{display:current == 2 ? 'block' : 'none'}" /> -->
+		<cart :style="{display:current == 2 ? 'block' : 'none'}" />
+		<category  :style="{display:current == 3 ? 'block' : 'none'}" />
 		
 		<view class="supBottomNav">
 			
@@ -68,12 +68,12 @@
 						active:'icon-quanbushangpinred',
 						activeIdx:1
 					},
-					{
-						name:'活动',
-						icon:'icon-youhui',
-						active:'icon-youhuired',
-						activeIdx:2
-					},
+					// {
+					// 	name:'活动',
+					// 	icon:'icon-youhui',
+					// 	active:'icon-youhuired',
+					// 	activeIdx:2
+					// },
 					{
 						name:'采购单',
 						icon:'icon-dingdan',
@@ -89,16 +89,22 @@
 				],
 			}
 		},
-		onLoad(){
-			  console.log('loaded')
+		computed:{
+			 cidx(){
+				 return this.$store.state.currentIndex
+			 }
+		},
+		onLoad(option){
+			  // console.log('loaded')
 			  // this.$store.commit('ADD_CART',true) //改变状态，重新加载购物车
-			  this.changeidx(this.$store.state.currentIndex)
-			 
+			  // this.changeidx(this.$store.state.currentIndex)
+			
+			  this.changeidx(option.type)
 		},
 		onShow() {
 			// console.log('show')
 			//  this.$store.commit('ADD_CART',true)
-			 this.changeidx(this.$store.state.currentIndex)
+			 this.changeidx(this.cidx)
 			// console.log(this.$store.state.currentIndex)
 			 
 		},

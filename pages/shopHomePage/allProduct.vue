@@ -43,6 +43,7 @@
 									</view>
 									<p class="goods_name">{{item.name}}</p>
 									<view class="goods_price">¥{{item.showPrice}} <span>已售出{{item.sale || 0}}件</span><!-- <i class="iconfont icon-jia"></i> --></view>
+									<view class="aimg_box"><image v-if="item.activity" class="activity_gif" src="../../static/images/fire.gif" mode=""></image></view>
 								</view>
 								<view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
 							</view>
@@ -340,6 +341,12 @@
 	.drawerScrollList{
 		height:100vh;
 	}
+	.aimg_box{
+		display: flex;
+		align-items: center;
+		
+		padding:0 10px;
+	}
 	.cateList{
 		height: calc(100vh - 150px);
 		 overflow: scroll;
@@ -354,11 +361,12 @@
 			  	margin:0 10px 10px 0;
 			  	padding:5px 10px;
 			  }
+			  .activeCate{
+			  	background:linear-gradient(to right, #21A5F9, #1A6FE8);
+			  	color:#fff !important;
+			  }
 		  }
-		.activeCate{
-			background:linear-gradient(to right, #21A5F9, #1A6FE8);
-			color:#fff;
-		}
+		
 	}
 	.confirm{
 		position:fixed;

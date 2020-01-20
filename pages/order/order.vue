@@ -20,26 +20,45 @@
 							  <view class="order_box">
 									 <view class="order_title">{{item.shopName}}<i class="iconfont icon-you"></i></view>
 									 <view class="order_item" v-for="(goods,gidx) of item.goods" :key="gidx">
-											 <view class="o-left">
-												 <image class="order_img" :src="goods.goods_img" mode="aspectFill"></image>
+											 <view class="order_item_box">
+												<view class="o-left">
+														<image class="order_img" :src="goods.goods_img" mode="aspectFill"></image>
+												</view>
+												<view class="omid">
+														<p>{{goods.goods_name}}</p>
+														<span>规格:{{goods.spec_str}}</span>
+												</view>
+												<!-- 普通商品 -->
+												<view class="o-right">
+													 <span>￥{{goods.goods_price}}</span>
+													 <view class="or-bottom">
+														 <span>× {{goods.quantity}}</span>
+														 <!-- <span>优惠：{{goods.coupon_fee}}</span> -->
+													 </view>
+												</view> 
 											 </view>
-											 <view class="omid">
-												 <p>{{goods.goods_name}}</p>
-												 <span>规格:{{goods.spec_str}}</span>
-											 </view>
-											 <!-- 普通商品 -->
-											 <view class="o-right">
-												 <span>￥{{goods.goods_price}}</span>
-												 <view class="or-bottom">
-													 <span>× {{goods.quantity}}</span>
-													 <!-- <span>优惠：{{goods.coupon_fee}}</span> -->
-												 </view>
-											 </view>
-											 <!-- 赠品 -->
-											 <!-- <view class="o-right gift-right" v-else>
-													<span>赠品</span>
-											 </view> -->
+											
+											<!-- 赠品 -->
+											<view class="freeGoods_wrap" v-if="showfree && goods.freeGoods">
+												<span class="orderOptItem_left">选择赠品</span> 
+												<view class="orderOptItem_right">
+													<dselect 
+														:list="goods.freeGoods.name"
+														:clearable="false"
+														:showItemNum="5" 
+														:listShow="false"
+														:isCanInput="false"  
+														:style_Container="'width:calc(100vw - 115px);height: 30px; font-size: 12px;'"
+														:placeholder = "'placeholder'"
+														:initValue="goods.freeGoods.name[0]"
+														:selectHideType="'hideAll'"
+														@change="handleFreeChange($event,goods)"
+													>
+													</dselect>
+												</view>
+											</view>
 									 </view>
+									
 								</view>
 								
 							</view>
@@ -47,23 +66,7 @@
 								<!-- 订单选项 -->
 								<view class="orderOptItem_wrap">
 									
-										<view class="orderOptItem" v-if="showfree">
-											<span class="orderOptItem_left">选择赠品</span> 
-											<view class="orderOptItem_right">
-												<dselect 
-													:list="freelist"
-													:clearable="false"
-													:showItemNum="5" 
-													:listShow="false"
-													:isCanInput="false"  
-													:style_Container="'width:calc(100vw - 115px);height: 30px; font-size: 12px;'"
-													:placeholder = "'placeholder'"
-													:initValue="freelist[0]"
-													:selectHideType="'hideAll'"
-												>
-												</dselect>
-											</view>
-										</view>
+										
 										<view class="orderOptItem" @click="payType">
 											<span class="orderOptItem_left">结算方式</span> 
 											<view class="orderOptItem_right">
@@ -116,7 +119,7 @@
 			<span class="tcv_left">共{{orderDetailInfo.totalquantity}}件</span>
 			<view class="tcv_right">
 				<view>合计：<span>￥{{totalPrice}}</span></view>
-				<button size="mini" @click="orderSubmit($event)">去付款</button>
+				<button size="mini" @click="orderSubmit($event)" :disabled="disabled">提交订单</button>
 			</view>
 		</view>
 		<!-- 结算方式 选择 -->
@@ -242,8 +245,10 @@
 				multipleData : {} ,//批量购买数据
 				//赠品列表
 				showfree:false,//有无赠品
-				freelist:[],
-				freegoodsId:[]
+				freegoodsId:{},//批量购买存储赠品id
+				freegoodsIdSingle:[],//单品购买
+				freeIdx:0,//选择的赠品下标
+				disabled:false
 			};
 				
 				
@@ -346,7 +351,22 @@
 			//获取订单详情
 			getOrderDetail(){
 				this.$dyrequest(this.cartDetailRequest).then(res=>{
-				
+					if(res.data.code == 502){ 
+							uni.showModal({
+							    title: '提示',
+								showCancel:false,
+							    content: '该小店未设置收货地址或收获电话，请完善信息后重新购买',
+							    success: function (res) {
+							        if (res.confirm) {
+							            uni.navigateBack({
+							            	delta:1
+							            })
+							        } 
+							    }
+							});
+							
+							return
+					}
 					this.orderDetailInfo=res.data.data
 					let ordergoods = res.data.data.data
 					
@@ -392,17 +412,34 @@
 								 this.$set(ordergoods[i][j],'goodsIndex',this.goodsIdx)
 								 this.$set(ordergoods[i][j],'loaded',false)
 								 ordergoods[i][j].goods_img = this.domain+ ordergoods[i][j].goods_img
-								 tempGoods.push(ordergoods[i][j])
-								 quantityCount+= ordergoods[i][j].quantity
-								 // this.cartList.push(data1[i][j])
+								  quantityCount+= ordergoods[i][j].quantity //总件数
+								  
 								 //判断是否有赠品
 								// console.log(ordergoods[i][j].rule.freeProductName)
 									 if(ordergoods[i][j].rule.freeProductName){
+										 console.log(1)
 										this.showfree = true
-										this.freelist = ordergoods[i][j].rule.freeProductName
-										this.freegoodsId = ordergoods[i][j].rule.freeProductId
+										if(this.type==1){
+											//单品购买默认选择赠品id
+											this.freegoodsIdSingle = ordergoods[i][j].rule.freeProductId
+										}else{
+											
+											// "productname":{
+											// 	"1583":["2019120456995357"],
+											// 	"1583":["2019120456995357"],
+											// 	"1583":["2019120456995357"],
+											// 	},
+											//批量购买默认选中的赠品Id
+											this.freegoodsId[ordergoods[i][j].id]=[]
+											this.freegoodsId[ordergoods[i][j].id].push(ordergoods[i][j].rule.freeProductId[0])
+										}
+										
+										//赠品列表
+										this.$set(ordergoods[i][j],'freeGoods',{name:ordergoods[i][j].rule.freeProductName,pid:ordergoods[i][j].rule.freeProductId})
 									 }
+									 tempGoods.push(ordergoods[i][j])
 								}
+								
 								//重新组装数据，将对应小店和商品组装在一起 
 								this.orderGoodsList.push({
 									shopName:i,
@@ -411,8 +448,8 @@
 								})
 							
 						}
-						//console.log(this.freegoodsId)
-						//console.log(this.orderGoodsList)
+						// console.log(this.freegoodsId)
+						// console.log(this.orderGoodsList)
 					
 				})
 				
@@ -534,10 +571,18 @@
 					this.deliverTips =  '包邮'
 				}
 			},
-		
+			//选择赠品 
+			handleFreeChange(e,item){
+				this.freeIdx = e.index
+				if(this.type==2){ //批量选中后替换原来的赠品id
+					this.freegoodsId[item.id][0] = item.freeGoods.pid[this.freeIdx]
+				}
+				
+				
+			},
 			//提交订单
 			orderSubmit(e,idx){
-				
+				this.disabled=true
 				let submitRequest={}
 				if(this.type == 1){
 					submitRequest = {
@@ -554,18 +599,20 @@
 								activity_id:this.priceParams.activity_id,
 								order_type:this.priceParams.order_type,
 								period_id:this.priceParams.period_id,
-								productname:idx ? this.freegoodsId[idx] : (this.freegoodsId.length==0 ? '':this.freegoodsId[0]),
+								productname:this.freegoodsIdSingle.length==0 ? '':this.freegoodsIdSingle[this.freeIdx],
 								delivery_id:this.priceParams.delivery_id,
 								memo:this.memo
 							}
 						}
 				}else{
+					this.multipleData[this.sellerId].productname = this.freegoodsId
 					submitRequest = {
 						url:'/CartSales/orderSubmit',
 						method:'POST',
 						data:{
 							id:this.$store.state.shopId,
-							order:JSON.stringify(this.multipleData)
+							order:JSON.stringify(this.multipleData),
+							
 						}
 					}
 				}
@@ -579,15 +626,16 @@
 					
 					//返回购物车重新加载数据
 					
-					// setTimeout(()=>{
-					// 	this.$store.commit('ADD_CART',true)
-					// 	this.$store.commit('SET_CURRENINDEX',0)
-					// 	uni.navigateTo({
-					// 	    url: '/pages/shopHomePage/homeindex'
-					// 	});
-					// },2500)
+					setTimeout(()=>{
+						uni.reLaunch({
+							url:'/pages/personal/shopOrder?shopId='+this.shopId
+						})
+					},2000)
 					
 					
+				}).catch(err=>{
+					
+					this.disabled=false
 				})
 			},
 			//选择结算方式
@@ -703,7 +751,15 @@
 			    font-size: 12px;
 		}
 	}
-	.order_item{
+	.freeGoods_wrap{
+		display: flex;
+		align-items: center;
+		margin-bottom:15px;
+		.orderOptItem_left{
+			margin-right:15px;
+		}
+	}
+	.order_item_box{
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -924,4 +980,5 @@
 				}
 			}
 		}
+		
 </style>

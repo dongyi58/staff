@@ -8,6 +8,8 @@
 		 navtitle="订单管理"
 		 :cancletext="false"
 		 :focus="false"
+		 :backType="1"
+		 backurl="/pages/personal/shopManage"
 		 />
 		 <view class="shoplist_content">
 		 		<view class="shoplist_content_item" >
@@ -57,7 +59,7 @@
 					 <view class="ordernum">
 						 <view class="ordernum_left">
 							 <span>订单编号:{{item.orderno}}</span>
-							 <span>{{item.order_type == 1 ? '账期订单' : (item.order_type == 2 ? '到付订单' : '现付订单')}}</span>
+							
 						 </view>	
 						 <span> 
 							<i v-if="item.order_role==2" class="iconfont icon-daifu"></i>
@@ -96,7 +98,8 @@
 									
 									<span class="sh_btn" v-if="item.showShouhou">申请售后</span>
 									
-									<span class="qrcode_btn" v-if="item.showQrcode">生成二维码</span>
+									<span class="qrcode_btn" @click="payment(item.total_no,idx,item.many,item.orderno)" v-if="item.showQrcode">生成二维码</span>
+									 <span class="otype">{{item.order_type == 1 ? '账期订单' : (item.order_type == 2 ? '到付订单' : '现付订单')}}</span>
 								</view>
 								<view class="to_right">
 								
@@ -106,15 +109,38 @@
 						 </view>
 						<view class="total_two">
 							<span>下单时间:{{item.create_time}}</span>
-							<span>实付:￥{{item.fact_price}}</span>
+							<span>实付款:￥{{item.fact_price}}</span>
 						</view>
 					 </view>
 					
 				 </view>
 				  <view class="loadfinshed_text" v-if="finshed">没有更多商品了</view>
+				 
 		 </scroll-view>
+		
 		 <level ref="levelRef"/>
 		 <backTop :scrollTop="topval" @backTop="backTop" />
+		<view  class="amask" :class="{'showMask' : showqrcode}" ></view>
+		<view class="qr"  v-if="ifShow" :class="[isali ? 'aliBkg' : 'wechatBkg']">
+			<i class="iconfont icon-ziyuan closeQrcode" @click="handleCloseQr"></i>
+			<span><i class="iconfont icon-saoma"></i> 请使用{{typeText}}扫码支付</span>
+			<view class="qrbkg" >
+				<tki-qrcode
+					class="qrcodeBox"
+					cid="qrcode1" 
+					ref="qrcode" 
+					:val="codeUrl" 
+					:size="size"
+					:unit="unit" 
+					:icon="icon" 
+					:iconSize="iconsize"
+					:onval="onval" 
+					:usingComponents="true" />
+			</view>
+			
+		</view>
+			 <pageLoad :hide="hide" />	
+		
 	</view>
 </template>
 
@@ -123,16 +149,19 @@
 	import customnav from '@/components/customnav.vue'
 	import qstab from '@/components/QS-tabs/QS-tabs.vue'
 	import level from '@/components/level.vue'
+	import popup from '@/components/uni-popup/uni-popup.vue'
+	import tkiQrcode from "@/components/tki-qrcode/tki-qrcode.vue"
+	
 	export default {
-		components:{customnav,qstab,level},
+		components:{customnav,qstab,level,popup,tkiQrcode},
 		data() {
 			return {
+				hide:false,
 				tabs:['全部','待付款','待发货','待收货'],
 				tabwidth:0,
 				currentidx:0,
 				shopInfo:{},
 				orderList:[],
-				dfkList:[],//待付款
 				orderGoodsList:[],
 				domain2:this.$store.state.domain2,
 				domain:this.$store.state.domain,
@@ -140,8 +169,9 @@
 				page:1,
 				finshed:false,
 				type:'',
-				goodsIndex:-1,
-				orderStatus:['待付款','待发货','待收货','已完成订单','已取消订单'],//订单类型：1 账期订单 2 到付订单 3 现付订单
+				
+				goodsIndex:-1,                  
+				orderStatus:['待付款','待发货','待收货','已完成订单','交易关闭'],//订单类型：1 账期订单 2 到付订单 3 现付订单
 				//图片懒加载
 				windowHeight: 0,
 				show: false,
@@ -152,10 +182,26 @@
 				 marktop3:0,
 				 marktop4:0,
 				 topval:0,
-				
+				 codeUrl:'',
+				 ifShow: false,
+				 size: 200, // 二维码大小
+				 unit: 'px', // 单位
+				 icon: '', // 二维码图标
+				 iconsize: 40, // 二维码图标大小
+				 onval: false, // val值变化时自动重新生成二维码
+				 showqrcode:false,
+				 matchStatus:-1,
+				 matchStatus2:-1,
+				 matchTimer:null,
+				 typeText:'',
+				 isali:false
 			};
 		},
-		
+		computed:{
+			oldtype(){
+				return this.$store.state.oldtype
+			}
+		},
 		onLoad(option){
 			//tabs宽度
 			this.tabwidth = uni.getSystemInfoSync().windowWidth / 4;
@@ -165,7 +211,58 @@
 			this.getOrderList()
 			
 		},
+		onShow() {
+			this.goodsIndex=-1
+			this.type = this.oldtype || ''
+			this.orderGoodsList=[]
+			this.orderList = []
+			this.show=false
+			this.page=1
+			this.getOrderList()
+		},
 		methods:{
+			callsupplier(phonenum){
+					uni.makePhoneCall({
+					    phoneNumber: phonenum //仅为示例
+					});
+			},
+			handleCloseQr(){
+				this.showqrcode=false
+				this.ifShow=false
+				clearInterval(this.matchTimer)
+			},
+			payment(totalNum,idx,payType,orderno){
+				if(payType == 1){ //多订单
+					uni.showToast({
+						icon:'none',
+						title:'非业务员下单请到小店支付',
+						duration:2000
+					})
+					return
+				}
+				this.$store.dispatch('paymentType',totalNum).then(opt=>{
+					this.codeUrl = opt.info
+					if(opt.idx == 0){
+						this.typeText='支付宝'
+						this.isali=true
+					}else{
+						this.typeText='微信'
+						this.isali=false
+					}
+					this.showqrcode=true
+					this.ifShow=true
+					setTimeout(()=>{
+						this.$refs.qrcode._makeCode()
+					},500)
+					
+					// this.matchStatus = this.orderList[idx].order_status
+				this.type=''
+					this.matchTimer=setInterval(()=>{
+						
+						this.getOrderList(true,orderno)
+					},2000)
+				})
+			},
 			backTop(){
 				this.setMarkTop = 0
 				setTimeout(()=>{
@@ -225,6 +322,8 @@
 				this.currentidx = idx
 				this.goodsIndex=-1
 				this.type = idx
+				//保存点击的状态
+				this.$store.commit('SAVE_STATUS',idx)
 				this.orderGoodsList=[]
 				this.orderList = []
 				this.show=false
@@ -251,11 +350,12 @@
 			levelUp(shopId){
 				this.$refs.levelRef.showLevel(shopId)
 			},
-			getOrderList(){
+			getOrderList(match,orderno){
 				let _this = this
 				this.$dyrequest({
 					url:'/SmallShop/ordermanage',
 					method:'POST',
+					hideLoading:true,
 					data:{
 						id:this.shopId,
 						page:this.page,
@@ -264,67 +364,117 @@
 					
 				}).then(res=>{
 					this.shopInfo = res.data.data.shopMsg
-				
-					res.data.data.orderList.map((item,idx)=>{
-							 _this.$set(item,'showQrcode',false)
-							 _this.$set(item,'showShouhou',false)
-							item.order_status = Number(item.order_status)
+					
+					if(match){
 							
-							//订单状态为待收货显示售后按钮
-							if(item.order_status == 3){
-								 _this.$set(item,'showShouhou',true)
-							}
+						res.data.data.orderList.map(item=>{
 							
-							//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
-							if(item.order_status == 3 && item.order_type == 1){
-								 _this.$set(item,'showQrcode',true)
+							if(item.orderno == orderno){
+								this.matchStatus = item
+							
 							}
-							if(item.order_status == 3 && item.order_type == 2){
-								 _this.$set(item,'showQrcode',true)
-							}
-							//订单状态为待付款且订单类型为现付显示付款二维码按钮
-							if(item.order_status == 1 && item.order_type == 3){
-								 _this.$set(item,'showQrcode',true)
-							}
-							//处理商品信息
-							item.goods.map((gitem,idx)=>{
-								_this.goodsIndex+=1
-									 _this.$set(gitem,'show',false)
-									 _this.$set(gitem,'loaded',false)
-									 _this.$set(gitem,'format_spec',false)
-									  _this.$set(gitem,'goodsIndex',_this.goodsIndex)
+						})
+						
+						if(this.matchStatus.order_type == 1 || this.matchStatus.order_type == 2){
+								if(this.matchStatus.order_status == 4){
+									clearInterval(this.matchTimer)
+									this.showqrcode=false
+									this.ifShow=false
+									uni.showToast({
+										icon:'none',
+										title:'支付成功'
+									})
+									setTimeout(()=>{
+										this.type=this.oldtype
+										this.orderList=[]
+										this.getOrderList()
+									},2000)
+								}
+						}else{
+								if(this.matchStatus.order_status == 2){
+									clearInterval(this.matchTimer)
+									this.showqrcode=false
+									this.ifShow=false
+									uni.showToast({
+										icon:'none',
+										title:'支付成功'
+									})
+									setTimeout(()=>{
 									
-									 if(gitem.status == 3){
-										 _this.$set(item,'showQrcode',false)
-										 _this.$set(item,'showShouhou',false)
-									 }
-									// console.log(_this.goodsIndex)
-									 //格式化规格
-									 if(gitem.price_type == 'whole'){//整件价
-										 if(gitem.pack_type == 1){//1，整件 2 ，散装
-											 gitem.format_spec= gitem.net_weight+'×'+ gitem.spec+'/'+gitem.whole_unit
-										 }else{
-											  gitem.format_spec= gitem.whole_spec+gitem.bulk_unit
+									this.type=this.oldtype
+									this.orderList=[]
+										this.getOrderList()
+									},2000)
+								}
+						}
+						
+					}else{
+						
+						res.data.data.orderList.map((item,idx)=>{
+								 _this.$set(item,'showQrcode',false)
+								 _this.$set(item,'showShouhou',false)
+								item.order_status = Number(item.order_status)
+								
+								//订单状态为待收货显示售后按钮
+								// if(item.order_status == 3){
+								// 	 _this.$set(item,'showShouhou',true)
+								// }
+								
+								//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
+								if(item.order_status == 3 && item.order_type == 1){
+									 _this.$set(item,'showQrcode',true)
+								}
+								if(item.order_status == 3 && item.order_type == 2){
+									 _this.$set(item,'showQrcode',true)
+								}
+								//订单状态为待付款且订单类型为现付显示付款二维码按钮
+								if(item.order_status == 1 && item.order_type == 3){
+									 _this.$set(item,'showQrcode',true)
+								}
+								//处理商品信息
+								item.goods.map((gitem,idx)=>{
+									_this.goodsIndex+=1
+										 _this.$set(gitem,'show',false)
+										 _this.$set(gitem,'loaded',false)
+										 _this.$set(gitem,'format_spec',false)
+										 _this.$set(gitem,'goodsIndex',_this.goodsIndex)
+										 if(gitem.status == 3){
+											 _this.$set(item,'showQrcode',false)
+											 _this.$set(item,'showShouhou',false)
 										 }
-									 }else{//单价
-										 if(gitem.pack_type == 1){
-										 		gitem.format_spec= gitem.net_weight+'/'+gitem.retail_unit
-										 }else{
-										 		gitem.format_spec= gitem.retail_spec+gitem.bulk_unit
+										// console.log(_this.goodsIndex)
+										 //格式化规格
+										 if(gitem.price_type == 'whole'){//整件价
+											 if(gitem.pack_type == 1){//1，整件 2 ，散装
+												 gitem.format_spec= gitem.net_weight+'×'+ gitem.spec+'/'+gitem.whole_unit
+											 }else{
+												  gitem.format_spec= gitem.whole_spec+gitem.bulk_unit
+											 }
+										 }else{//单价
+											 if(gitem.pack_type == 1){
+											 		gitem.format_spec= gitem.net_weight+'/'+gitem.retail_unit
+											 }else{
+											 		gitem.format_spec= gitem.retail_spec+gitem.bulk_unit
+											 }
 										 }
-									 }
-									 
-									 gitem.img = _this.domain + gitem.img
-									 //存储商品列表做懒加载
-									 _this.orderGoodsList.push(gitem)
-									 //待付款列表
-									 
-															 
-							})
-								_this.orderList.push(item)
-							
-					})
-						console.log(_this.orderList)
+										 
+										 gitem.img = _this.domain + gitem.img
+										 //存储商品列表做懒加载
+										 _this.orderGoodsList.push(gitem)
+										 //待付款列表
+										 
+																 
+								})
+									_this.orderList.push(item)
+								
+						})
+					}
+					
+					//数据加载完成后隐藏loading
+					setTimeout(()=>{
+						this.hide = true
+					},1000)
+						// console.log(_this.orderList)
 						
 						
 					//图片懒加载
@@ -344,6 +494,10 @@
 					}
 						//console.log( _this.orderList)
 				})
+				.catch(err=>{
+						clearInterval(this.matchTimer)
+					console.log('支付错误，请重新生成支付二维码')
+				})
 			}
 		}
 	}
@@ -356,6 +510,7 @@
 	 height:calc(100vh - 199px - var(--status-bar-height)); 
 	//height:541px;
 }
+
 //订单列表
 .uni-popup__wrapper-box{
 		width:80%;
@@ -372,13 +527,7 @@
 			display: flex;
 			align-items: center;
 			color:#999;
-			span:last-child{
-				border:1px solid #147AED;
-				color:#147AED;
-				border-radius:4px;
-				padding:3px 5px;
-				margin-left:5px
-			}
+			
 		}
 		span{
 			display: flex;
@@ -465,7 +614,16 @@
 				display: flex;
 				align-items: center;
 				width:50%;
-				span{
+				.otype{
+					
+						
+						color:#147AED;
+						border-radius:4px;
+						padding:3px 5px;
+						margin-left:5px
+					
+				}
+				.qrcode_btn{
 					border-radius:20px;
 					padding:3px 10px;
 					color:#fff;

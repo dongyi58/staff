@@ -8,6 +8,8 @@
 			 navtitle="小店管理"
 			 :cancletext="false"
 			 :focus="false"
+			 :backType="1"
+			 backurl="/pages/personal/personal"
 			 />
 			 <view class="shopmanage_header">
 				 <span>{{staffInfo.name}}</span>
@@ -87,7 +89,7 @@
 											
 											<view class="top_info">
 												<span>{{item.shopname}}</span>
-												<span @click="checkShopInfo(item.id)">查看基本信息</span>
+												<span @click="checkShopInfo(item.id)">基本信息</span>
 											</view>
 									</view>
 									<view class="top_right_type">
@@ -106,6 +108,7 @@
 				 </scroll-view>
 			 </view>
 			<level ref="levelRef"/>
+			 <pageLoad :hide="hide" />	
 			<backTop :scrollTop="topval" @backTop="backTop" />
 	</view>
 </template>
@@ -119,6 +122,7 @@
 		components: {qstab,customnav,level},
 		data() {
 			return {
+				hide:false,
 				tabs:[
 					{
 						name:'推荐小店',type:'tj',
@@ -163,6 +167,10 @@
 		
 			this.getShop()
 			this.getDutyShop()
+			//数据加载完成后隐藏loading
+			setTimeout(()=>{
+				this.hide = true
+			},1000)
 			// this.tabs.push('责任小店('+dutyShopList.length+')','推荐小店('+dutyShopList.length+')')
 		},
 		methods:{
@@ -237,6 +245,7 @@
 						this.$set(this.tabs[0],'name',this.tabs[0].name+'(0)')
 						
 					}
+					
 					
 				})
 				
@@ -347,7 +356,7 @@
 			flex-direction: column;
 			justify-content: center;
 			margin-left:.5rem;
-			width:70%;
+			width:65%;
 			a{
 				display:flex;
 				color:#1D88E2;
@@ -404,7 +413,8 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-around;
-			    align-items: flex-end;
+			align-items: flex-end;
+			flex-shrink: 0;
 			color:#888;
 			.right_btn{
 				display: flex;

@@ -19,7 +19,7 @@
 		},
 		watch:{
 			scrollTop(n,o){
-				console.log(n)
+				// console.log(n)
 				n > 1000 ? this.show=true : this.show=false
 			},
 		},

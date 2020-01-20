@@ -27,7 +27,7 @@
 							 :key="gidx" 
 							 :options="options" 
 							 @click="delCartGoods($event,goods.id)">
-								<view class="goodsActiveTips" v-if="goods.activity == 1" @click="checkActivity(item.activity_rule)">查看活动</view>
+								<view class="goodsActiveTips" v-if="goods.activity == 1" @click="checkActivity(goods.type,goods.ruleIdx)">查看活动</view>
 								<view class="order_item">
 										<view class="checkWrap">
 											   <checkbox-group  v-if="goods.goods_status!=3" @change="checkGoods(idx,gidx)">
@@ -85,13 +85,33 @@
 				<span class= "delBtn" v-else @click="delCartGoods(null)">删除</span>
 			</view>
 		</view>
-		<!-- <popup ref="popup" type="bottom">
-			<view>
+		<popup ref="popup" type="bottom" @change="popChange" :popstyle="{height:'300px'}" class="home_popup">
+			<view class="activityPop">
+				
 				<ul>
-					<li>{{activityRule[0].rebate}}</li>
+					<!-- 特价 -->
+					<li v-if="atype=='tj'">
+						<span>特价优惠</span>
+						<span>购买立减{{tjList[ruleIdx].tejia}}元</span>
+					</li>
+					<!-- 买赠 -->
+					<li v-else-if="atype=='maiz'">
+						<span>购买即可获得如下赠品（任选其一）</span>
+						<span v-for="(m,mi) of maizList[ruleIdx]"  :key="mi">{{m}}</span>
+					</li>
+					<!-- 满赠 -->
+					<li v-else-if="atype=='manz'" v-for="(mz,mzk,mzi) in manzList[ruleIdx]" :key="mzi">
+						<span>购买满{{mzk}}元，即可获得如下赠品（任选其一）</span>
+						<span v-for="(mzg,mzgi) of mz" :key="mzgi">{{mzg}}</span>
+					</li>
+					<!-- 折扣 -->
+					<li v-else>
+						<span>折扣优惠</span>
+						<span v-for="(g,i) in zkList[ruleIdx]" :key="i">满{{g.total}}元享{{g.zhekou}}折优惠</span>
+					</li>
 				</ul>
 			</view>
-		</popup> -->
+		</popup>
 	</view>
 </template>
 
@@ -118,7 +138,10 @@
 				domain:this.$store.state.domain,
 				checkall:false,
 				cartTitle:'',
-				activityRule:{},
+				zkList:[], //折扣
+				maizList:[],//买赠
+				manzList:[],//买赠
+				tjList:[],//特价
 				options:[
 				        {
 				            text: '取消',
@@ -135,17 +158,27 @@
 				loaded:false,
 				show:false,
 				topval:0,
-				scrollTop:-1
+				scrollTop:-1,
+				fstr:[],//活动参数
+				mstr:[],//非活动参数
+				atype:'',
+				saveId:[],
+				zkidx:-1,//活动规则的下标
+				maizIdx:-1,
+				manzIdx:-1,
+				tjIdx:-1,
+				ruleIdx:-1,//渲染活动规则的下标
+				
 			};
 		},
 		
 		watch:{
 			getcurrent:{
 				handler(n,o){
-					
+				
 					//用户有加入购物车操作，才重新获取数据
-					if(n == 3){
-						 console.log('重新加载了')
+					if(n == 2){
+						 // console.log('重新加载了')
 						this.init()
 					
 					}
@@ -172,18 +205,59 @@
 					let count = 0 //计算选中的商品个数
 					let cartIdArr=[] //存储选中购物车商品id
 					let sellerId=""
+					let activityGoodsNum=0
+					let unActivityGoodsNum=0
+					let _self=this
+					
 					this.cartGoodsList.map(item=>{
 							item.goodsInfo.map(gitem=>{
 								if(gitem.checked && gitem.goods_status !=3){
 									
-									cartIdArr.push(gitem.id)
-									sellerId = gitem.seller_id	
-									totalPrice += gitem.goods_price * gitem.quantity
+										// if(gitem.activity == 0){ // 非活动
+										// 	// console.log(1)
+										// 		if(_self.saveId.indexOf(gitem.id) < 0){
+										// 				_self.mstr.push(
+										// 					{
+										// 						product_id:gitem.product_id,
+										// 						amount:gitem.quantity,
+										// 						price:gitem.goods_price,
+										// 						price_type:gitem.price_type
+										// 					}
+										// 				)
+										// 				_self.saveId.push(gitem.id)
+										// 				_self.unActivityGetPrice()
+										// 				unActivityGoodsNum++
+										// 		}
+											
+										// }else{//活动
+										// 	//通过存储已经请求过的商品购物车id
+										// 	//来判断，不重复添加数据，请求
+										// 	if(_self.saveId.indexOf(gitem.id) < 0){
+										// 		_self.fstr.push(
+										// 			{
+										// 				product_id:gitem.product_id,
+										// 				quantity:gitem.quantity,
+										// 				activity_id:gitem.activity_id,
+										// 				price:gitem.goods_price,
+										// 				cart_id:gitem.id
+										// 			}
+										// 		)
+										// 		_self.saveId.push(gitem.id)
+										// 		_self.activityGetPrice()
+										// 		activityGoodsNum++
+										// 	}
+											
+										// }
+										
+									cartIdArr.push(gitem.id) //选中的购物车Id
+									sellerId = gitem.seller_id	 //供应商id
+									totalPrice += gitem.goods_price * gitem.quantity //总价
 									count++
 								}
 							})
 							
 					})
+					// console.log(unActivityGoodsNum,activityGoodsNum,this.cartGoodsList[0].goodsInfo.length)
 					return {
 							totalPrice:totalPrice.toFixed(2),
 							count:count,
@@ -193,6 +267,42 @@
 			},
 		},
 		methods:{
+			//计算勾选的商品优惠金额
+			//活动商品调用
+			activityGetPrice(){
+				this.$dyrequest({
+					url:'/CartSales/reducePrice',
+					method:'POST',
+					data:{
+						id:this.shopId,
+						finalstr:JSON.stringify(this.fstr)
+					}
+				})
+			},
+			//非活动商品调用
+			unActivityGetPrice(){
+				this.$dyrequest({
+					url:'/CartSales/addBuyCart',
+					method:'POST',
+					data:{
+						id:this.shopId,
+						mormalfinalstr:JSON.stringify(this.mstr)
+					}
+				}).then(res=>{
+					console.log(res)
+				})
+			},
+			//全部为一种类型是调用删除中间表
+			// delMiddle(){
+			// 	this.$dyrequest({
+			// 		url:'/CartSales/deleteBuyCart',
+			// 		method:'POST',
+			// 		data:{
+			// 			id:this.shopId,
+			// 			type:有活动时值为1 非活动值为2
+			// 		}
+			// 	})
+			// },
 			backTop(){
 				this.scrollTop = 0
 				setTimeout(()=>{
@@ -202,9 +312,19 @@
 			handleScroll(e){
 				this.topval = e.target.scrollTop
 			},
-			checkActivity(res){
-				this.activityRule = res
+			checkActivity(type,idx){
+				this.atype = type
+				this.ruleIdx = idx
+				console.log(this.tjList)
 				this.$refs.popup.open()
+			},
+			popChange(e){
+				if(!e.show){
+					this.maizFlag=false
+					this.zkFlag=false
+					this.tjFlag=false
+				}
+				
 			},
 			init(){
 				
@@ -417,7 +537,50 @@
 							 
 							 goodsarr[i][j].goods_img = this.domain+ goodsarr[i][j].goods_img
 							 tempGoods.push(goodsarr[i][j])
-							 // this.cartList.push(data1[i][j])
+							 //活动
+								let activity_rule = goodsarr[i][j].activity_rule
+								//折扣
+								
+								if(activity_rule && activity_rule.zhekou){
+									
+									 this.$set(goodsarr[i][j],'type','zk')
+									for(let k in activity_rule){
+										for(let l in activity_rule[k]){
+											
+											this.$set(activity_rule[k][l],'zhekou',(activity_rule[k][l].zhekou*10).toFixed(1))
+											
+										}
+										this.zkidx++
+										this.$set(goodsarr[i][j],'ruleIdx',this.zkidx)
+										this.zkList.push(activity_rule[k])
+									}
+									console.log(this.zkList)  
+								}
+								//特价
+								if(activity_rule && activity_rule.tejia){
+									 this.tjIdx++
+									 this.$set(goodsarr[i][j],'type','tj')
+									 this.$set(goodsarr[i][j],'ruleIdx',this.tjIdx)
+									 this.tjList.push(activity_rule)
+									 // console.log(	 this.tjList)
+								}
+								//买赠
+								if(activity_rule && activity_rule.maizeng){
+									this.$set(goodsarr[i][j],'type','maiz')
+									this.maizIdx++
+									this.$set(goodsarr[i][j],'ruleIdx', this.maizIdx)
+									this.maizList.push(activity_rule.maizeng)
+								}
+								
+								//满赠
+								if(activity_rule && activity_rule.manzeng){
+									 this.$set(goodsarr[i][j],'type','manz')
+									 this.manzIdx++
+									  this.$set(goodsarr[i][j],'ruleIdx', this.manzIdx)
+									 this.manzList.push(activity_rule.manzeng)
+									 // console.log( this.manzList)
+								}
+								
 							}
 							
 							
@@ -432,7 +595,7 @@
 						
 					}
 					
-					 console.log(this.cartGoodsList) 
+					 // console.log(this.cartGoodsList) 
 				})
 			},
 			
@@ -480,9 +643,31 @@
 <style lang="scss">
 	@import '@/static/css/style.scss';
 	.cart_scrollview{
-		height:calc(100vh - 125px);
+		height:calc(100vh - 125px - var(--status-bar-height));
 		padding:10px;
 		box-sizing: border-box;
+	}
+	.home_popup .uni-popup__wrapper-box{
+		height:300px;
+	}
+	.activityPop{
+		ul{
+			li{
+				display: flex;
+				flex-direction: column;
+				span:first-child{
+					color:#383838;
+					font-size:14px;
+					padding:5px 0;
+					border-bottom:1px solid #f8f8f8;
+					color:#147AED
+				}
+				span{
+					padding:10px 0;
+					border-bottom:1px solid #f8f8f8
+				}
+			}
+		}
 	}
 	
 	//购物车列表

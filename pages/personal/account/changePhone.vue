@@ -15,7 +15,7 @@
 					 <input type="number" class="codeInp" maxlength="11"  placeholder="您的新手机号" v-model="newPhone">
 				</view>
 				<view class="current_account_list_item">
-					<input type="text" class="codeInp" maxlength="6" placeholder="请输入位数字验证码位验证码" v-model="code"><button size='mini' plain class="verifyCodeBtn" @click="verifyPhone('senSms')">获取验证码</button>
+					<input type="text" class="codeInp" maxlength="6" placeholder="请输入6位数字验证码" v-model="code"><button size='mini' plain class="verifyCodeBtn" :disabled="yzmDisabled" @click="verifyPhone('senSms')">{{yzmtext}}</button>
 				</view>
 				
 		 </view>
@@ -37,7 +37,10 @@
 			return {
 				newPhone:'',
 				code:'',
-				disable:true
+				disable:true,
+				
+				yzmDisabled:false,
+				yzmtext:'获取验证码'
 			};
 		},
 		onLoad() {
@@ -61,15 +64,12 @@
 						newPhone:this.newPhone
 					}
 				}).then(res=>{
-					console.log(res)
-					uni.showToast({
-						icon:'none',
-						title: res.data.message,
-						
-					});
-					if(d == 'submit'){
-						if(res.data.code == 0){
-							uni.setStorgeSync('phone',this.newPhone)
+					console.log(d,res.data.code)
+					
+					if(d == 'submit' && res.data.code == 0){
+							uni.removeStorageSync('token')
+							uni.removeStorageSync('phone')
+							
 							uni.showToast({
 								icon:'none',
 								title: '修改成功,请重新登录',
@@ -80,7 +80,23 @@
 									url:'/pages/login/login'
 								});
 							},2000)
-						}
+						
+					}else{
+						this.yzmDisabled=true
+						let time=60
+						
+						let timer = setInterval(()=>{
+							
+							if(time < 1){
+								this.yzmtext=`获取验证码`
+								this.yzmDisabled=false
+								clearInterval(timer)
+								return
+							}
+							
+							this.yzmtext=`${time--}秒后再次获取`
+							
+						},1000)
 					}
 				})
 			}

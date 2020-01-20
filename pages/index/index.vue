@@ -2,7 +2,7 @@
 	<view class="wrap index-wrap">
 		<view class="status_bar index_status_bar"></view>
 		<view class="header">首页</view>
-		
+		 
 		<view class="index_item_box">
 			<view class="item_one">
 				<view class="item_one_left">
@@ -33,9 +33,9 @@
 				<view class="item_two_text">业务员快捷下单，让进货更快，更方便</view>
 				<view class="item_two_bottom">
 					<span><image class="dot_icon" src="../../static/images/dot.png">选择<br>店铺</span>
-					<span><image class="dot_icon" src="../../static/images/dot.png">选取商品并<br>加入购物车</span>
-					<span><image class="dot_icon" src="../../static/images/dot.png">代付或生成<br>付款二维码</span>
-					<span><image class="dot_icon" src="../../static/images/dot.png">小店付款<br>完成交易</span>
+					<span><image class="dot_icon" src="../../static/images/dot.png">选取商品并<br>加入采购单</span>
+					<span><image class="dot_icon" src="../../static/images/dot.png">提交订单生成<br>交易二维码</span>
+					<span><image class="dot_icon" src="../../static/images/dot.png">小店付款<br>完成下单</span>
 				</view>
 			</view>
 			<view class="item_two item_three">
@@ -43,10 +43,14 @@
 				<view class="item_two_text">小店管理、报表管理、收入管理一目了然</view>
 				
 			</view>
-			<!-- <view class="msg_box" @click="checkMessage">
+			<!-- 消息 -->
+		<!-- 	<view class="msg_box" @click="checkMessage">
 				<i class="new_msg_tip"></i>
-				<i class="iconfont icon-xiaoxi"></i>
+				<i class="iconfont icon-quit-s"></i>
 			</view> -->
+			<view class="msg_box" @click="logOut">
+				<i class="iconfont icon-quit-s"></i>
+			</view>
 		</view>
 		
 	</view>
@@ -58,13 +62,16 @@
 	export default {
 		
 		data() {
-		
+			
 			return {
 				staff_info:"",
 				domain:this.$store.state.domain,
+				
 			}
 		},
-		
+		onLoad() {
+			
+		},
 		onShow() {
 			
 			let _this = this
@@ -72,6 +79,7 @@
 			this.$dyrequest({
 			    url:'/IndexSales/homePage', 
 				method:'POST',
+				hideLoading:true,
 			}).then(res=>{
 					_this.staff_info = res.data.data
 					_this.staff_info.picture = _this.domain+_this.staff_info.picture
@@ -104,6 +112,21 @@
 			
 		},
 		methods: {
+			logOut(){
+				uni.showActionSheet({
+				    itemList: ['退出登录'],
+				    success: function (res) {
+				       uni.removeStorageSync('token');
+				       uni.removeStorageSync('phone');
+				       uni.navigateTo({
+				       	url:'/pages/login/login'
+				       })
+				    },
+				    fail: function (res) {
+				        console.log(res.errMsg);
+				    }
+				});
+			},
 			calc(idx){
 				this.$set(this.list[idx],'flag',true)
 			},
@@ -265,8 +288,8 @@
 	}
 	.msg_box{
 		position:fixed;
-		bottom:10px;
-		right:10px;
+		bottom:20px;
+		right:20px;
 		width:45px;
 		height:45px;
 		border-radius:50%;
@@ -274,7 +297,7 @@
 		text-align: center;
 		line-height: 45px;
 		i{
-			font-size:2em;
+			font-size:1.5em;
 		}
 		.new_msg_tip{
 		    position: absolute;

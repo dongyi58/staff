@@ -12,7 +12,8 @@
 		 <view class="current_account_list">
 				<view class="current_account_list_item">请输入{{bindedPhone.substr(0, 3) + '****' + bindedPhone.substr(7)}}收到的短信验证码</view>
 				<view class="current_account_list_item">
-					<input type="text" class="codeInp" maxlength="6" placeholder="请输入6位验证码" v-model="code"><button size='mini' plain class="verifyCodeBtn" @click="verifyPhone('senSms')">获取验证码</button>
+					<input type="text"  class="codeInp" maxlength="6" placeholder="请输入6位数字验证码" v-model="code">
+					<button size='mini' plain class="verifyCodeBtn" :disabled="yzmDisabled" @click.stop="verifyPhone('senSms')">{{yzmtext}}</button>
 				</view>
 				
 		 </view>
@@ -34,7 +35,9 @@
 			return {
 				bindedPhone:'',
 				code:'',
-				disable:true
+				disable:true,
+				yzmDisabled:false,
+				yzmtext:'获取验证码'
 			};
 		},
 		onLoad() {
@@ -48,7 +51,6 @@
 		},
 		methods:{
 			verifyPhone(d){
-				
 				this.$dyrequest({
 					url:'/PersonSales/verifyPhone',
 					method:'POST',
@@ -63,12 +65,28 @@
 						title: res.data.message
 					});
 					if(d == 'submit'){
+						
 						if(res.data.code == 0){
 							uni.navigateTo({
-								url:'/pages/pesonal/account/changePhone'
-								
+								url:'/pages/personal/account/changePhone'
 							});
 						}
+					}else{
+						this.yzmDisabled=true
+						let time=60
+						
+						let timer = setInterval(()=>{
+							
+							if(time < 1){
+								this.yzmtext=`获取验证码`
+								this.yzmDisabled=false
+								clearInterval(timer)
+								return
+							}
+							
+							this.yzmtext=`${time--}秒后再次获取`
+							
+						},1000)
 					}
 				})
 			}

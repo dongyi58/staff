@@ -99,16 +99,16 @@
 				default:0
 			},
 			transColor:'',
-			searchkey:''
+			// searchkey:''
 			
 		},
 		data() {
 			return {
 			
 				transOpacity2:0,
-				// csearchkey:'',
-				editTxt:'管理'
-				
+				searchkey:'',
+				editTxt:'管理',
+				historyList:[],
 			};
 		},
 		computed:{
@@ -137,7 +137,7 @@
 					uni.navigateTo({
 						url:this.backurl,
 						animationType: 'slide-in-left',
-						animationDuration: 200
+						animationDuration: 300
 					})
 				}else{
 					uni.navigateBack({
@@ -159,15 +159,16 @@
 					url:'/pages/search/search'
 				})
 			},
-			//跳转搜索结果页面
+			//跳转搜索结果页面,存储搜索历史
 			gotoSearchResult(){
-				let historyList = uni.getStorageSync('searchHistory')
-				if(historyList.indexOf(this.searchkey) < 0){
-					historyList.push(this.searchkey)
+				let cecheH = uni.getStorageSync('searchHistory')
+				this.historyList = cecheH || []
+				
+				if(this.historyList.indexOf(this.searchkey) < 0){
+					this.historyList.push(this.searchkey)
 				}
 				
-				
-				uni.setStorageSync('searchHistory',historyList)
+				uni.setStorageSync('searchHistory',this.historyList)
 				// console.log(historyList)
 				uni.redirectTo({
 					url:'/pages/search/searchResult?keywords='+this.searchkey

@@ -14,7 +14,7 @@
 		 		<!-- 全部商品列表 -->
 		 			<view class="goods_list_wrap">
 		 				<view class="goods_list">
-		 					<view class="goods_item"  @click="goto_goodsdetail(item.goods_id)" v-for="(item,idx) of allResultgoods" :key="idx">
+		 					<view class="goods_item"  @click="goto_goodsdetail(item.goods_id,item.activity)" v-for="(item,idx) of allResultgoods" :key="idx">
 		 						<view class="goods_img_box">
 		 							<!-- <image class="goods_img" :src="item.img" lazy-load mode="aspectFill"></image> -->
 		 							<image class=" goods_img image" :class="{lazy:!item.show}" :data-index="idx" @load="imageLoad" :src="item.show ? item.img:''" />
@@ -78,10 +78,12 @@
 			}
 		},
 		methods:{
-			goto_goodsdetail(goodsId){
+			goto_goodsdetail(goodsId,activity){
 							
+				
+				 
 				 uni.navigateTo({
-					url:'/pages/goodsDetail/goodsDetail?dtype=1&goods_id='+goodsId
+				 	url:'/pages/goodsDetail/goodsDetail?activity='+activity+'&dtype=1&shopId='+this.shopId+'&goods_id='+goodsId
 				 })
 			},
 			//图片懒加载
@@ -140,7 +142,7 @@
 					 								 
 					 })
 					 //图片懒加载 首次加载
-					 this.windowHeight = uni.getSystemInfoSync().windowHeight-45
+					 this.windowHeight = uni.getSystemInfoSync().windowHeight
 					 
 					 if (!this.show) {
 					 	this.show = true

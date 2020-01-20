@@ -454,7 +454,7 @@
 			left:50%;
 			top:35%;
 			transform: translate(-50%,-50%);
-			font-size:15em;
+			font-size:13em;
 			color:#e7e7e7;
 		}
 		.btn_front_box{
@@ -464,7 +464,7 @@
 			top:35%;
 			transform: translate(-50%,-50%);
 			.btn_front{
-				font-size:13em;
+				font-size:11em;
 				color:#ABABAB
 			}
 			span{

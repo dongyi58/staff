@@ -2,11 +2,7 @@
 const domain = 'http://dsales.ddddian.com'
 let expiredLen = 0
  const request = function(options) {
-			if(!options.hideLoading){
-				uni.showLoading({
-					title:'加载中..'
-				})
-			}
+			
 			
 		
 			return new Promise((resolve,reject)=>{
@@ -21,6 +17,12 @@ let expiredLen = 0
 						 data = data || {}
 						 data.token = token;
 						 data.phone = phone;
+						
+					}
+					if(!options.hideLoading){
+						uni.showLoading({
+							title:'加载中..'
+						})
 						
 					}
 					// console.log(data)
@@ -56,13 +58,14 @@ let expiredLen = 0
 							
 						},
 						fail(err){
-					
-							reject(err)
+							uni.hideLoading();
 							uni.showToast({
 								icon:"none",
-							    title:'网络错误',
+							    title:'网络错误,请切换网络重试',
 							    duration: 2000
 							});
+							reject(err)  
+							
 						}
 					})
 			})

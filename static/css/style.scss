@@ -94,12 +94,13 @@
 		opacity: 0;
 	}
 //公用loading样式
-//下架商品
+
+//下架商品样式
 .disableGoods{
-				color:#999 !important;
-				filter: gray;
-				filter: grayscale(100%);
-			}
+		color:#999 !important;
+		filter: gray;
+		filter: grayscale(100%);
+	}
 // 公用过滤样式
 .filter_bar{
 	background:#fff;
@@ -134,14 +135,16 @@
 		color:#078CF3 !important
 	}
 // 公用过滤样式
+
+//无数据提示
 .emptyTips{
-			display: flex;
-			    justify-content: center;
-			    align-items: center;
-			    padding: 6em 0;
-			    font-size: 14px;
-			    color: #999;
-		}
+		display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 6em 0;
+			font-size: 14px;
+			color: #999;
+	}
 
 //小店采购统计
 
@@ -276,16 +279,24 @@
 	background:#fff;
 	padding:10px;
 }
+.activity_gif{
+		width:50px;
+		height:18px;
+	}
 .info_one{
 	.price_stock{
 		display: flex;
 		justify-content: space-between;
 		.left_price{
 			.nowPrice{
+				display: flex;
+				align-items: center;
 				color:#FD0304;
 				font-size:1rem;
 				span{
-					font-size:14px;
+					font-size:16px;
+					margin-right:5px;
+					font-weight: 600;
 				}
 			}
 			.oldPrice{
@@ -408,13 +419,23 @@
 		&_left{
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 			span{
+				display: flex;
 				margin-left:10px;
 			}
 			.mzgoods_img{
 				width:30px;
 				height:30px;
 				border-radius: 5px;
+			}
+			.emptySpan{
+				margin:0 !important;
+				width:45px;
+			}
+			i{
+				font-style:normal;
+				margin:0 5px;
 			}
 		}
 		&_right{
@@ -573,6 +594,8 @@
 		left: 2.5%;
 		width:95%;
 		height:100px;
+		display: flex;
+		align-items: center;
 		border-bottom:1px solid #f5f5f5;
 		transition:all .6s;
 		transition-delay: .1s;
@@ -627,17 +650,25 @@
 				flex-direction: column;
 				margin-left:10px;
 				.spec_price{
+					display: flex;
+					flex-direction: column;
 					font-size:14px;
 					color:#FD0304;
 					span{
 						font-size:14px;
 						
 					}
+					.spec_describe{
+						color:#FC6515;
+						margin-bottom: 10px;
+					}
 				}
-				.spec_describe{
-					color:#FC6515;
-					margin-bottom: 10px;
+				.spec_info{
+					span{
+						margin-right:10px;
+					}
 				}
+				
 				.spec_num,.spec_stock{
 					color:#999;
 				}
@@ -646,6 +677,7 @@
 		i{
 			position:absolute;
 			right:0;
+			top:0;
 		}
 	}
 	.spec_option{
@@ -675,6 +707,7 @@
 		// }
 	}
 	.sh_right{
+		opacity: 0;
 		left: 50% !important;
 		top: 185px !important;
 		transform: translate3d(-50%,0,0) !important;
@@ -688,16 +721,18 @@
 	.priceBox{
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		padding:0;
 		border-radius:4px;
+		overflow: hidden;
 		.price_head{
 			display: flex;
-			flex:1;
 			width:100%;
 			padding:5px 10px;
 			background:#F1F1F1;
-			box-sizing: border-box;
 			align-items: center;
+			align-content: flex-start;
+			justify-content: flex-start;
 			span{
 				display: flex;
 				align-items: baseline;
@@ -711,20 +746,23 @@
 			}
 		}
 		.spec_text{
-			padding:3px 0;
+			padding:5px 10px;
 			color:#999;
+			text-align: center;
 		}
 	}
 	.active_price{
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		border:1px solid #2A8BF9;
 		.price_head{
 			display: flex;
-			flex:1;
+			width:100%;
 			background:#2A8BF9 !important;
 			color:#fff;
 			align-items: center;
+			padding:5px 10px;
 			span{
 				display: flex;
 				align-items: baseline;
@@ -850,7 +888,47 @@
 		font-size:2rem
 	}
 }
-
+//二维码
+.qr{
+	    z-index: 9999;
+	    position: fixed;
+	    top: 50%;
+	    left: 50%;
+		transform: translate3d(-50%,-50%,0);
+	    display: flex;
+		 flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background:#fff;
+		color:#fff;
+        padding: 1.5rem;
+		border-radius: 10px;
+		span{
+			display: flex;
+			align-items: center;
+			font-size: 16px;
+			margin:10px 0;
+			i{
+				margin-right: 10px;
+			}
+		}
+}
+.qrbkg{
+	    padding: 1rem;
+	    background: #fff;
+}
+.wechatBkg{
+	background:#24aa39
+}
+.aliBkg{
+	background:#019fe8
+}
+.closeQrcode{
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 18px;
+}
  // sku测试
  
  .skuname{
@@ -863,11 +941,17 @@
 	padding:1rem 0;
 	flex-wrap: wrap;
 	li{
+		border:1px solid #007AFF;
+		padding:3px 10px;
+		border-radius:5px;
+		margin-right:5px;
+	}
+	.priceBox{
 		border:1px solid #f3f3f3;
 		background:#fff;
 		border-radius:5px;
 		text-align:center;
-		padding:3px 10px;
+		// padding:3px 10px;
 		margin-right:10px;
 		margin-bottom:10px;
 	}

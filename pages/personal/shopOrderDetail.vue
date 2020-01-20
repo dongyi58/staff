@@ -12,12 +12,14 @@
 		
 		
 				<view class="detailHeader">
-							 <view class="hleft">
-								 <span>{{statusText}}</span>
-								<!-- <span>剩余26分交易自动关闭</span> -->
-							 </view>
-							 <view class="hright">
-								 <i class="iconfont" :class="statusIcon"></i>
+							 <view class="statusBox">
+								 <view class="hleft">
+										 <span>{{statusText}}</span>
+										<!-- <span>剩余26分交易自动关闭</span> -->
+								 </view>
+								 <view class="hright">
+										 <i class="iconfont" :class="statusIcon"></i>
+								 </view>
 							 </view>
 				</view>
 				<scroll-view class="order_list" scroll-y="true">
@@ -34,23 +36,28 @@
 						 			 <view class="o-left">
 						 				 <image class="order_img" :src="goods.img" mode="aspectFill"></image>
 						 			 </view>
-						 			 <view class="omid">
+						 			 <view class="omid" v-if="goods.gift == 1">
 						 				 <p>{{goods.name}}</p>
 						 				 
 										 <span v-if="goods.status == 2">规格:{{goods.format_spec}}</span>
 										 <span v-else-if="goods.store == 0">已售罄</span>
 										 <span v-else>已下架</span>
 						 			 </view>
+									  <!-- 赠品 -->
+									 <view class="omid" v-else>
+									 				<p>{{goods.name}}</p>		 		
+									 </view>
 									 <!-- 普通商品 -->
 						 			 <view class="o-right" v-if="goods.gift == 1 ">
 						 				 <span>￥{{goods.price}}</span>
 						 				 <view class="or-bottom">
 						 					 <span>× {{goods.quantity}}</span>
-						 					 <span>优惠：{{goods.coupon_fee}}</span>
+						 					<!-- <span>优惠：{{goods.coupon_fee}}</span> -->
 						 				 </view>
 						 			 </view>
 									 <!-- 赠品 -->
-									 <view class="o-right gift-right" v-else>
+									 <view class="o-right " v-else>
+											<span>x {{goods.amount}}</span>
 											<span>赠品</span>
 									 </view>
 						 	 </view>
@@ -77,19 +84,38 @@
 						 	</view>
 							<view class='make-qrcode-box'>
 								<span class="sh_btn" v-if="item.showShouhou">申请售后</span>
-								<span class="qrcode_btn" v-if="item.showQrcode">生成二维码</span>
+								<span class="qrcode_btn" v-if="item.showQrcode" @click="payment(item.total_no,idx,item.many)">生成二维码</span>
 							</view>
 						  </view>
 					 </view>
 		</scroll-view>
+		<view  class="amask" :class="{'showMask' : showqrcode}" ></view>
+		<view class="qr"  v-if="ifShow" :class="[isali ? 'aliBkg' : 'wechatBkg']">
+			<i class="iconfont icon-ziyuan closeQrcode" @click="handleCloseQr"></i>
+			<span><i class="iconfont icon-saoma"></i> 请使用{{typeText}}扫码支付</span>
+			<view class="qrbkg" >
+				<tki-qrcode
+					class="qrcodeBox"
+					cid="qrcode1" 
+					ref="qrcode" 
+					:val="codeUrl" 
+					:size="size"
+					:unit="unit" 
+					:icon="icon" 
+					:iconSize="iconsize"
+					:onval="onval" 
+					:usingComponents="true" />
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
 	// 顶部导航
 	import customnav from '@/components/customnav.vue'
+	import tkiQrcode from "@/components/tki-qrcode/tki-qrcode.vue"
 	export default {
-		components:{customnav},
+		components:{customnav,tkiQrcode},
 		data() {
 			return {
 				orderDetailInfo:[],
@@ -99,7 +125,23 @@
 				orderStatus:'',
 				statusIcon:'',
 				statusText:'',
-				domain:this.$store.state.domain
+				domain:this.$store.state.domain,
+				codeUrl:'',
+				ifShow: false,
+				size: 200, // 二维码大小
+				unit: 'px', // 单位
+				background: '#b4e9e2', // 背景色
+				foreground: '#309286', // 前景色
+				pdground: '#32dbc6', // 角标色
+				icon: '', // 二维码图标
+				iconsize: 40, // 二维码图标大小
+				onval: false, // val值变化时自动重新生成二维码
+				showqrcode:false,
+				matchStatus:-1,
+				matchStatus2:-1,
+				matchTimer:null,
+				typeText:'',
+				isali:false
 			};
 		},
 		
@@ -123,79 +165,160 @@
 					break;
 				case 4:
 					this.statusIcon = 'icon-yishouhuo';
-					this.statusText = '买家已收货';
+					this.statusText = '订单已完成';
 					break;
 				case 5:
 					this.statusIcon = 'icon-quxiaodingdan';
-					this.statusText = '订单已取消';
+					this.statusText = '交易已关闭';
 					break;
 			}
 			this.getOrderDetail()
 		},	
 		methods:{
-			getOrderDetail(){
+			handleCloseQr(){
+				this.showqrcode=false
+				this.ifShow=false
+				clearInterval(this.matchTimer)
+			},
+			payment(totalNum,idx,payType){
+				if(payType == 1){ //多订单
+					uni.showToast({
+						icon:'none',
+						title:'非业务员下单请到小店支付',
+						duration:2000
+					})
+					return
+				}
+				this.$store.dispatch('paymentType',totalNum).then(opt=>{
+					this.codeUrl = opt.info
+					if(opt.idx == 0){
+						this.typeText='支付宝'
+						this.isali=true
+					}else{
+						this.typeText='微信'
+						this.isali=false
+					}
+					this.showqrcode=true
+					this.ifShow=true
+					setTimeout(()=>{
+						this.$refs.qrcode._makeCode()
+					},500)
+					
+					this.matchStatus = this.orderDetailInfo[0].order_status
+					this.matchTimer=setInterval(()=>{
+						this.getOrderDetail(true)
+					},2000)
+				})
+			},
+			getOrderDetail(match){
 				this.$dyrequest({
 					url:'/SmallShop/orderDetail',
 					method:'POST',
+						hideLoading:true,
 					data:{
 						id:this.orderId,
 						smallShopId:this.shopId
 					}
 				}).then(res=>{
 					// console.log(res.data.data)
-					res.data.data.map((item,idx)=>{
-							if(item.memo == 'null'){
-								item.memo="无订单备注"
-							}
-							this.$set(item,'showQrcode',false)
-							this.$set(item,'showShouhou',false)
-							//订单状态为待收货显示售后按钮
-							if(item.order_status == 3){
-								 this.$set(item,'showShouhou',true)
-							}
-							
-							//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
-							if(item.order_status == 3 && item.order_type == 1){
-								 this.$set(item,'showQrcode',true)
-							}
-							if(item.order_status == 3 && item.order_type == 2){
-								 this.$set(item,'showQrcode',true)
-							}
-							//订单状态为待付款且订单类型为现付显示付款二维码按钮
-							if(item.order_status == 1 && item.order_type == 3){
-								 this.$set(item,'showQrcode',true)
-							}
-						//处理商品信息
-							item.goods.map((gitem,idx)=>{
-									this.$set(gitem,'show',false)
-									this.$set(gitem,'loaded',false)
-									 this.$set(gitem,'format_spec',false)
-									 if(gitem.status == 3){
-										 this.$set(item,'showQrcode',false)
-										 this.$set(item,'showShouhou',false)
-									 }
-									 //格式化规格
-									 if(gitem.price_type == 'whole'){//整件价
-										 if(gitem.pack_type == 1){//1，整件 2 ，散装
-											 gitem.format_spec= gitem.net_weight+'×'+ gitem.spec+'/'+gitem.whole_unit
-										 }else{
-											  gitem.format_spec= gitem.whole_spec+gitem.bulk_unit
-										 }
-									 }else{//单价
-										 if(gitem.pack_type == 1){
-										 		gitem.format_spec= gitem.net_weight+'/'+gitem.retail_unit
-										 }else{
-										 		gitem.format_spec= gitem.retail_spec+gitem.bulk_unit
-										 }
-									 }
-									 
-									 gitem.img =this.domain + gitem.img
-									
-												 
-							})
-							this.orderDetailInfo.push(item)
+					if(match){ //轮询支付状态
+					
+						this.matchStatus = res.data.data[0]
+						//到付和账期购买后状态为待发货状态3，发货后可支付，支付完成后状态为4
+						if(this.matchStatus.order_type == 1 || this.matchStatus.order_type == 2){
+								if(this.matchStatus.order_status == 4){
+									clearInterval(this.matchTimer)
+									this.showqrcode=false
+									this.ifShow=false
+									uni.showToast({
+										icon:'none',
+										title:'支付成功'
+									})
+									setTimeout(()=>{
+										this.statusIcon = 'icon-daifahuo';
+										this.statusText = '商家正在准备商品';
+										this.$set(this.orderDetailInfo[0],'showQrcode',false)
+										this.orderDetailInfo=[]
+										this.orderDetailGoods=[]
+										this.getOrderDetail()
+									},2000)
+								}
+						}else{
+							//普通现付，状态为1待支付，支付完成后状态为2，状态改变后刷新数据
+								if(this.matchStatus.order_status == 2){
+									clearInterval(this.matchTimer)
+									this.showqrcode=false
+									this.ifShow=false
+									uni.showToast({
+										icon:'none',
+										title:'支付成功'
+									})
+									setTimeout(()=>{
+										this.statusIcon = 'icon-daifahuo';
+										this.statusText = '商家正在准备商品';
+										this.$set(this.orderDetailInfo[0],'showQrcode',false)
+										this.orderDetailInfo=[]
+										this.orderDetailGoods=[]
+										this.getOrderDetail()
+									},2000)
+								}
+						}
+					}else{
+						res.data.data.map((item,idx)=>{
+								if(item.memo == 'null'){
+									item.memo="无订单备注"
+								}
+								this.$set(item,'showQrcode',false)
+								this.$set(item,'showShouhou',false)
+								//订单状态为待收货显示售后按钮
+								// if(item.order_status == 3){
+								// 	 this.$set(item,'showShouhou',true)
+								// }
 								
-					})
+								//订单状态为待收货且订单类型为到付或账期是显示付款二维码按钮
+								if(item.order_status == 3 && item.order_type == 1){
+									 this.$set(item,'showQrcode',true)
+								}
+								if(item.order_status == 3 && item.order_type == 2){
+									 this.$set(item,'showQrcode',true)
+								}
+								//订单状态为待付款且订单类型为现付显示付款二维码按钮
+								if(item.order_status == 1 && item.order_type == 3){
+									 this.$set(item,'showQrcode',true)
+								}
+							//处理商品信息
+								item.goods.map((gitem,idx)=>{
+										this.$set(gitem,'show',false)
+										this.$set(gitem,'loaded',false)
+										 this.$set(gitem,'format_spec',false)
+										 if(gitem.status == 3){
+											 this.$set(item,'showQrcode',false)
+											 this.$set(item,'showShouhou',false)
+										 }
+										 //格式化规格
+										 if(gitem.price_type == 'whole'){//整件价
+											 if(gitem.pack_type == 1){//1，整件 2 ，散装
+												 gitem.format_spec= gitem.net_weight+'×'+ gitem.spec+'/'+gitem.whole_unit
+											 }else{
+												  gitem.format_spec= gitem.whole_spec+gitem.bulk_unit
+											 }
+										 }else{//单价
+											 if(gitem.pack_type == 1){
+											 		gitem.format_spec= gitem.net_weight+'/'+gitem.retail_unit
+											 }else{
+											 		gitem.format_spec= gitem.retail_spec+gitem.bulk_unit
+											 }
+										 }
+										 
+										 gitem.img =this.domain + gitem.img
+										
+													 
+								})
+								this.orderDetailInfo.push(item)
+									
+						})
+					}
+					
 				})
 			}
 		}
@@ -208,13 +331,19 @@
 		width:100%;
 		height:calc(100vh - 145px - var(--status-bar-height))
 	}
+	.statusBox{
+		    display: flex;
+		    align-items: center;
+		    width: 50%;
+		    justify-content: space-between;
+	}
 	.detailHeader{
 		width:100%;
 		height:100px;
 		background:linear-gradient(to right,#21A5F9,#1A6FE8);
 		display: flex;
 		align-items: center;
-		justify-content: space-evenly;
+		justify-content: center;
 		color:#fff;
 		.hleft{
 			display: flex;
@@ -224,7 +353,8 @@
 				margin-bottom:10px;
 			}
 			span:last-child{
-				font-size:14px;
+				font-size:16px;
+				font-weight: 600;
 			}
 		}
 		.hright i{

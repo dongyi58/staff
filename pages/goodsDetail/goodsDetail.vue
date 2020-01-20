@@ -21,7 +21,10 @@
 						<view class="info_item info_one">
 							<view class="price_stock">
 								<view class="left_price">
-									<view class="nowPrice" v-if="formatPrice"><span>￥</span>{{formatPrice.nowPrice || '0.00'}}</view>
+									<view class="nowPrice" v-if="formatPrice">
+										<span>￥{{formatPrice.nowPrice || '0.00'}}</span>
+										<image v-if="isActivity=='true'" class="activity_gif" src="../../static/images/fire.gif" mode=""></image>
+									</view>
 									<view class="oldPrice"  v-if="formatPrice">原价：<span>￥{{formatPrice.oldPrice || '0.00'}}</span></view>
 								</view>
 								<view class="right_stock">
@@ -36,16 +39,16 @@
 					</view>
 					<!-- 优惠发货和已选规格 -->
 					<view class="info_item info_two">
-						<view class="discount_cell info_cell" @click="openPopup">
+						<!-- <view class="discount_cell info_cell" @click="openPopup">
 							<view class="cell_left"  >
 								<span>优惠</span>
-								<span v-if="goodsDiscount.length == 0" style="color:#999">暂无可领取优惠券</span>
-								<span v-else>共{{goodsDiscount.length}}张优惠券可领取</span>
+								<span v-if="goodsDiscount.length == 0" >暂无可领取优惠券</span>
+								<span v-else > 共{{totalCoupon}}可领优惠券，已领取{{takeCoupon}}张</span>
 							</view>
 							<view class="cell_right">
 								<i class="iconfont icon-you"></i>
 							</view>
-						</view>
+						</view> -->
 						<view class="send_cell info_cell">
 							<view class="cell_left">
 								<span>发货地</span>
@@ -64,26 +67,47 @@
 								<i class="iconfont icon-you"></i>
 							</view>
 						</view> -->
-						<!-- 打折 -->
-						<view class="send_cell info_cell" v-if="zhekou">
+						<!-- 打折 S-->
+						<view class="send_cell info_cell" v-if="zhekou" @click="showmz">
 							<view class="cell_left">
 								<span>折扣</span>
-								<span>现在购买享受<i style="color:red">{{activityRule[0].rebate*10}}</i>折</span>
+								<span>现在购买享受<i style="color:red">{{activityRule[0].rebate}}</i>折</span>
 							</view>
 							<view class="cell_right">
 								<!-- <i class="iconfont icon-you"></i> -->
 							</view>
 						</view>
-						<!-- 满减 -->
-						<view class="send_cell info_cell" v-if="zhekouman">
+						<view class="mzgoods_list"
+							:style="{height:mheight+'px'}"
+							 v-if="zhekou">
+							<view v-for="(j,i) in activityRule" :key="i" v-if="i != 0" class="mzgoods_item">
+								<view class="mzgoods_item_left" >
+										<span>现在购买享受<i style="color:red">{{j.rebate}}</i>折</span>
+								</view>
+							</view>
+						</view>
+						
+						<!-- 满折 S-->
+						<view class="send_cell info_cell" v-if="zhekouman" @click="showmz">
 							<view class="cell_left">
-								<span>满减</span>
-								<span>现在购买满<i style="color:red">{{activityRule[0].money}}</i>元立享<i style="color:red">{{activityRule[0].rebate*10}}</i>折优惠</span>
+								<span>折扣</span>
+								<span>现在购买满<i style="color:red">{{activityRule[0].money}}</i>元立享<i style="color:red">{{activityRule[0].rebate}}</i>折优惠</span>
 							</view>
 							<view class="cell_right">
-								<!-- <i class="iconfont icon-you"></i> -->
+								<i class="iconfont icon-you"></i>
 							</view>
 						</view>
+						<view class="mzgoods_list"
+							:style="{height:mheight+'px'}"
+							 v-if="zhekouman">
+							 <view v-for="(j,i) in activityRule" :key="i" v-if="i != 0" class="mzgoods_item">
+								<view class="mzgoods_item_left" >
+									<span class="emptySpan"></span><span>现在购买满<i style="color:red">{{j.money}}</i>元立享<i style="color:red">{{j.rebate}}</i>折优惠</span>
+								</view>
+							</view>
+						</view>
+						
+						
 						<!-- 满赠 -->
 						<view class="send_cell info_cell" v-if="manzeng" @click="showmz">
 							<view class="cell_left">
@@ -108,8 +132,8 @@
 								<span class="mzgoods_item_right">剩余{{g.stock}}件</span>
 							</view>
 						</view>
-						<!-- 买赠 -->
 						
+						<!-- 买赠 -->
 						<view class="send_cell info_cell" v-if="maizeng" @click="showmz">
 							<view class="cell_left">
 								<span>买赠</span>
@@ -128,7 +152,7 @@
 							<view v-for="maizeng in activityRule" :key="maizeng.product_id" class="mzgoods_item">
 								<view class="mzgoods_item_left">
 									<image :src="domain+maizeng.spec_img" mode="" class="mzgoods_img"></image> 
-									<span>{{maizeng.product_name}}</span>
+									<span v-if="">{{maizeng.product_name}}</span>
 								</view>
 							</view>
 						</view>
@@ -154,7 +178,7 @@
 									<span class="suppliername">{{goodsDetail.supplier.contactname}}</span>
 									<view class="rate_comment">
 									
-										<uni-rate :value="star" disabled="true"></uni-rate>
+										<uni-rate v-if="star" :value="star" disabled="true"></uni-rate>
 										<!-- <span>89条评论</span> -->
 									</view>
 								
@@ -190,8 +214,8 @@
 				
 				<!-- <span><i class="iconfont icon-dianpu-tap"></i>店铺</span>
 				<span><i class="iconfont icon-lianxikefu"></i>客服</span> -->
-				<span @click="goCart">
-					<i class="badage" :style="width">{{cartNum}}</i>
+				<span @click="goCart" >
+					<i class="badage" :style="width" v-if="cartNum!=0">{{cartNum}}</i>
 					<i class="iconfont icon-dingdan"></i>采购单
 				</span>
 			</view>
@@ -214,11 +238,21 @@
 								
 								<view class="sh_right">
 									<view class="sh_left_text">
-										<view class="spec_price">￥<span>{{selectSpecInfo.specPrice}}</span></view>
-										<span class="spec_describe">{{selectSpecInfo.specTitle}}</span>
-										<span class="spec_num">货号:{{selectSpecInfo.productNo}}</span>
-										<span class="spec_stock">库存:{{selectSpecInfo.stock}}</span>
-										<span class="spec_stock" v-if="dtype==2">活动库存:{{selectSpecInfo.activityStock}}</span>
+										<view class="spec_price">
+											<span>￥{{selectSpecInfo.specPrice}}</span>
+											<span class="spec_describe">{{selectSpecInfo.specTitle}}</span>
+										</view>
+										<view class="spec_info">
+											<span class="spec_num" v-show="selectSpecInfo.productNo != ''">货号:{{selectSpecInfo.productNo}}</span>
+											<span class="spec_stock">库存:{{selectSpecInfo.stock}}</span>
+										</view>
+										<view class="spec_info">
+											<span class="spec_stock" v-show="showSpecActivity">活动名称:{{selectSpecInfo.activityName}}</span>
+										</view>
+										<view class="spec_info">
+											<span class="spec_stock" v-show="showSpecActivity && selectSpecInfo.activityRstock != 0">活动单品库存:{{selectSpecInfo.activityRstock}}</span>
+											<span class="spec_stock" v-show="showSpecActivity && selectSpecInfo.activityWstock != 0">活动整件库存:{{selectSpecInfo.activityWstock}}</span>
+										</view>
 									</view>
 								</view>
 								<i class="iconfont icon-ziyuan" @click="closeSpec"></i>
@@ -248,17 +282,18 @@
 											<view class="sku_parent">
 												  <h1 class="skuname">销售方式</h1> 
 												  
-												  <ul class="skuChild">
-														<li class="priceBox " 
+												  <view class="skuChild">
+														<view class="priceBox " 
 														@click="priceSelect(1)" 
 														:class="[ps_idx == 1 ? 'active_price' : '']"
 														v-if="specPriceType == 2 || specPriceType == 3"
 														>
 														
 															<view class="price_head">单品价: <span>￥<i>{{goodsInfoBySpec.retail_price}}</i></span></view>
+															
 															<view class="spec_text">{{goodsInfoBySpec.retail_priceTitle}}</view>
-														</li>
-														<li class="priceBox"
+														</view>
+														<view class="priceBox"
 														 @click="priceSelect(2)" 
 														:class="[ps_idx == 2 ? 'active_price' : '']"
 														 v-if="specPriceType == 1 || specPriceType == 3"
@@ -266,8 +301,8 @@
 														
 															<view class="price_head">整件价: <span>￥<i>{{goodsInfoBySpec.wholesale_price}}</i></span></view>
 															<view class="spec_text">{{goodsInfoBySpec.whole_priceTitle}}</view>
-														</li>
-												  </ul>
+														</view>
+												  </view>
 											</view>
 										
 									</view>
@@ -275,7 +310,7 @@
 									<view class="buySteper">
 										<view class="steperLeft">采购数量({{selectSpecInfo.moq+selectSpecInfo.unit}}起售)</view>
 										
-										<view class="steperRight"><stepper :min="selectSpecInfo.moq"  @change="stepperChange" :max="99" :value="quantity"></stepper></view>
+										<view class="steperRight"><stepper :min="selectSpecInfo.moq"  @change="stepperChange" :max="selectSpecInfo.max" :value="quantity"></stepper></view>
 									</view>
 									
 									<!-- 弹窗确定按钮 -->
@@ -306,7 +341,7 @@
 								v-for="(yitem,yid) of item.rule"
 								:key="yid"
 								:class="[item.way_id == 1 ? 'zkbj' : 'mjbj']">
-								   <image v-if="yitem.take" class="takeimg" src="../../static/images/take.png"></image>
+								   <image v-if="yitem.status==1" class="takeimg" src="../../static/images/take.png"></image>
 									<view class="yhq_left">
 										<view class="yhq_left_one">
 											<span  v-if="item.way_id == 1">{{yitem.rebate*10}} 折</span>
@@ -317,19 +352,22 @@
 										<view class="yhq_left_two">
 											<span v-if="item.way_id == 1">部分商品可用</span>
 											<span v-if="item.way_id == 5">满{{yitem.money}}元使用</span>
-											<span v-if="item.way_id == 5">部分商品通用<br>(特价除外)</span>
+											<span v-if="item.way_id == 5">部分商品可用</span>
 										</view>
 									</view>
 									<view class="yhq_right">
 										<span v-if="item.way_id == 1">店铺折扣券</span>
 										<span v-else>店铺满减券</span>
-										<span  class="usestyle2" v-if="!yitem.take && yitem.status !=1" @click="getYhq(item.activity_id,yitem.money,idx,yid)">领 取</span>
-										<span  class="takestyle2" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
+										<span  :class="[item.way_id == 1 ? 'usestyle2' : 'usestyle']"
+										 v-if="!yitem.take && yitem.status !=1" 
+										 @click="getYhq(item.activity_id,yitem.money,idx,yid)">领 取</span>
+										<span  :class="[item.way_id == 1 ? 'takestyle2' : 'takestyle']" v-else @click="useDiscount(item.activity_id,item.way_id)">去使用</span>
 									</view>
 								</view>
 							</view>
 						</view>
 		 </popup>
+		  <pageLoad :hide="hide" />	
 	</view>
 </template>
 
@@ -357,6 +395,7 @@
 			},
 		data() {
 			return {
+				hide:false,
 				goodsDetail:[],//商品详情数据
 				goodsInfoParams:{},//接收活动商品参数
 				domain:this.$store.state.domain,
@@ -428,7 +467,13 @@
 				manzengList:[],
 				mzflag:false,
 				mheight:0,
-				disabelScroll:false
+				disabelScroll:false,
+				takeNum:0,
+				isActivity:false,
+				activityBySpec:[],
+				showSpecActivity:false,
+				totalCoupon:0,
+				takeCoupon:0
 			};
 		},
 	computed:{
@@ -483,42 +528,50 @@
 			//根据选中的规格改变价钱库存等
 			selectSpecInfo(){
 				let spec = this.goodsInfoBySpec
-				let salenum = 0
-				//判断买赠的起订量
-				if(this.activityType == 'maizeng'){
-					salenum = Number(this.goodsDetail.maizengAmount.getnum)
-				}else{
-					if(this.ps_idx == 1){
-						salenum = Number(spec.retail_sale_num)
-					}else{
-						salenum = Number(spec.whole_sale_num)
-					}
-					
-				}
+				let activeitySpec= this.activityBySpec
+				let goodsUnit=''
+				
+				
 				//根据当前点击的价格类型，切换顶部的价格货号库存信息
 				//通过ps_idx变化触发更新
 					if(this.ps_idx == 1){
+						if(spec.pack_type==2){
+							goodsUnit=spec.bulk_unit
+						}else{
+							goodsUnit = spec.retail_unit
+						}
 						//单价
 						return {
 							specPrice:spec.retail_price,
 							specTitle:spec.retail_priceTitle,
 							productNo:spec.product_no,
-							stock:spec.retail_store+spec.retail_unit,
-							activityStock:spec.retail_store_activity+spec.retail_unit,
-							moq:salenum,
-							unit:spec.retail_unit
+							stock:spec.retail_store+goodsUnit,
+							activityStock:spec.retail_store_activity+goodsUnit,
+							moq:spec.retail_sale_num,
+							max:spec.store,
+							unit:goodsUnit,
+							activityName:activeitySpec.activityName || '',
+							activityType:activeitySpec.activityType || '',
+							activityWstock:activeitySpec.whole_store_activity || '',
+							activityRstock:activeitySpec.retail_store_activity || '',
 						}
 						
 					}else{
+						console.log(goodsUnit)
 						// 整件价
 						return  {
 							specPrice:spec.wholesale_price,
 							specTitle:spec.whole_priceTitle,
 							productNo:spec.product_no,
-							stock:spec.whole_store+spec.whole_unit,
-							activityStock:spec.whole_store_activity+spec.whole_unit,
-							moq:salenum,
-							unit:spec.whole_unit
+							stock:spec.whole_store+goodsUnit,
+							activityStock:spec.whole_store_activity+goodsUnit,
+							moq:spec.whole_sale_num,
+							max:spec.store,
+							unit:spec.whole_unit || spec.bulk_unit,
+							activityName:activeitySpec.activityName || '',
+							activityType:activeitySpec.activityType || '',
+							activityWstock:activeitySpec.whole_store_activity || '',
+							activityRstock:activeitySpec.retail_store_activity || '',
 						}
 						
 					
@@ -531,7 +584,8 @@
 			this.goodsId = option.goods_id
 			this.dtype = option.dtype
 			this.activityType = option.type //manjian,zhekou
-			
+			// console.log(option.activity)
+			this.isActivity = option.activity
 			// console.log(this.activityType,this.dtype)
 				//请求商品详情参数
 				if(this.dtype == 1){ //普通商品
@@ -539,6 +593,7 @@
 					this.goodsInfoParams = {
 						method:'POST',
 						url:'/Goods/detail',
+						hideLoading:true,
 						data:{
 							goodsId:option.goods_id,
 							id:this.shopId,
@@ -566,6 +621,7 @@
 					this.goodsInfoParams = {
 						method:'POST',
 						url:'/Goods/productDetail',
+						hideLoading:true,
 						data:{
 							id:this.shopId,
 							activityId:option.activityId,
@@ -610,7 +666,12 @@
 						mmheight = this.activityRule[i].length  * 50
 					}
 				}else{
-					mmheight = this.activityRule.length  * 50
+					if(this.maizeng){
+						mmheight = this.activityRule.length  * 50
+					}else{
+						mmheight = (this.activityRule.length-1)  * 37.5
+					}
+					
 				}
 				
 				if(this.mzflag){
@@ -622,15 +683,15 @@
 			},
 			goCart(){
 				// this.$store.commit('ADD_CART',true)
-				this.$store.commit('SET_CURRENINDEX',3) 
+				this.$store.commit('SET_CURRENINDEX',2) 
 				
-				uni.navigateTo({
-					url:'/pages/shopHomePage/homeindex'
-				})
+				// uni.navigateBack()({
+				// 	url:'/pages/shopHomePage/homeindex?currentIdx=2'
+				// })
 				
-				// uni.navigateBack({
-				//     delta:1
-				// });
+				uni.navigateBack({
+				    delta:1
+				});
 				
 			},
 			//切换价格类型，并更新头部展示的价格库存货号等、
@@ -703,7 +764,12 @@
 							this.maizengText = `购买满${mzNum}${this.goodsDetail.goods.retail_unit || ''}即可获得如下赠品(任选其一)`
 						}
 					}
-					
+					//折扣
+					if(this.activityType == 'zhekou' || this.activityType == 'zhekouman'){
+						this.activityRule.map(item=>{
+							this.$set(item,'rebate',(item.rebate*10).toFixed(1))
+						})
+					}
 					// console.log(this.activityRule)
 					//商家星级
 					this.star = this.goodsDetail.ct.star
@@ -732,14 +798,17 @@
 					this.swiperTotal = this.goodsDetail.goodsImg.length
 					
 					//优惠券
-					
 					if(this.goodsDetail.coupon){
 						this.goodsDetail.coupon.map(item=>{
-							if(item.rule[0].status != 1){
-								item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
-								item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
-								this.goodsDiscount.push(item)
-							}
+							item.start_time = item.start_time.split(' ')[0].replace(/-/g,".")
+							item.end_time = item.end_time.split(' ')[0].replace(/-/g,".")
+							this.goodsDiscount.push(item)
+							item.rule.map(yitem=>{
+								this.totalCoupon++
+								if(yitem.status == 1){
+									this.takeCoupon++
+								}
+							})
 						})
 					}
 					
@@ -816,7 +885,7 @@
 						}else{
 							
 							retailPriceTitle = `${specInfo.retail_spec}${specInfo.bulk_unit}`;
-							wholePriceTitle = `${specInfo.whole_spec}${specInfo.bulk_unit}/${specInfo.whole_unit}`
+							wholePriceTitle = `${specInfo.whole_spec}${specInfo.bulk_unit}/${specInfo.whole_unit || ''}`
 							
 						}	
 						this.$set(specInfo,'retail_priceTitle',retailPriceTitle)
@@ -824,11 +893,17 @@
 						
 						
 						this.goodsInfoBySpec = specInfo
-						console.log(this.goodsInfoBySpec)
+						//获取规格是否参加活动
+						this.getActivity()
+						// console.log(this.goodsInfoBySpec)
 					}
 					
 					
 				})
+				//数据加载完成后隐藏loading
+				setTimeout(()=>{
+					this.hide = true
+				},1000)
 			},
 		
 			//获取商品规格组合默认选中一组规格，组装规格数据，点击规格值查询对应组合是否可用或有无库存
@@ -980,6 +1055,8 @@
 					this.$set(specInfo,'whole_priceTitle',wholePriceTitle)
 					
 					this.goodsInfoBySpec = specInfo	
+					//获取此规格是否参加活动
+					this.getActivity()
 					// console.log(this.goodsInfoBySpec)
 				})
 			},
@@ -1009,6 +1086,7 @@
 					this.skuText(this.selectArr)
 					//判断所有选择完的规格，使用开始存的以规格组合为键名skuInfo找到对应的规格组合
 					this.defaultSku = this.skuInfo[this.selectArr.toString()].defaultSku
+					//请求规格信息
 					this.getSkuInfo()
 				}else{
 					this.skuText()
@@ -1080,6 +1158,29 @@
 				// console.log(this.skuInfo[result])
 				 //无空值下，判断是否有库存和是否启用，
 				 return this.skuInfo[result].stock == 0 ? false : (this.skuInfo[result].is_use == 1 ? true : false);
+			},
+			
+			//获取商品活动
+			
+			getActivity(){
+				this.$dyrequest({
+					url:'/Goods/getActivityByCondition',
+					method:'POST',
+					hideLoading:true,
+					data:{
+						productId:this.selectGoods.productId,
+						priceType:this.selectGoods.price_type
+					}
+				}).then(res=>{
+					this.activityBySpec=[]
+					let data = res.data.data
+					if(data.mark == 'ok'){
+						this.showSpecActivity=true
+						this.activityBySpec=data
+					}else{
+						this.showSpecActivity=false
+					}
+				})
 			},
 			
 			//确定按钮方法，
@@ -1185,10 +1286,10 @@
 			  },
 			 
 			 //领取优惠券
-			 getYhq(activiId,discount_money,idx){
+			 getYhq(activiId,discount_money,idx,yid){
 					let _this = this
 			  
-					this.$set(this.goodsDiscount[idx],'take',true)
+						this.$set(this.goodsDiscount[idx].rule[yid],'take',true)
 					this.$dyrequest({
 						url:'/Supplier/getCoupon',
 						method:'POST',
@@ -1204,6 +1305,13 @@
 							title: res.data.message
 						});
 					})
+			  },
+			  //使用优惠券
+			  
+			  useDiscount(couponId,type){
+			  				  uni.navigateTo({
+			  				  	url:'/pages/yhq/yhq?couponId='+couponId+'&type='+type
+			  				  })
 			  },
 			//切换轮播图
 			 handleSwiperChange(e){
@@ -1251,6 +1359,10 @@
 	}
 	.home_popup .uni-popup__wrapper-box{
 		width:90%;
+	}
+	.activity_gif{
+		width:50px;
+		height:18px;
 	}
 	body{
 		overflow:scroll !important;
@@ -1303,10 +1415,11 @@
 		margin-bottom:10px;
 		color:#fff;
 		.takeimg{
+			position: absolute;
+			right: 0;
 				width: 40px;
 			    height: 34px;
-			    position: absolute;
-			    right: 0;
+			    
 		}
 		.yhq_left{
 			width:75%;

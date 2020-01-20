@@ -40,7 +40,7 @@
 		watch:{
 			currentIndex(n,o){
 				//下标为1时加载数据，也就是当点击了全部商品时才调用方法
-				if(n == 4 && !this.loadonce){
+				if(n == 3 && !this.loadonce){
 					this.loadonce = true
 					this.loadData();
 				}

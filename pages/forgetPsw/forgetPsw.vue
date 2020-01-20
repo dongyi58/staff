@@ -5,7 +5,7 @@
 		 :ismsg="false" 
 		 :isSearch="false" 
 		 :midtitle="true"
-		 navtitle="订单管理"
+		 navtitle="忘记密码"
 		 :cancletext="false"
 		 :focus="false"
 		 />
@@ -115,7 +115,7 @@
 						})
 						if(res.data.mark=='ok'){ //修改成功
 							uni.reLaunch({
-								url:'/pages/entrance/login'
+								url:'/pages/login/login'
 							})
 						}
 					})
@@ -193,7 +193,7 @@
 						console.log(res);
 						uni.showToast({
 							icon:'none',
-							title:res.data.data.info
+							title:res.data.info
 						})
 						// this.verifyCode=res.data.data.code;
 					})

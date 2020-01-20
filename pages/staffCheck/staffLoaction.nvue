@@ -182,7 +182,15 @@
 						})
 					},
 					fail: function(err){
-						console.log(err)
+						uni.showToast({
+							icon:'none',
+							title:'网络错误，请重新进入'
+						})
+						setTimeout(()=>{
+							uni.navigateTo({
+								url:'/pages/index/index'
+							})
+						},1500)
 					},
 				});
 			},
@@ -221,6 +229,7 @@
 								})
 							}else{
 								 _this.shopMark = res.data.data
+								 console.log( _this.shopMark)
 								uni.$emit('shopNums',{
 									whz:_this.shopMark.whz_count,
 									dutyshop:_this.shopMark.dutyShop_count,
@@ -332,8 +341,8 @@
 								latitude:markdata[i][j].xy[1],
 								longitude:markdata[i][j].xy[0],
 								iconPath:iconUrl,
-								width:80,
-								height:80,
+								width:30,
+								height:30,
 								// anchor:{
 								// 	x:0.95,y:0
 								// },

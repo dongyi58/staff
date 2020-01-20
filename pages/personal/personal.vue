@@ -9,11 +9,13 @@
 		  placeholder="在结果中搜索"
 		 :cancletext="false"
 		 :focus="false"
+		 :backType="1"
+		 backurl="/pages/index/index"
 		 />
 		<view class="content_wrap">
 			 <view class="personal_header">
 			 			 <image v-if="staffInfo.img" class="personal_header_img" :src="staffInfo.img" mode="aspectFill"></image>
-						 <image v-else class="personal_header_img" src="../../static/images/default-avatar.jpeg" mode="aspectFill"></image>
+						 <image v-else class="personal_header_img" fade-show src="../../static/images/default-avatar.jpeg" mode="aspectFill"></image>
 			 			 <span>{{staffInfo.name}}</span>
 			 </view>
 			 <view class="personal_content">
@@ -55,18 +57,18 @@
 			 			<view class="pc_item">
 			 				<uni-list>
 			 				    <uni-list-item  @click="feedBack" title="功能反馈" :show-extra-icon="true"  iconclass="icon-shequneiicon- personal_icon4" ></uni-list-item>
-			 					<uni-list-item title="关于店店店 1.1" :show-extra-icon="true"  iconclass="icon-guanyu3 personal_icon5" ></uni-list-item>
+			 					<uni-list-item title="关于店店店" :show-extra-icon="true"  iconclass="icon-guanyu3 personal_icon5" ></uni-list-item>
 			 					<uni-list-item @click="logoutAction" title="退出"  :show-extra-icon="true"  iconclass="icon-tuichu personal_icon6" ></uni-list-item>
 			 				</uni-list>
 			 			</view>
 			 </view>
 		 </view>
-		
-		<popup ref="popup" type="bottom" class="home_popup" :popstyle="{display:'flex',width:'100%',height:'100px',overflow:'hidden',alignItems:'center'}">
+		<view class="xieyi"><span @click="yszc">隐私政策</span>|<span @click="yhxy">用户协议</span></view>
+		<!-- <popup ref="popup" type="bottom" class="home_popup" :popstyle="{display:'flex',width:'100%',height:'100px',overflow:'hidden',alignItems:'center'}">
 					<view class="logout_box">
 						<button type="warn" @click="logout">退出当前账号</button>
 					</view>
-		 </popup>
+		 </popup> -->
 		 <popup ref="popup2" type="center" class="feed_popup" :popstyle="{display:'flex',width:'90%',height:'250px',overflow:'hidden'}">
 		 			<view class="feedBack" >
 						<h4>功能反馈 <i class="iconfont icon-ziyuan" @click="closeFeedBack"></i> </h4>
@@ -112,6 +114,16 @@
 		
 		},
 		methods:{
+			yszc(){
+				uni.navigateTo({
+					url:'/pages/yinsi/yinsi'
+				})
+			},
+			yhxy(){
+				uni.navigateTo({
+					url:'/pages/yhxy/yhxy'
+				})
+			},
 			sendFeedBack(){
 				console.log(this.feedtext)
 				uni.showToast({
@@ -131,15 +143,23 @@
 			closeFeedBack(){
 				this.$refs.popup2.close()
 			},
+			// logoutAction(){
+			// 	  this.$refs.popup.open()
+			// },
 			logoutAction(){
-				  this.$refs.popup.open()
-			},
-			logout(){
-				uni.removeStorageSync('token');
-				uni.removeStorageSync('phone');
-				uni.navigateTo({
-					url:'/pages/login/login'
-				})
+				uni.showActionSheet({
+				    itemList: ['退出登录'],
+				    success: function (res) {
+				       uni.removeStorageSync('token');
+				       uni.removeStorageSync('phone');
+				       uni.navigateTo({
+				       	url:'/pages/login/login'
+				       })
+				    },
+				    fail: function (res) {
+				        console.log(res.errMsg);
+				    }
+				});
 
 			},
 			goAccount(){
@@ -166,6 +186,18 @@
 
 <style lang="scss">
 	@import '@/static/css/style.scss';
+	.xieyi{
+		    position: fixed;
+		    bottom: 20px;
+		    width: 100%;
+		    display: flex;
+		    justify-content: center;
+			color:#147AED;
+			span{
+				margin:0 5px;
+				text-decoration: underline;
+			}
+	}
 	//个人中心
 	.feedBack{
 		width:90%;
@@ -198,7 +230,7 @@
 		padding:5px;
 		font-size:12px !important;
 		box-sizing: border-box;
-		
+		color:#000;
 	}
 	
 	.content_wrap{
@@ -213,7 +245,6 @@
 		width:90%;
 		height:250px;
 		overflow: hidden !important;
-		color:#999;
 		font-size:12px !important
 	}
 	.personal_header{

@@ -1,7 +1,7 @@
 <template>
 	<view class="wrap shoplist_wrap">
 		<view class="status_bar index_status_bar"></view>
-		<customnav  :isSearch="false" navtitle="选择代下单小店" backType="1" backurl="/pages/index/index" />
+		<customnav  :isSearch="false" navtitle="选择代下单小店" />
 		<!-- 搜索栏 -->
 		<view class="shoplist_content_search">
 			<view class="searchbkg"></view>
@@ -47,6 +47,7 @@
 			</view>
 		</scroll-view>
 		<backTop :scrollTop="topval" @backTop="backTop" />
+		  <pageLoad :hide="hide" />	
 	</view>
 </template>
 
@@ -63,7 +64,8 @@
 				domain2:this.$store.state.domain2,
 				shopname:'',
 				topval:0,
-				scrollTop:-1
+				scrollTop:-1,
+				hide:false,
 			};
 		},
 		mounted() {
@@ -94,11 +96,13 @@
 				this.loadShoplist()
 			},
 			gotoShopDetail(id){
+				
+				this.$store.commit('SET_SHOPID',id) //存储点击小店id
 				uni.navigateTo({
-				    url: '/pages/shopHomePage/homeindex'
+				    url: '/pages/shopHomePage/homeindex?type=0'
 				});
 				// this.$store.commit('ADD_CART',true)
-				this.$store.commit('SET_SHOPID',id) //存储点击小店id
+				
 				// this.$store.commit('SET_CURRENINDEX',0) //显示供应商首页
 			},
 			callsupplier(phonenum){
@@ -112,11 +116,17 @@
 					this.$dyrequest({
 					     url:'/SmallShop/chooseShop', 
 					 	method:'POST',
+						hideLoading:true,
 						data:{
 							shopname:this.shopname
 						}
 					 }).then(res=>{
 						 _this.shop_list= res.data.data
+						 //数据加载完成后隐藏loading
+						 setTimeout(()=>{
+						 	this.hide = true
+						 },1000)
+						 
 					 })
 			}
 				
